@@ -725,6 +725,6 @@ The proposed architecture leverages AWS best practices and modern technologies t
 4. Project kickoff and Phase 1 implementation
 
 **Contact Information:**
-- Project Lead: [Your Name]
-- Email: [Your Email]
+- Project Lead: Ha Duy Dang Khoa  
+- Email: hduydangkhoa@gmail.com
 - Date: July 11, 2025

@@ -1,6 +1,6 @@
 ---
-title: "10. Dọn dẹp tài nguyên"
-date: 2025-07-14T15:00:00+07:00
+title: "10. Dọn dẹp Tài nguyên"
+date: 2025-07-15T11:00:00+07:00
 weight: 100
 chapter: true
 pre: "<b>10. </b>"
@@ -9,277 +9,76 @@ draft: false
 
 ### Chương 10
 
-# Dọn dẹp tài nguyên
+# Dọn dẹp Tài nguyên
 
-Hướng dẫn chi tiết cách dọn dẹp và tối ưu hóa tài nguyên AWS để tiết kiệm chi phí.
+Sau khi hoàn thành workshop RDS Performance Insights, điều quan trọng là phải dọn dẹp các tài nguyên AWS để tránh các khoản phí không cần thiết. Thực hiện theo các bước sau để xóa đúng cách tất cả các tài nguyên đã tạo.
 
-## Mục tiêu
+## 🗑️ Các bước Dọn dẹp Tài nguyên
 
-Giảm thiểu chi phí phát sinh bằng cách dọn dẹp các tài nguyên không cần thiết và tối ưu hóa cấu hình hiện tại.
+### 1. Xóa RDS Instance
 
-## 1. Dọn dẹp RDS Resources
+Điều hướng đến RDS Console và xóa database instance của bạn:
 
-### Xóa RDS Instances không sử dụng
+1. **Mở RDS Console** → Chọn instance của bạn
+2. **Actions** → **Delete**
+3. **Create final snapshot:** Chọn **No** (để tiết kiệm chi phí)
+4. **Gõ "delete me"** để xác nhận xóa
+5. Click **Delete DB Instance**
 
-```bash
-# Liệt kê tất cả RDS instances
-aws rds describe-db-instances --query 'DBInstances[*].[DBInstanceIdentifier,DBInstanceStatus,Engine]' --output table
+> **Cảnh báo**: Hành động này không thể hoàn tác. Đảm bảo bạn đã sao lưu bất kỳ dữ liệu quan trọng nào trước khi tiến hành.
 
-# Xóa RDS instance (tạo snapshot trước khi xóa)
-aws rds create-db-snapshot \
-    --db-instance-identifier mydb-instance \
-    --db-snapshot-identifier mydb-final-snapshot-$(date +%Y%m%d)
+### 2. Xóa CloudWatch Alarms
 
-# Xóa RDS instance
-aws rds delete-db-instance \
-    --db-instance-identifier mydb-instance \
-    --final-db-snapshot-identifier mydb-final-snapshot-$(date +%Y%m%d) \
-    --delete-automated-backups
-```
+Xóa tất cả các alarm giám sát được tạo trong workshop:
 
-### Xóa Read Replicas
+1. **CloudWatch Console** → **Alarms**
+2. **Chọn tất cả alarm liên quan đến workshop**
+3. **Actions** → **Delete**
+4. **Xác nhận xóa**
 
-```bash
-# Liệt kê Read Replicas
-aws rds describe-db-instances --query 'DBInstances[?ReadReplicaSourceDBInstanceIdentifier!=null].[DBInstanceIdentifier,ReadReplicaSourceDBInstanceIdentifier]' --output table
+### 3. Xóa SNS Topic
 
-# Xóa Read Replica
-aws rds delete-db-instance \
-    --db-instance-identifier mydb-replica \
-    --skip-final-snapshot \
-    --delete-automated-backups
-```
+Dọn dẹp các topic thông báo:
 
-### Dọn dẹp Snapshots cũ
+1. **SNS Console** → **Topics**
+2. **Chọn topic** được tạo cho RDS alerts
+3. **Delete**
+4. **Xác nhận bằng cách gõ "delete me"**
 
-```bash
-# Liệt kê snapshots cũ hơn 30 ngày
-aws rds describe-db-snapshots \
-    --snapshot-type manual \
-    --query 'DBSnapshots[?SnapshotCreateTime<=`2024-12-01`].[DBSnapshotIdentifier,SnapshotCreateTime]' \
-    --output table
+### 4. Xóa CloudWatch Dashboard
 
-# Xóa snapshot cũ
-aws rds delete-db-snapshot --db-snapshot-identifier old-snapshot-name
-```
+Xóa dashboard giám sát:
 
-## 2. Dọn dẹp CloudWatch Resources
+1. **CloudWatch Console** → **Dashboards**
+2. **Chọn RDS dashboard của bạn**
+3. **Actions** → **Delete**
+4. **Xác nhận xóa**
 
-### Xóa Custom Dashboards
+## 💰 Mẹo Tối ưu hóa Chi phí
 
-```bash
-# Liệt kê dashboards
-aws cloudwatch list-dashboards --output table
+- **Luôn xóa các tài nguyên không sử dụng** để tránh các khoản phí liên tục
+- **Thiết lập cảnh báo billing** để giám sát chi tiêu AWS
+- **Sử dụng AWS Cost Explorer** để theo dõi chi phí tài nguyên
+- **Cân nhắc sử dụng AWS Budgets** để quản lý chi phí
 
-# Xóa dashboard
-aws cloudwatch delete-dashboards --dashboard-names "RDS-Performance-Dashboard"
-```
+## ✅ Danh sách Kiểm tra Xác minh
 
-### Dọn dẹp CloudWatch Alarms
+Sau khi dọn dẹp, xác minh rằng tất cả tài nguyên đã được xóa:
 
-```bash
-# Liệt kê alarms
-aws cloudwatch describe-alarms --query 'MetricAlarms[*].[AlarmName,StateValue]' --output table
+- [ ] RDS Instance đã xóa
+- [ ] CloudWatch Alarms đã xóa
+- [ ] SNS Topics đã xóa
+- [ ] CloudWatch Dashboards đã xóa
+- [ ] Không có khoản phí bất ngờ trong billing
 
-# Xóa alarm không cần thiết
-aws cloudwatch delete-alarms --alarm-names "RDS-CPU-High" "RDS-Memory-Low"
-```
+## 🎯 Best Practices cho Các dự án Tương lai
 
-### Xóa Log Groups cũ
+1. **Gắn tag cho tài nguyên** để dễ dàng xác định và dọn dẹp
+2. **Tài liệu hóa các phụ thuộc tài nguyên** trước khi xóa
+3. **Sử dụng Infrastructure as Code** (CloudFormation/Terraform) để dọn dẹp dễ dàng hơn
+4. **Thiết lập automated cleanup** cho môi trường development
+5. **Kiểm tra tài nguyên thường xuyên** để xác định các tài nguyên không sử dụng
 
-```bash
-# Liệt kê log groups
-aws logs describe-log-groups --query 'logGroups[*].[logGroupName,creationTime]' --output table
+---
 
-# Xóa log group
-aws logs delete-log-group --log-group-name "/aws/rds/instance/mydb/slowquery"
-```
-
-## 3. Tối ưu hóa Performance Insights
-
-### Giảm Retention Period
-
-```bash
-# Kiểm tra retention period hiện tại
-aws rds describe-db-instances \
-    --db-instance-identifier mydb-instance \
-    --query 'DBInstances[0].PerformanceInsightsRetentionPeriod'
-
-# Giảm retention period xuống 7 ngày (miễn phí)
-aws rds modify-db-instance \
-    --db-instance-identifier mydb-instance \
-    --performance-insights-retention-period 7 \
-    --apply-immediately
-```
-
-## 4. Dọn dẹp SNS và Lambda
-
-### Xóa SNS Topics và Subscriptions
-
-```bash
-# Liệt kê SNS topics
-aws sns list-topics --output table
-
-# Xóa subscription
-aws sns unsubscribe --subscription-arn "arn:aws:sns:region:account:topic:subscription"
-
-# Xóa topic
-aws sns delete-topic --topic-arn "arn:aws:sns:region:account:rds-alerts"
-```
-
-### Xóa Lambda Functions
-
-```bash
-# Liệt kê Lambda functions
-aws lambda list-functions --query 'Functions[*].[FunctionName,Runtime,LastModified]' --output table
-
-# Xóa Lambda function
-aws lambda delete-function --function-name rds-alert-processor
-```
-
-## 5. Tối ưu hóa Instance Types
-
-### Downgrade Instance Size
-
-```bash
-# Kiểm tra utilization trước khi downgrade
-aws cloudwatch get-metric-statistics \
-    --namespace AWS/RDS \
-    --metric-name CPUUtilization \
-    --dimensions Name=DBInstanceIdentifier,Value=mydb-instance \
-    --start-time 2024-12-01T00:00:00Z \
-    --end-time 2024-12-31T23:59:59Z \
-    --period 3600 \
-    --statistics Average
-
-# Downgrade instance class nếu CPU < 50%
-aws rds modify-db-instance \
-    --db-instance-identifier mydb-instance \
-    --db-instance-class db.t3.small \
-    --apply-immediately
-```
-
-## 6. Dọn dẹp Storage
-
-### Giảm Allocated Storage
-
-```bash
-# Lưu ý: Không thể giảm allocated storage, chỉ có thể tối ưu hóa
-# Thay vào đó, tạo instance mới với storage nhỏ hơn và migrate data
-
-# Kiểm tra storage utilization
-aws cloudwatch get-metric-statistics \
-    --namespace AWS/RDS \
-    --metric-name FreeStorageSpace \
-    --dimensions Name=DBInstanceIdentifier,Value=mydb-instance \
-    --start-time 2024-12-01T00:00:00Z \
-    --end-time 2024-12-31T23:59:59Z \
-    --period 3600 \
-    --statistics Average
-```
-
-### Tắt Multi-AZ nếu không cần thiết
-
-```bash
-# Tắt Multi-AZ deployment
-aws rds modify-db-instance \
-    --db-instance-identifier mydb-instance \
-    --no-multi-az \
-    --apply-immediately
-```
-
-## 7. Script tự động dọn dẹp
-
-### Bash Script để dọn dẹp hàng loạt
-
-```bash
-#!/bin/bash
-# cleanup-rds-resources.sh
-
-echo "=== Script Dọn dẹp Tài nguyên RDS ==="
-
-# 1. Xóa snapshots cũ hơn 30 ngày
-echo "Đang dọn dẹp snapshots cũ..."
-OLD_SNAPSHOTS=$(aws rds describe-db-snapshots \
-    --snapshot-type manual \
-    --query 'DBSnapshots[?SnapshotCreateTime<=`2024-11-01`].DBSnapshotIdentifier' \
-    --output text)
-
-for snapshot in $OLD_SNAPSHOTS; do
-    echo "Đang xóa snapshot: $snapshot"
-    aws rds delete-db-snapshot --db-snapshot-identifier $snapshot
-done
-
-# 2. Xóa unused alarms
-echo "Đang dọn dẹp CloudWatch alarms..."
-aws cloudwatch delete-alarms --alarm-names \
-    "RDS-CPU-High-Test" \
-    "RDS-Memory-Low-Test" \
-    "RDS-Connection-High-Test"
-
-# 3. Giảm Performance Insights retention
-echo "Đang tối ưu hóa Performance Insights retention..."
-aws rds modify-db-instance \
-    --db-instance-identifier mydb-instance \
-    --performance-insights-retention-period 7 \
-    --apply-immediately
-
-echo "Dọn dẹp hoàn tất!"
-```
-
-## 8. Giám sát Chi phí
-
-### Thiết lập Budget Alerts
-
-```bash
-# Tạo budget để theo dõi chi phí RDS
-aws budgets create-budget \
-    --account-id 123456789012 \
-    --budget '{
-        "BudgetName": "RDS-Monthly-Budget",
-        "BudgetLimit": {
-            "Amount": "100",
-            "Unit": "USD"
-        },
-        "TimeUnit": "MONTHLY",
-        "BudgetType": "COST",
-        "CostFilters": {
-            "Service": ["Amazon Relational Database Service"]
-        }
-    }'
-```
-
-## 9. Best Practices cho Tối ưu hóa Chi phí
-
-### Lịch trình tự động
-
-- **Tắt Dev/Test instances** vào cuối tuần
-- **Automated snapshots cleanup** hàng tuần
-- **Performance Insights retention** review hàng tháng
-- **Instance right-sizing** review hàng quý
-
-### Checklist dọn dẹp định kỳ
-
-- [ ] Xóa snapshots cũ hơn 30 ngày
-- [ ] Review và xóa unused alarms
-- [ ] Kiểm tra instance utilization
-- [ ] Tối ưu hóa storage allocation
-- [ ] Review Multi-AZ necessity
-- [ ] Cleanup unused log groups
-- [ ] Review Performance Insights retention
-
-## 10. Ước tính tiết kiệm chi phí
-
-### Potential Savings
-
-| Hành động | Tiết kiệm ước tính/tháng |
-|-----------|-------------------------|
-| Downgrade db.m5.large → db.t3.medium | ~$50-80 |
-| Tắt Multi-AZ (nếu không cần) | ~50% chi phí instance |
-| Giảm Performance Insights retention | ~$10-20 |
-| Xóa unused Read Replicas | ~$100-200 |
-| Cleanup old snapshots | ~$5-15 |
-
-### Cost Calculator
-
-Sử dụng [AWS Pricing Calculator](https://calculator.aws) để ước tính chính xác chi phí sau khi tối ưu hóa.
+*Chúc mừng! Bạn đã hoàn thành thành công workshop RDS Performance Insights và dọn dẹp tất cả tài nguyên. 🎉*

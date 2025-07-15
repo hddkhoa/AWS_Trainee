@@ -17,7 +17,46 @@ Query optimization is the process of improving database query performance throug
 
 ## 🚀 Optimization Techniques
 
-### 1. Index Optimization
+### 1. [Index Strategies](index-strategies/)
+Learn advanced indexing techniques to speed up your queries:
+- Composite indexes and leftmost prefix optimization
+- Covering indexes for maximum performance
+- When to use and avoid indexes
+
+### 2. [Query Rewriting](query-rewriting/)
+Master query optimization patterns:
+- Converting subqueries to JOINs
+- Avoiding functions on indexed columns
+- Efficient pagination techniques
+
+### 3. [Execution Plans](execution-plans/)
+Understand and analyze query execution plans:
+- Reading EXPLAIN output
+- Identifying performance bottlenecks
+- Optimization strategies based on execution plans
+
+---
+
+## 📊 Performance Impact
+
+Proper query optimization can result in:
+- **70-90%** reduction in query execution time
+- **50-80%** decrease in CPU usage
+- **60-85%** reduction in I/O operations
+- **Improved** overall database responsiveness
+
+---
+
+## 🛠️ Tools and Techniques
+
+- **EXPLAIN/EXPLAIN ANALYZE**: Primary tools for query analysis
+- **Performance Insights**: AWS RDS monitoring and optimization
+- **Slow Query Log**: Identify problematic queries
+- **Index Analysis**: Optimize database indexes
+
+---
+
+*Ready to optimize your queries? Start with [Index Strategies](index-strategies/) to build a solid foundation.*
 - **Composite Indexes**: Multi-column indexes for complex queries
 - **Partial Indexes**: Indexes with WHERE conditions
 - **Covering Indexes**: Include all needed columns

@@ -177,7 +177,6 @@
                 <div class="chapter">
                     <h1>5.1 Thiết lập CloudWatch Alarms</h1>
                     <h1 id="thiết-lập-cloudwatch-alarms">Thiết lập CloudWatch Alarms</h1>
-<img src="/images/2025-07-14_16-36-57.png" alt="2025-07-14_16-36-57" width="800">
 <h2 id="bước-1-tạo-cpu-alarm">Bước 1: Tạo CPU Alarm</h2>
 <ol>
 <li>Trong CloudWatch, click &ldquo;Alarms&rdquo; → &ldquo;All alarms&rdquo;</li>
@@ -188,8 +187,8 @@
 • <strong>DBInstanceIdentifier:</strong> Chọn instance của bạn
 • Click &ldquo;Select metric&rdquo;</li>
 </ol>
-<img src="/images/2025-07-14_16-38-15.png" alt="2025-07-14_16-38-15" width="800">
 <h2 id="bước-2-cấu-hình-alarm-conditions">Bước 2: Cấu hình Alarm Conditions</h2>
+<img src="/images/2025-07-14_16-36-57.png" alt="2025-07-14_16-36-57" width="800">
 <ol>
 <li>Conditions:
 • <strong>Threshold type:</strong> Static
@@ -199,8 +198,8 @@
 • <strong>Datapoints to alarm:</strong> 2 out of 2
 • <strong>Period:</strong> 5 minutes</li>
 </ol>
-<img src="/images/2025-07-14_16-42-46.png" alt="2025-07-14_16-42-46" width="800">
 <h2 id="bước-3-cấu-hình-actions">Bước 3: Cấu hình Actions</h2>
+<img src="/images/2025-07-14_16-38-15.png" alt="2025-07-14_16-38-15" width="800">
 <ol>
 <li>Alarm state trigger: In alarm</li>
 <li>Send a notification to:
@@ -209,21 +208,21 @@
 • <strong>Email endpoints:</strong> Nhập email của bạn</li>
 <li>Click &ldquo;Create topic&rdquo;</li>
 </ol>
-<img src="/images/2025-07-14_16-43-53.png" alt="2025-07-14_16-43-53" width="800">
 <h2 id="bước-4-thêm-name-và-description">Bước 4: Thêm Name và Description</h2>
+<img src="/images/2025-07-14_16-42-46.png" alt="2025-07-14_16-42-46" width="800">
 <ol>
 <li>Alarm name: RDS-CPU-High</li>
 <li>Alarm description: RDS CPU utilization is above 80%</li>
 <li>Click &ldquo;Next&rdquo;</li>
 </ol>
-<img src="/images/2025-07-14_16-44-13.png" alt="2025-07-14_16-44-13" width="800">
 <h2 id="bước-5-preview-và-create">Bước 5: Preview và Create</h2>
+<img src="/images/2025-07-14_16-43-53.png" alt="2025-07-14_16-43-53" width="800">
 <ol>
 <li>Review tất cả settings</li>
 <li>Click &ldquo;Create alarm&rdquo;</li>
 <li>Confirm email: Kiểm tra email và click confirm subscription</li>
 </ol>
-<img src="/images/2025-07-14_16-31-10.png" alt="2025-07-14_16-31-10" width="800">
+<img src="/images/2025-07-14_16-44-13.png" alt="2025-07-14_16-44-13" width="800">
 <h2 id="bước-6-tạo-additional-alarms-cho-other-metrics">Bước 6: Tạo Additional Alarms cho Other Metrics</h2>
 <h3 id="memory-alarm">Memory Alarm</h3>
 <ol>
@@ -250,6 +249,7 @@
 <li>Set thresholds based on instance capacity</li>
 </ol>
 <h2 id="bước-7-verify-và-test-alarms">Bước 7: Verify và Test Alarms</h2>
+<img src="/images/2025-07-14_16-31-10.png" alt="2025-07-14_16-31-10" width="800">
 <h3 id="verify-alarm-status">Verify Alarm Status</h3>
 <ol>
 <li>Return to CloudWatch Alarms dashboard</li>

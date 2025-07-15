@@ -11,7 +11,7 @@ draft: false
 
 # Giới Thiệu
 
-<img src="/images/USECASE.png" alt="USECASE" width="800">
+ <img src="/images/usecase .png" alt="usecase " width="800">
 
 Khám phá AWS RDS Performance Insights là gì và các khái niệm cốt lõi đằng sau việc giám sát và tối ưu hóa hiệu suất cơ sở dữ liệu.
 

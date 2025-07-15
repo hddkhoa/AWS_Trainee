@@ -177,7 +177,6 @@
                 <div class="chapter">
                     <h1>5.1 CloudWatch Alarms Setup</h1>
                     <h1 id="cloudwatch-alarms-setup">CloudWatch Alarms Setup</h1>
-<img src="/images/2025-07-14_16-36-57.png" alt="2025-07-14_16-36-57" width="800">
 <h2 id="step-1-create-cpu-alarm">Step 1: Create CPU Alarm</h2>
 <ol>
 <li>In CloudWatch, click &ldquo;Alarms&rdquo; → &ldquo;All alarms&rdquo;</li>
@@ -188,7 +187,6 @@
 • <strong>DBInstanceIdentifier:</strong> Select your instance
 • Click &ldquo;Select metric&rdquo;</li>
 </ol>
-<img src="/images/2025-07-14_16-38-15.png" alt="2025-07-14_16-38-15" width="800">
 <h2 id="step-2-configure-alarm-conditions">Step 2: Configure Alarm Conditions</h2>
 <ol>
 <li>Conditions:
@@ -199,7 +197,6 @@
 • <strong>Datapoints to alarm:</strong> 2 out of 2
 • <strong>Period:</strong> 5 minutes</li>
 </ol>
-<img src="/images/2025-07-14_16-42-46.png" alt="2025-07-14_16-42-46" width="800">
 <h2 id="step-3-configure-actions">Step 3: Configure Actions</h2>
 <ol>
 <li>Alarm state trigger: In alarm</li>
@@ -209,21 +206,18 @@
 • <strong>Email endpoints:</strong> Enter your email</li>
 <li>Click &ldquo;Create topic&rdquo;</li>
 </ol>
-<img src="/images/2025-07-14_16-43-53.png" alt="2025-07-14_16-43-53" width="800">
 <h2 id="step-4-add-name-and-description">Step 4: Add Name and Description</h2>
 <ol>
 <li>Alarm name: RDS-CPU-High</li>
 <li>Alarm description: RDS CPU utilization is above 80%</li>
 <li>Click &ldquo;Next&rdquo;</li>
 </ol>
-<img src="/images/2025-07-14_16-44-13.png" alt="2025-07-14_16-44-13" width="800">
 <h2 id="step-5-preview-and-create">Step 5: Preview and Create</h2>
 <ol>
 <li>Review all settings</li>
 <li>Click &ldquo;Create alarm&rdquo;</li>
 <li>Confirm email: Check your email and click confirm subscription</li>
 </ol>
-<img src="/images/2025-07-14_16-31-10.png" alt="2025-07-14_16-31-10" width="800">
 <h2 id="step-6-create-additional-alarms-for-other-metrics">Step 6: Create Additional Alarms for Other Metrics</h2>
 <h3 id="memory-alarm">Memory Alarm</h3>
 <ol>

@@ -318,7 +318,16 @@
 <ol>
 <li>Database authentication: Chọn &ldquo;Password authentication&rdquo;</li>
 </ol>
-<h3 id="bước-7-monitoring-quan-trọng">Bước 7: Monitoring (Quan trọng!)</h3>
+<h3 id="bước-7-monitoring">Bước 7: Monitoring</h3>
+<div class="notices warning">
+  <div class="label">
+    <i class="fas fa-exclamation-triangle"></i>
+    Warning
+  </div>
+  <div class="content">
+    (Quan trọng!)
+  </div>
+</div>
 <img src="/images/2025-07-14_16-08-09.png" alt="2025-07-14_16-08-09" width="800">
 <ol>
 <li>Enable Enhanced monitoring: Tick chọn
@@ -429,40 +438,6 @@
 </ul>
 </li>
 </ol>
-<h2 id="khắc-phục-sự-cố">Khắc phục sự cố</h2>
-<h3 id="các-vấn-đề-thường-gặp">Các vấn đề thường gặp:</h3>
-<ol>
-<li>
-<p><strong>Performance Insights không hiển thị dữ liệu:</strong></p>
-<ul>
-<li>Đợi 5-10 phút sau khi kích hoạt</li>
-<li>Kiểm tra xem có traffic đến database không</li>
-</ul>
-</li>
-<li>
-<p><strong>Không thể kết nối đến database:</strong></p>
-<ul>
-<li>Kiểm tra Security Group rules</li>
-<li>Xác minh Public accessibility = Yes</li>
-<li>Kiểm tra cấu hình VPC và Subnet</li>
-</ul>
-</li>
-<li>
-<p><strong>Enhanced Monitoring không hoạt động:</strong></p>
-<ul>
-<li>Kiểm tra quyền IAM role</li>
-<li>Tạo lại monitoring role nếu cần</li>
-</ul>
-</li>
-<li>
-<p><strong>Performance Insights dashboard trống:</strong></p>
-<ul>
-<li>Đảm bảo database có một số hoạt động query</li>
-<li>Kiểm tra cài đặt retention period</li>
-<li>Xác minh Performance Insights đã được kích hoạt</li>
-</ul>
-</li>
-</ol>
 <h2 id="chi-phí-ước-tính">Chi phí ước tính</h2>
 <ul>
 <li><strong>RDS db.t3.micro:</strong> ~$12.41/tháng (Free tier: 750 giờ/tháng)</li>
@@ -471,15 +446,6 @@
 <li><strong>Storage 20GB:</strong> ~$2.30/tháng</li>
 </ul>
 <p><strong>Tổng:</strong> ~$17/tháng (hoặc free nếu trong Free tier)</p>
-<h2 id="các-bước-tiếp-theo">Các bước tiếp theo</h2>
-<p>Khi RDS instance của bạn đang chạy với Performance Insights được kích hoạt:</p>
-<ol>
-<li>Tạo một số database load để test</li>
-<li>Khám phá Performance Insights dashboard</li>
-<li>Học cách diễn giải metrics và wait events</li>
-<li>Thiết lập CloudWatch alarms cho các metrics chính</li>
-<li>Thực hành các kỹ thuật tối ưu hóa query</li>
-</ol>
 
             </div>
         </div>

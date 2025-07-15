@@ -1,459 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Overview - RDS Performance Insights &amp; Query Optimization</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    
-    
-    <link rel="stylesheet" href="/css/theme-blue.css">
-    
-    
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif; 
-            font-weight: 300; 
-            line-height: 1.6; 
-            font-size: 18px;
-            color: var(--MAIN-TEXT-color, #323232);
-        }
-        
-        #sidebar { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 300px; 
-            height: 100vh; 
-            background: var(--MENU-SECTIONS-BG-color, #252c31); 
-            color: #ccc; 
-            overflow-y: auto; 
-            z-index: 1000; 
-        }
-        
-        #sidebar #header { 
-            padding: 2rem 1rem; 
-            text-align: center; 
-            background: var(--MENU-HEADER-BG-color, #1C90F3);
-            border-bottom: 1px solid var(--MENU-HEADER-BORDER-color, #33a1ff);
-        }
-        
-        #sidebar #header .baseurl { 
-            color: var(--MENU-SEARCH-BOX-color, #33a1ff); 
-            font-size: 1.5rem; 
-            font-weight: bold; 
-        }
-        
-        #sidebar .searchbox { 
-            padding: 10px; 
-            background: var(--MENU-SEARCH-BG-color, #167ad0);
-            border-bottom: 1px solid var(--MENU-SEARCH-BOX-color, #33a1ff);
-        }
-        
-        #sidebar .searchbox input { 
-            width: 100%; 
-            padding: 10px; 
-            border: 1px solid var(--MENU-SEARCH-BOX-color, #33a1ff); 
-            background: rgba(255,255,255,0.1); 
-            color: var(--MENU-SEARCH-BOX-ICONS-color, #a1d2fd); 
-            border-radius: 4px; 
-        }
-        
-        #sidebar-toggle-span { display: none; }
-        
-        #body { margin-left: 300px; }
-        #body .padding { padding: 3rem 6rem; }
-        
-         
-        #sidebar ul { list-style: none; padding: 0; margin: 0; }
-        #sidebar ul li a { 
-            display: block; 
-            padding: 10px 20px; 
-            color: var(--MENU-SECTIONS-LINK-color, #ccc); 
-            text-decoration: none; 
-            border-left: 4px solid transparent; 
-        }
-        #sidebar ul li a:hover { 
-            background: var(--MENU-SECTIONS-ACTIVE-BG-color, #20272b); 
-            border-left-color: var(--MAIN-LINK-color, #1C90F3);
-            color: var(--MENU-SECTIONS-LINK-HOVER-color, #e6e6e6);
-        }
-        #sidebar ul li.active > a { 
-            background: var(--MENU-SECTION-ACTIVE-CATEGORY-BG-color, #fff); 
-            border-left-color: var(--MAIN-LINK-color, #1C90F3); 
-            color: var(--MENU-SECTION-ACTIVE-CATEGORY-color, #777); 
-        }
-        #sidebar ul ul { padding-left: 20px; }
-        #sidebar ul ul li a { padding: 8px 20px; font-size: 0.9em; }
-        
-         
-        .language-switcher { position: relative; padding: 20px; }
-        .language-switcher a { 
-            color: var(--MAIN-LINK-color, #1C90F3); 
-            text-decoration: none; 
-            margin-left: 10px; 
-        }
-        .language-switcher a:hover { 
-            color: var(--MAIN-LINK-HOVER-color, #167ad0); 
-        }
-        
-         
-        h1, h2, h3, h4, h5, h6 { 
-            color: var(--MAIN-TITLES-TEXT-color, #5e5e5e); 
-            font-weight: 400; 
-        }
-        h1 { font-size: 3rem; }
-        h2 { font-size: 2.5rem; }
-        h3 { font-size: 2rem; }
-        
-         
-        a { color: var(--MAIN-LINK-color, #1C90F3); }
-        a:hover { color: var(--MAIN-LINK-HOVER-color, #167ad0); }
-        
-         
-        pre { background: #f8f8f8; padding: 1rem; border-radius: 4px; overflow-x: auto; }
-        code { background: #f8f8f8; padding: 0.2rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
-        
-         
-        .breadcrumbs { margin-bottom: 2rem; color: #999; }
-        .breadcrumbs a { 
-            color: var(--MAIN-LINK-color, #1C90F3); 
-            text-decoration: none; 
-        }
-        .breadcrumbs a:hover { 
-            color: var(--MAIN-LINK-HOVER-color, #167ad0);
-            text-decoration: underline; 
-        }
-        
-         
-        @media (max-width: 768px) {
-            #sidebar { transform: translateX(-300px); transition: transform 0.3s; }
-            #sidebar.open { transform: translateX(0); }
-            #body { margin-left: 0; }
-            #body .padding { padding: 1rem 2rem; }
-            #sidebar-toggle-span { display: block; position: fixed; top: 10px; left: 10px; z-index: 1001; }
-            #sidebar-toggle { background: var(--MAIN-LINK-color, #1C90F3); color: white; padding: 10px; border: none; border-radius: 4px; }
-        }
-    </style>
-</head>
-<body>
-    <nav id="sidebar">
-        <div id="header">
-            <a id="logo" href='/'>
-  <div style="text-align: center; padding: 20px;">
-    <h2 style="color: var(--MENU-SEARCH-BOX-color, #33a1ff); font-size: 2rem; font-weight: bold; margin: 0;">
-      LEARN
-    </h2>
-    <p style="color: var(--MENU-SEARCH-BOX-ICONS-color, #a1d2fd); font-size: 0.9rem; margin: 5px 0 0 0;">
-      RDS Performance Insights
-    </p>
-  </div>
-</a>
-
-        </div>
-        
-        <div class="searchbox">
-            <input type="search" placeholder="Search..." id="search-input">
-        </div>
-        
-        <ul class="topics">
-            <li><a href="http://localhost:1313/"><i class="fas fa-home"></i> Home</a></li>
-            
-            <li class="">
-                <a href="/introduction/"><i class="fas fa-book"></i> 1. Introduction</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/preparation/"><i class="fas fa-book"></i> 2. Preparation</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/performance-baseline/"><i class="fas fa-book"></i> 3. Performance Baseline Establishment</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/performance-insights/"><i class="fas fa-book"></i> Performance Insights</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/monitoring-dashboard/"><i class="fas fa-book"></i> 4. Monitoring Dashboard</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/alerting-system/"><i class="fas fa-book"></i> 5. Alerting System</a>
-                
-            </li>
-            
-            <li class="active">
-                <a href="/query-optimization/"><i class="fas fa-book"></i> 6. Query Optimization Techniques</a>
-                
-                <ul>
-                    
-                    <li class="active">
-                        <a href="/query-optimization/overview/">Overview</a>
-                    </li>
-                    
-                </ul>
-                
-            </li>
-            
-            <li class="">
-                <a href="/automated-tuning/"><i class="fas fa-book"></i> 7. Automated Tuning Recommendations</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/capacity-planning/"><i class="fas fa-book"></i> 8. Capacity Planning</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/monitoring/"><i class="fas fa-book"></i> 9. Monitoring &amp; Alerting</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/best-practices/"><i class="fas fa-book"></i> 10. Best Practices &amp; Resource Cleanup</a>
-                
-            </li>
-            
-        </ul>
-        
-        <div class="language-switcher">
-            
-            
-            
-            
-            <a href="/vi"><i class="fas fa-language"></i> Tiếng Việt</a>
-            
-            
-        </div>
-    </nav>
-
-    <span id="sidebar-toggle-span">
-        <a href="#" id="sidebar-toggle"><i class="fas fa-bars"></i></a>
-    </span>
-
-    <section id="body">
-        <div id="overlay"></div>
-        <div class="padding">
-            <div id="body-inner">
-                <div class="breadcrumbs">
-                    <a href="http://localhost:1313/">Home</a>
-                    
-                    <span> > </span><a href="/">RDS Performance Insights &amp; Query Optimization</a>
-                    
-                    <span> > </span><a href="/query-optimization/">6. Query Optimization Techniques</a>
-                    
-                    <span> > </span>Overview
-                </div>
-                
-                <h1>Overview</h1>
-                <h1 id="query-optimization-overview">Query Optimization Overview</h1>
-<h2 id="-what-is-query-optimization">🎯 What is Query Optimization?</h2>
-<p>Query optimization is the process of improving database query performance through various techniques including index optimization, query rewriting, and execution plan analysis.</p>
-<blockquote>
-<p><strong>Info</strong>: Effective query optimization can improve performance by 70% or more while reducing resource consumption.</p>
-</blockquote>
-<hr>
-<h2 id="-optimization-techniques">🚀 Optimization Techniques</h2>
-<h3 id="1-index-optimization">1. Index Optimization</h3>
-<ul>
-<li><strong>Composite Indexes</strong>: Multi-column indexes for complex queries</li>
-<li><strong>Partial Indexes</strong>: Indexes with WHERE conditions</li>
-<li><strong>Covering Indexes</strong>: Include all needed columns</li>
-<li><strong>Index Maintenance</strong>: Regular monitoring and cleanup</li>
-</ul>
-<h3 id="2-query-rewriting">2. Query Rewriting</h3>
-<ul>
-<li><strong>Subquery Optimization</strong>: Convert to JOINs where appropriate</li>
-<li><strong>Window Functions</strong>: Replace multiple GROUP BY queries</li>
-<li><strong>CTE Usage</strong>: Common Table Expressions for complex logic</li>
-<li><strong>LIMIT Usage</strong>: Reduce result set size</li>
-</ul>
-<h3 id="3-execution-plan-analysis">3. Execution Plan Analysis</h3>
-<ul>
-<li><strong>EXPLAIN Analysis</strong>: Understand query execution</li>
-<li><strong>Cost Analysis</strong>: Identify expensive operations</li>
-<li><strong>Join Optimization</strong>: Choose appropriate join types</li>
-<li><strong>Sort Optimization</strong>: Minimize sorting operations</li>
-</ul>
-<hr>
-<h2 id="-performance-impact">📊 Performance Impact</h2>
-<h3 id="before-vs-after-optimization">Before vs After Optimization</h3>
-<table>
-<thead>
-<tr>
-<th>Metric</th>
-<th>Before</th>
-<th>After</th>
-<th>Improvement</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Query Response Time</strong></td>
-<td>3-5 seconds</td>
-<td>1-1.5 seconds</td>
-<td><strong>70%</strong></td>
-</tr>
-<tr>
-<td><strong>Resource Usage</strong></td>
-<td>High CPU/IO</td>
-<td>Optimized</td>
-<td><strong>60%</strong></td>
-</tr>
-<tr>
-<td><strong>Throughput</strong></td>
-<td>100 QPS</td>
-<td>250 QPS</td>
-<td><strong>150%</strong></td>
-</tr>
-<tr>
-<td><strong>Index Hit Ratio</strong></td>
-<td>75%</td>
-<td>95%</td>
-<td><strong>27%</strong></td>
-</tr>
-</tbody>
-</table>
-<hr>
-<h2 id="-optimization-strategy">🎯 Optimization Strategy</h2>
-<h3 id="phase-1-identify-bottlenecks">Phase 1: Identify Bottlenecks</h3>
-<ol>
-<li><strong>Monitor slow queries</strong> using Performance Insights</li>
-<li><strong>Analyze execution plans</strong> for expensive operations</li>
-<li><strong>Identify missing indexes</strong> through query patterns</li>
-<li><strong>Review table statistics</strong> and data distribution</li>
-</ol>
-<h3 id="phase-2-implement-optimizations">Phase 2: Implement Optimizations</h3>
-<ol>
-<li><strong>Create targeted indexes</strong> for slow queries</li>
-<li><strong>Rewrite inefficient queries</strong> using best practices</li>
-<li><strong>Optimize JOIN operations</strong> and conditions</li>
-<li><strong>Implement query result caching</strong> where appropriate</li>
-</ol>
-<h3 id="phase-3-monitor-and-validate">Phase 3: Monitor and Validate</h3>
-<ol>
-<li><strong>Measure performance improvements</strong> using metrics</li>
-<li><strong>Monitor resource utilization</strong> changes</li>
-<li><strong>Validate business logic</strong> remains correct</li>
-<li><strong>Document optimization changes</strong> for future reference</li>
-</ol>
-<hr>
-<h2 id="-quick-wins">💡 Quick Wins</h2>
-<blockquote>
-<p><strong>Quick Win #1</strong>: Add indexes on frequently filtered columns - can provide immediate 50-80% performance improvement.</p>
-</blockquote>
-<blockquote>
-<p><strong>Quick Win #2</strong>: Use LIMIT clauses to reduce result set size - especially effective for pagination queries.</p>
-</blockquote>
-<blockquote>
-<p><strong>Quick Win #3</strong>: Replace SELECT * with specific column names - reduces I/O and network overhead.</p>
-</blockquote>
-<hr>
-<h2 id="-optimization-tools">🔧 Optimization Tools</h2>
-<h3 id="postgresql">PostgreSQL</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Analyze query
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">EXPLAIN</span> (<span style="color:#66d9ef">ANALYZE</span>, BUFFERS) <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> orders <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#ae81ff">123</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Find slow queries
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> query, mean_time, calls 
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> pg_stat_statements 
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> mean_time <span style="color:#66d9ef">DESC</span> 
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">10</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Check index usage
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> schemaname, tablename, indexname, idx_scan, idx_tup_read, idx_tup_fetch
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> pg_stat_user_indexes
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> idx_scan <span style="color:#66d9ef">DESC</span>;
-</span></span></code></pre></div><h3 id="mysql">MySQL</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Analyze query
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">EXPLAIN</span> FORMAT<span style="color:#f92672">=</span>JSON <span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> orders <span style="color:#66d9ef">WHERE</span> customer_id <span style="color:#f92672">=</span> <span style="color:#ae81ff">123</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Find slow queries
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> DIGEST_TEXT, AVG_TIMER_WAIT<span style="color:#f92672">/</span><span style="color:#ae81ff">1000000000</span> <span style="color:#66d9ef">as</span> avg_time_sec, COUNT_STAR
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> performance_schema.events_statements_summary_by_digest
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> AVG_TIMER_WAIT <span style="color:#66d9ef">DESC</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">10</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Check index usage
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SHOW</span> <span style="color:#66d9ef">INDEX</span> <span style="color:#66d9ef">FROM</span> orders;
-</span></span></code></pre></div><hr>
-<h2 id="-common-optimization-patterns">📈 Common Optimization Patterns</h2>
-<h3 id="1-join-optimization">1. JOIN Optimization</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Before: Inefficient subquery
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> customers 
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> id <span style="color:#66d9ef">IN</span> (<span style="color:#66d9ef">SELECT</span> customer_id <span style="color:#66d9ef">FROM</span> orders <span style="color:#66d9ef">WHERE</span> total <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1000</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">-- After: More efficient JOIN
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">DISTINCT</span> <span style="color:#66d9ef">c</span>.<span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> customers <span style="color:#66d9ef">c</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">INNER</span> <span style="color:#66d9ef">JOIN</span> orders o <span style="color:#66d9ef">ON</span> <span style="color:#66d9ef">c</span>.id <span style="color:#f92672">=</span> o.customer_id
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> o.total <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1000</span>;
-</span></span></code></pre></div><h3 id="2-pagination-optimization">2. Pagination Optimization</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Before: Inefficient OFFSET for large pages
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> products <span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> created_at <span style="color:#66d9ef">OFFSET</span> <span style="color:#ae81ff">10000</span> <span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">20</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">-- After: Cursor-based pagination
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> products 
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> created_at <span style="color:#f92672">&gt;</span> <span style="color:#e6db74">&#39;2023-01-01 10:00:00&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> created_at <span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">20</span>;
-</span></span></code></pre></div><h3 id="3-count-optimization">3. COUNT Optimization</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Before: Slow COUNT(*) on large tables
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> <span style="color:#66d9ef">COUNT</span>(<span style="color:#f92672">*</span>) <span style="color:#66d9ef">FROM</span> orders <span style="color:#66d9ef">WHERE</span> status <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;completed&#39;</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">-- After: Use approximate count or cached value
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> reltuples::BIGINT <span style="color:#66d9ef">AS</span> estimate
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> pg_class
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> relname <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;orders&#39;</span>;
-</span></span></code></pre></div><hr>
-<h2 id="-best-practices">🎯 Best Practices</h2>
-<h3 id="query-design">Query Design</h3>
-<ol>
-<li><strong>Use effective WHERE clauses</strong>: Place most selective conditions first</li>
-<li>**Avoid SELECT ***: Only select needed columns</li>
-<li><strong>Use LIMIT</strong>: Restrict results when possible</li>
-<li><strong>Optimize ORDER BY</strong>: Use indexes for sorting</li>
-</ol>
-<h3 id="index-design">Index Design</h3>
-<ol>
-<li><strong>Composite indexes</strong>: Column order matters</li>
-<li><strong>Covering indexes</strong>: Include all needed columns</li>
-<li><strong>Partial indexes</strong>: For specific conditions</li>
-<li><strong>Index maintenance</strong>: Remove unused indexes</li>
-</ol>
-<h3 id="performance-monitoring">Performance Monitoring</h3>
-<ol>
-<li><strong>Track slow queries</strong>: Set appropriate thresholds</li>
-<li><strong>Analyze execution plans</strong>: Understand query costs</li>
-<li><strong>Monitor resource usage</strong>: CPU, I/O, memory</li>
-<li><strong>Regular benchmarking</strong>: Compare performance over time</li>
-</ol>
-<hr>
-<h2 id="-next-steps">🔗 Next Steps</h2>
-<ol>
-<li><strong><a href="index-strategies/">Index Strategies</a></strong> - Learn advanced indexing techniques</li>
-<li><strong><a href="query-rewriting/">Query Rewriting</a></strong> - Master query optimization patterns</li>
-<li><strong><a href="execution-plans/">Execution Plans</a></strong> - Understand and analyze query plans</li>
-</ol>
-
-            </div>
-        </div>
-    </section>
-
-    <script>
-        
-        document.getElementById('sidebar-toggle').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('sidebar').classList.toggle('open');
-        });
-    </script>
-</body>
-</html>
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Overview - RDS Performance Insights & Query Optimization</title>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css><link rel=stylesheet href=/css/theme-blue.css><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:work sans,helvetica,tahoma,geneva,arial,sans-serif;font-weight:300;line-height:1.6;font-size:18px;color:var(--MAIN-TEXT-color,#323232)}#sidebar{position:fixed;top:0;left:0;width:300px;height:100vh;background:var(--MENU-SECTIONS-BG-color,#252c31);color:#ccc;overflow-y:auto;z-index:1000}#sidebar #header{padding:2rem 1rem;text-align:center;background:var(--MENU-HEADER-BG-color,#1C90F3);border-bottom:1px solid var(--MENU-HEADER-BORDER-color,#33a1ff)}#sidebar #header .baseurl{color:var(--MENU-SEARCH-BOX-color,#33a1ff);font-size:1.5rem;font-weight:700}#sidebar .searchbox{padding:10px;background:var(--MENU-SEARCH-BG-color,#167ad0);border-bottom:1px solid var(--MENU-SEARCH-BOX-color,#33a1ff)}#sidebar .searchbox input{width:100%;padding:10px;border:1px solid var(--MENU-SEARCH-BOX-color,#33a1ff);background:rgba(255,255,255,.1);color:var(--MENU-SEARCH-BOX-ICONS-color,#a1d2fd);border-radius:4px}#sidebar-toggle-span{display:none}#body{margin-left:300px}#body .padding{padding:3rem 6rem}#sidebar ul{list-style:none;padding:0;margin:0}#sidebar ul li a{display:block;padding:10px 20px;color:var(--MENU-SECTIONS-LINK-color,#ccc);text-decoration:none;border-left:4px solid transparent}#sidebar ul li a:hover{background:var(--MENU-SECTIONS-ACTIVE-BG-color,#20272b);border-left-color:var(--MAIN-LINK-color,#1C90F3);color:var(--MENU-SECTIONS-LINK-HOVER-color,#e6e6e6)}#sidebar ul li.active>a{background:var(--MENU-SECTION-ACTIVE-CATEGORY-BG-color,#fff);border-left-color:var(--MAIN-LINK-color,#1C90F3);color:var(--MENU-SECTION-ACTIVE-CATEGORY-color,#777)}#sidebar ul ul{padding-left:20px}#sidebar ul ul li a{padding:8px 20px;font-size:.9em}.language-switcher{position:relative;padding:20px}.language-switcher a{color:var(--MAIN-LINK-color,#1C90F3);text-decoration:none;margin-left:10px}.language-switcher a:hover{color:var(--MAIN-LINK-HOVER-color,#167ad0)}h1,h2,h3,h4,h5,h6{color:var(--MAIN-TITLES-TEXT-color,#5e5e5e);font-weight:400}h1{font-size:3rem}h2{font-size:2.5rem}h3{font-size:2rem}a{color:var(--MAIN-LINK-color,#1C90F3)}a:hover{color:var(--MAIN-LINK-HOVER-color,#167ad0)}pre{background:#f8f8f8;padding:1rem;border-radius:4px;overflow-x:auto}code{background:#f8f8f8;padding:.2rem .4rem;border-radius:3px;font-size:.9em}.breadcrumbs{margin-bottom:2rem;color:#999}.breadcrumbs a{color:var(--MAIN-LINK-color,#1C90F3);text-decoration:none}.breadcrumbs a:hover{color:var(--MAIN-LINK-HOVER-color,#167ad0);text-decoration:underline}@media(max-width:768px){#sidebar{transform:translateX(-300px);transition:transform .3s}#sidebar.open{transform:translateX(0)}#body{margin-left:0}#body .padding{padding:1rem 2rem}#sidebar-toggle-span{display:block;position:fixed;top:10px;left:10px;z-index:1001}#sidebar-toggle{background:var(--MAIN-LINK-color,#1C90F3);color:#fff;padding:10px;border:none;border-radius:4px}}</style></head><body><nav id=sidebar><div id=header><a id=logo href=/><div style=text-align:center;padding:20px><h2 style=color:var(--MENU-SEARCH-BOX-color,#33a1ff);font-size:2rem;font-weight:700;margin:0>LEARN</h2><p style="color:var(--MENU-SEARCH-BOX-ICONS-color,#a1d2fd);font-size:.9rem;margin:5px 0 0">RDS Performance Insights</p></div></a></div><div class=searchbox><input type=search placeholder=Search... id=search-input></div><ul class=topics><li><a href=http://localhost:1313/><i class="fas fa-home"></i> Home</a></li><li><a href=/introduction/><i class="fas fa-book"></i> 1. Introduction</a></li><li><a href=/preparation/><i class="fas fa-book"></i> 2. Preparation</a></li><li><a href=/performance-baseline/><i class="fas fa-book"></i> 3. Performance Baseline Establishment</a></li><li><a href=/performance-insights/><i class="fas fa-book"></i> Performance Insights</a></li><li><a href=/monitoring-dashboard/><i class="fas fa-book"></i> 4. Monitoring Dashboard</a></li><li><a href=/alerting-system/><i class="fas fa-book"></i> 5. Alerting System</a></li><li class=active><a href=/query-optimization/><i class="fas fa-book"></i> 6. Query Optimization Techniques</a><ul><li class=active><a href=/query-optimization/overview/>Overview</a></li></ul></li><li><a href=/automated-tuning/><i class="fas fa-book"></i> 7. Automated Tuning Recommendations</a></li><li><a href=/capacity-planning/><i class="fas fa-book"></i> 8. Capacity Planning</a></li><li><a href=/monitoring/><i class="fas fa-book"></i> 9. Monitoring & Alerting</a></li><li><a href=/best-practices/><i class="fas fa-book"></i> 10. Best Practices & Resource Cleanup</a></li></ul><div class=language-switcher><a href=/vi><i class="fas fa-language"></i> Tiếng Việt</a></div></nav><span id=sidebar-toggle-span><a href=# id=sidebar-toggle><i class="fas fa-bars"></i></a></span><section id=body><div id=overlay></div><div class=padding><div id=body-inner><div class=breadcrumbs><a href=http://localhost:1313/>Home</a>
+<span>> </span><a href=/>RDS Performance Insights & Query Optimization</a>
+<span>> </span><a href=/query-optimization/>6. Query Optimization Techniques</a>
+<span>> </span>Overview</div><h1>Overview</h1><h1 id=query-optimization-overview>Query Optimization Overview</h1><h2 id=-what-is-query-optimization>🎯 What is Query Optimization?</h2><p>Query optimization is the process of improving database query performance through various techniques including index optimization, query rewriting, and execution plan analysis.</p><blockquote><p><strong>Info</strong>: Effective query optimization can improve performance by 70% or more while reducing resource consumption.</p></blockquote><hr><h2 id=-optimization-techniques>🚀 Optimization Techniques</h2><h3 id=1-index-optimization>1. Index Optimization</h3><ul><li><strong>Composite Indexes</strong>: Multi-column indexes for complex queries</li><li><strong>Partial Indexes</strong>: Indexes with WHERE conditions</li><li><strong>Covering Indexes</strong>: Include all needed columns</li><li><strong>Index Maintenance</strong>: Regular monitoring and cleanup</li></ul><h3 id=2-query-rewriting>2. Query Rewriting</h3><ul><li><strong>Subquery Optimization</strong>: Convert to JOINs where appropriate</li><li><strong>Window Functions</strong>: Replace multiple GROUP BY queries</li><li><strong>CTE Usage</strong>: Common Table Expressions for complex logic</li><li><strong>LIMIT Usage</strong>: Reduce result set size</li></ul><h3 id=3-execution-plan-analysis>3. Execution Plan Analysis</h3><ul><li><strong>EXPLAIN Analysis</strong>: Understand query execution</li><li><strong>Cost Analysis</strong>: Identify expensive operations</li><li><strong>Join Optimization</strong>: Choose appropriate join types</li><li><strong>Sort Optimization</strong>: Minimize sorting operations</li></ul><hr><h2 id=-performance-impact>📊 Performance Impact</h2><h3 id=before-vs-after-optimization>Before vs After Optimization</h3><table><thead><tr><th>Metric</th><th>Before</th><th>After</th><th>Improvement</th></tr></thead><tbody><tr><td><strong>Query Response Time</strong></td><td>3-5 seconds</td><td>1-1.5 seconds</td><td><strong>70%</strong></td></tr><tr><td><strong>Resource Usage</strong></td><td>High CPU/IO</td><td>Optimized</td><td><strong>60%</strong></td></tr><tr><td><strong>Throughput</strong></td><td>100 QPS</td><td>250 QPS</td><td><strong>150%</strong></td></tr><tr><td><strong>Index Hit Ratio</strong></td><td>75%</td><td>95%</td><td><strong>27%</strong></td></tr></tbody></table><hr><h2 id=-optimization-strategy>🎯 Optimization Strategy</h2><h3 id=phase-1-identify-bottlenecks>Phase 1: Identify Bottlenecks</h3><ol><li><strong>Monitor slow queries</strong> using Performance Insights</li><li><strong>Analyze execution plans</strong> for expensive operations</li><li><strong>Identify missing indexes</strong> through query patterns</li><li><strong>Review table statistics</strong> and data distribution</li></ol><h3 id=phase-2-implement-optimizations>Phase 2: Implement Optimizations</h3><ol><li><strong>Create targeted indexes</strong> for slow queries</li><li><strong>Rewrite inefficient queries</strong> using best practices</li><li><strong>Optimize JOIN operations</strong> and conditions</li><li><strong>Implement query result caching</strong> where appropriate</li></ol><h3 id=phase-3-monitor-and-validate>Phase 3: Monitor and Validate</h3><ol><li><strong>Measure performance improvements</strong> using metrics</li><li><strong>Monitor resource utilization</strong> changes</li><li><strong>Validate business logic</strong> remains correct</li><li><strong>Document optimization changes</strong> for future reference</li></ol><hr><h2 id=-quick-wins>💡 Quick Wins</h2><blockquote><p><strong>Quick Win #1</strong>: Add indexes on frequently filtered columns - can provide immediate 50-80% performance improvement.</p></blockquote><blockquote><p><strong>Quick Win #2</strong>: Use LIMIT clauses to reduce result set size - especially effective for pagination queries.</p></blockquote><blockquote><p><strong>Quick Win #3</strong>: Replace SELECT * with specific column names - reduces I/O and network overhead.</p></blockquote><hr><h2 id=-optimization-tools>🔧 Optimization Tools</h2><h3 id=postgresql>PostgreSQL</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=display:flex><span><span style=color:#75715e>-- Analyze query
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>EXPLAIN</span> (<span style=color:#66d9ef>ANALYZE</span>, BUFFERS) <span style=color:#66d9ef>SELECT</span> <span style=color:#f92672>*</span> <span style=color:#66d9ef>FROM</span> orders <span style=color:#66d9ef>WHERE</span> customer_id <span style=color:#f92672>=</span> <span style=color:#ae81ff>123</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>-- Find slow queries
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>SELECT</span> query, mean_time, calls 
+</span></span><span style=display:flex><span><span style=color:#66d9ef>FROM</span> pg_stat_statements 
+</span></span><span style=display:flex><span><span style=color:#66d9ef>ORDER</span> <span style=color:#66d9ef>BY</span> mean_time <span style=color:#66d9ef>DESC</span> 
+</span></span><span style=display:flex><span><span style=color:#66d9ef>LIMIT</span> <span style=color:#ae81ff>10</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>-- Check index usage
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>SELECT</span> schemaname, tablename, indexname, idx_scan, idx_tup_read, idx_tup_fetch
+</span></span><span style=display:flex><span><span style=color:#66d9ef>FROM</span> pg_stat_user_indexes
+</span></span><span style=display:flex><span><span style=color:#66d9ef>ORDER</span> <span style=color:#66d9ef>BY</span> idx_scan <span style=color:#66d9ef>DESC</span>;
+</span></span></code></pre></div><h3 id=mysql>MySQL</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=display:flex><span><span style=color:#75715e>-- Analyze query
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>EXPLAIN</span> FORMAT<span style=color:#f92672>=</span>JSON <span style=color:#66d9ef>SELECT</span> <span style=color:#f92672>*</span> <span style=color:#66d9ef>FROM</span> orders <span style=color:#66d9ef>WHERE</span> customer_id <span style=color:#f92672>=</span> <span style=color:#ae81ff>123</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>-- Find slow queries
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>SELECT</span> DIGEST_TEXT, AVG_TIMER_WAIT<span style=color:#f92672>/</span><span style=color:#ae81ff>1000000000</span> <span style=color:#66d9ef>as</span> avg_time_sec, COUNT_STAR
+</span></span><span style=display:flex><span><span style=color:#66d9ef>FROM</span> performance_schema.events_statements_summary_by_digest
+</span></span><span style=display:flex><span><span style=color:#66d9ef>ORDER</span> <span style=color:#66d9ef>BY</span> AVG_TIMER_WAIT <span style=color:#66d9ef>DESC</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>LIMIT</span> <span style=color:#ae81ff>10</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>-- Check index usage
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>SHOW</span> <span style=color:#66d9ef>INDEX</span> <span style=color:#66d9ef>FROM</span> orders;
+</span></span></code></pre></div><hr><h2 id=-common-optimization-patterns>📈 Common Optimization Patterns</h2><h3 id=1-join-optimization>1. JOIN Optimization</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=display:flex><span><span style=color:#75715e>-- Before: Inefficient subquery
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>SELECT</span> <span style=color:#f92672>*</span> <span style=color:#66d9ef>FROM</span> customers 
+</span></span><span style=display:flex><span><span style=color:#66d9ef>WHERE</span> id <span style=color:#66d9ef>IN</span> (<span style=color:#66d9ef>SELECT</span> customer_id <span style=color:#66d9ef>FROM</span> orders <span style=color:#66d9ef>WHERE</span> total <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>1000</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>-- After: More efficient JOIN
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>SELECT</span> <span style=color:#66d9ef>DISTINCT</span> <span style=color:#66d9ef>c</span>.<span style=color:#f92672>*</span> <span style=color:#66d9ef>FROM</span> customers <span style=color:#66d9ef>c</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>INNER</span> <span style=color:#66d9ef>JOIN</span> orders o <span style=color:#66d9ef>ON</span> <span style=color:#66d9ef>c</span>.id <span style=color:#f92672>=</span> o.customer_id
+</span></span><span style=display:flex><span><span style=color:#66d9ef>WHERE</span> o.total <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>1000</span>;
+</span></span></code></pre></div><h3 id=2-pagination-optimization>2. Pagination Optimization</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=display:flex><span><span style=color:#75715e>-- Before: Inefficient OFFSET for large pages
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>SELECT</span> <span style=color:#f92672>*</span> <span style=color:#66d9ef>FROM</span> products <span style=color:#66d9ef>ORDER</span> <span style=color:#66d9ef>BY</span> created_at <span style=color:#66d9ef>OFFSET</span> <span style=color:#ae81ff>10000</span> <span style=color:#66d9ef>LIMIT</span> <span style=color:#ae81ff>20</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>-- After: Cursor-based pagination
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>SELECT</span> <span style=color:#f92672>*</span> <span style=color:#66d9ef>FROM</span> products 
+</span></span><span style=display:flex><span><span style=color:#66d9ef>WHERE</span> created_at <span style=color:#f92672>&gt;</span> <span style=color:#e6db74>&#39;2023-01-01 10:00:00&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>ORDER</span> <span style=color:#66d9ef>BY</span> created_at <span style=color:#66d9ef>LIMIT</span> <span style=color:#ae81ff>20</span>;
+</span></span></code></pre></div><h3 id=3-count-optimization>3. COUNT Optimization</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=display:flex><span><span style=color:#75715e>-- Before: Slow COUNT(*) on large tables
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>SELECT</span> <span style=color:#66d9ef>COUNT</span>(<span style=color:#f92672>*</span>) <span style=color:#66d9ef>FROM</span> orders <span style=color:#66d9ef>WHERE</span> status <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;completed&#39;</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>-- After: Use approximate count or cached value
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>SELECT</span> reltuples::BIGINT <span style=color:#66d9ef>AS</span> estimate
+</span></span><span style=display:flex><span><span style=color:#66d9ef>FROM</span> pg_class
+</span></span><span style=display:flex><span><span style=color:#66d9ef>WHERE</span> relname <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;orders&#39;</span>;
+</span></span></code></pre></div><hr><h2 id=-best-practices>🎯 Best Practices</h2><h3 id=query-design>Query Design</h3><ol><li><strong>Use effective WHERE clauses</strong>: Place most selective conditions first</li><li>**Avoid SELECT ***: Only select needed columns</li><li><strong>Use LIMIT</strong>: Restrict results when possible</li><li><strong>Optimize ORDER BY</strong>: Use indexes for sorting</li></ol><h3 id=index-design>Index Design</h3><ol><li><strong>Composite indexes</strong>: Column order matters</li><li><strong>Covering indexes</strong>: Include all needed columns</li><li><strong>Partial indexes</strong>: For specific conditions</li><li><strong>Index maintenance</strong>: Remove unused indexes</li></ol><h3 id=performance-monitoring>Performance Monitoring</h3><ol><li><strong>Track slow queries</strong>: Set appropriate thresholds</li><li><strong>Analyze execution plans</strong>: Understand query costs</li><li><strong>Monitor resource usage</strong>: CPU, I/O, memory</li><li><strong>Regular benchmarking</strong>: Compare performance over time</li></ol><hr><h2 id=-next-steps>🔗 Next Steps</h2><ol><li><strong><a href=index-strategies/>Index Strategies</a></strong> - Learn advanced indexing techniques</li><li><strong><a href=query-rewriting/>Query Rewriting</a></strong> - Master query optimization patterns</li><li><strong><a href=execution-plans/>Execution Plans</a></strong> - Understand and analyze query plans</li></ol></div></div></section><script>document.getElementById("sidebar-toggle").addEventListener("click",function(e){e.preventDefault(),document.getElementById("sidebar").classList.toggle("open")})</script></body></html>

@@ -6,27 +6,27 @@ draft: false
 
 # Overview
 
-RDS Performance Insights là một công cụ giám sát và phân tích hiệu suất cơ sở dữ liệu chủ động và hiệu quả, cung cấp thông tin chi tiết cần thiết để xác định các vấn đề về hiệu suất. Khi kết hợp với các kỹ thuật tối ưu hóa truy vấn phù hợp, nó trở thành một cặp đôi hoàn hảo giúp bạn duy trì một cơ sở dữ liệu RDS khỏe mạnh, nhanh chóng, và tiết kiệm chi phí.
+RDS Performance Insights is a proactive and efficient database performance monitoring and analysis tool that provides the detailed insights needed to identify performance issues. When combined with appropriate query optimization techniques, it becomes the perfect pair to help you maintain a healthy, fast, and cost-effective RDS database.
 
-Dưới đây là mô hình triển khai bạn có thể tham khảo.
+Below is the deployment model you can refer to.
 
-<img src="/images/USECASE.png" alt="USECASE" width="800">
+<img src="/images/usecase.jpg" alt="usecase" width="800">
 
 The following steps are here to help you initialize your new RDS Performance Insights monitoring setup. If you don't know AWS RDS at all, we strongly suggest you learn more about it by following this [great documentation for beginners](https://docs.aws.amazon.com/rds/).
 
-## Nội dung
+## Contents
 1. Introduction
 2. Preparation
 3. Performance Baseline Establishment
-4. Performan Insight
+4. Performance Insights
 5. Monitoring Dashboard
 6. Alerting System
 7. Automated Tuning Recommendations
 8. Capacity Planning
 9. Monitoring & Alert
-10. Resource Clenup
+10. Resource Cleanup
 
-Tài liệu tham khảo [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html)
+Reference [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html)
 
 ---
 

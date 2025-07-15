@@ -1,353 +1,41 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4.1 Thiết lập CloudWatch Dashboard - RDS Performance Insights &amp; Tối Ưu Hóa Truy Vấn</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif; font-weight: 300; line-height: 1.6; font-size: 18px; }
-        
-        #sidebar { position: fixed; top: 0; left: 0; width: 300px; height: 100vh; background: #282828; color: #ccc; overflow-y: auto; z-index: 1000; }
-        #sidebar .searchbox { padding: 10px; background: #323232; }
-        #sidebar .searchbox input { width: 100%; padding: 10px; border: none; background: #404040; color: #ccc; border-radius: 4px; }
-        
-        #sidebar-toggle-span { display: none; }
-        
-        #body { margin-left: 300px; }
-        #body .padding { padding: 3rem 6rem; }
-        
-         
-        #sidebar ul { list-style: none; padding: 0; margin: 0; }
-        #sidebar ul li a { display: block; padding: 10px 20px; color: #ccc; text-decoration: none; border-left: 4px solid transparent; }
-        #sidebar ul li a:hover { background: #404040; border-left-color: #599a3e; }
-        #sidebar ul li.active > a { background: #404040; border-left-color: #599a3e; color: #ccc; }
-        #sidebar ul ul { padding-left: 20px; }
-        #sidebar ul ul li a { padding: 8px 20px; font-size: 0.9em; }
-        
-         
-        #sidebar #header { padding: 2rem 1rem; text-align: center; }
-        #sidebar #header .baseurl { color: #599a3e; font-size: 1.5rem; font-weight: bold; }
-        
-         
-        .language-switcher { position: relative; padding: 20px; }
-        .language-switcher a { color: #599a3e; text-decoration: none; margin-left: 10px; }
-        
-         
-        h1, h2, h3, h4, h5, h6 { color: #5e5e5e; font-weight: 400; }
-        h1 { font-size: 3rem; }
-        
-         
-        .chapter h1 { color: #599a3e; border-bottom: 4px solid #F0F2F4; padding-bottom: 1rem; margin-bottom: 2rem; }
-        
-         
-        .page-list { margin-top: 2rem; }
-        .page-item { margin: 1rem 0; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 4px; }
-        .page-item h2 { margin: 0 0 0.5rem 0; }
-        .page-item h2 a { color: #599a3e; text-decoration: none; }
-        .page-item h2 a:hover { text-decoration: underline; }
-        .page-item p { color: #666; margin: 0; }
-        
-         
-        .breadcrumbs { margin-bottom: 2rem; color: #999; }
-        .breadcrumbs a { color: #599a3e; text-decoration: none; }
-        .breadcrumbs a:hover { text-decoration: underline; }
-        
-         
-        @media (max-width: 768px) {
-            #sidebar { transform: translateX(-300px); transition: transform 0.3s; }
-            #sidebar.open { transform: translateX(0); }
-            #body { margin-left: 0; }
-            #body .padding { padding: 1rem 2rem; }
-            #sidebar-toggle-span { display: block; position: fixed; top: 10px; left: 10px; z-index: 1001; }
-            #sidebar-toggle { background: #599a3e; color: white; padding: 10px; border: none; border-radius: 4px; }
-        }
-    </style>
-</head>
-<body>
-    <nav id="sidebar">
-        <div id="header">
-            <a id="logo" href='/'>
-  <div style="text-align: center; padding: 20px;">
-    <h2 style="color: var(--MENU-SEARCH-BOX-color, #33a1ff); font-size: 2rem; font-weight: bold; margin: 0;">
-      LEARN
-    </h2>
-    <p style="color: var(--MENU-SEARCH-BOX-ICONS-color, #a1d2fd); font-size: 0.9rem; margin: 5px 0 0 0;">
-      RDS Performance Insights
-    </p>
-  </div>
-</a>
-
-        </div>
-        
-        <div class="searchbox">
-            <input type="search" placeholder="Search..." id="search-input">
-        </div>
-        
-        <ul class="topics">
-            <li><a href="http://localhost:1313/"><i class="fas fa-home"></i> Home</a></li>
-            
-            <li class="">
-                <a href="/vi/introduction/"><i class="fas fa-book"></i> 1. Giới Thiệu</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/preparation/"><i class="fas fa-book"></i> 2. Chuẩn Bị</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/performance-baseline/"><i class="fas fa-book"></i> 3. Thiết lập Đường cơ sở Hiệu suất</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/performance-insights/"><i class="fas fa-book"></i> Performance Insights</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/monitoring-dashboard/"><i class="fas fa-book"></i> 4. Bảng điều khiển Giám sát</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/alerting-system/"><i class="fas fa-book"></i> 5. Hệ thống Cảnh báo</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/query-optimization/"><i class="fas fa-book"></i> 6. Kỹ thuật Tối ưu hóa Truy vấn</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/automated-tuning/"><i class="fas fa-book"></i> 7. Đề xuất Điều chỉnh Tự động</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/capacity-planning/"><i class="fas fa-book"></i> 8. Lập kế hoạch Năng lực</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/monitoring/"><i class="fas fa-book"></i> 9. Giám sát &amp; Cảnh báo</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/best-practices/"><i class="fas fa-book"></i> 10. Dọn dẹp tài nguyên</a>
-                
-            </li>
-            
-        </ul>
-        
-        <div class="language-switcher">
-            
-            
-            <a href="/vi/en"><i class="fas fa-language"></i> English</a>
-            
-            
-            
-            
-        </div>
-    </nav>
-
-    <span id="sidebar-toggle-span">
-        <a href="#" id="sidebar-toggle"><i class="fas fa-bars"></i></a>
-    </span>
-
-    <section id="body">
-        <div id="overlay"></div>
-        <div class="padding">
-            <div id="body-inner">
-                <div class="breadcrumbs">
-                    <a href="http://localhost:1313/">Home</a>
-                    
-                    <span> > </span><a href="/vi/">RDS Performance Insights &amp; Query Optimization</a>
-                    
-                    <span> > </span><a href="/vi/monitoring-dashboard/">4. Bảng điều khiển Giám sát</a>
-                    
-                    <span> > </span>4.1 Thiết lập CloudWatch Dashboard
-                </div>
-                
-                <div class="chapter">
-                    <h1>4.1 Thiết lập CloudWatch Dashboard</h1>
-                    <h1 id="thiết-lập-cloudwatch-dashboard">Thiết lập CloudWatch Dashboard</h1>
-<h2 id="bước-1-truy-cập-cloudwatch">Bước 1: Truy cập CloudWatch</h2>
-<ol>
-<li>Tìm kiếm &ldquo;CloudWatch&rdquo; trong AWS Console</li>
-<li>Click vào &ldquo;Amazon CloudWatch&rdquo;</li>
-</ol>
-<h2 id="bước-2-tạo-dashboard">Bước 2: Tạo Dashboard</h2>
-<img src="/images/2025-07-14_16-15-20.png" alt="2025-07-14_16-15-20" width="800">
-<ol>
-<li>Trong menu bên trái, click &ldquo;Dashboards&rdquo;</li>
-<li>Click &ldquo;Create dashboard&rdquo;</li>
-</ol>
-<img src="/images/2025-07-14_16-16-13.png" alt="2025-07-14_16-16-13" width="800">
-<ol start="3">
-<li>Dashboard name: RDS-Performance-Dashboard</li>
-<li>Click &ldquo;Create dashboard&rdquo;</li>
-</ol>
-<h2 id="bước-3-thêm-widget-đầu-tiên---cpu-utilization">Bước 3: Thêm Widget đầu tiên - CPU Utilization</h2>
-<img src="/images/2025-07-14_16-17-19.png" alt="2025-07-14_16-17-19" width="800">
-<ol>
-<li>Chọn &ldquo;Line&rdquo; widget type</li>
-<li>Click &ldquo;Next&rdquo;</li>
-</ol>
-<img src="/images/2025-07-14_16-25-18.png" alt="2025-07-14_16-25-18" width="800">
-<ol start="3">
-<li>Metrics:
+<!doctype html><html lang=vi><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>4.1 Thiết lập CloudWatch Dashboard - RDS Performance Insights & Tối Ưu Hóa Truy Vấn</title>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:work sans,helvetica,tahoma,geneva,arial,sans-serif;font-weight:300;line-height:1.6;font-size:18px}#sidebar{position:fixed;top:0;left:0;width:300px;height:100vh;background:#282828;color:#ccc;overflow-y:auto;z-index:1000}#sidebar .searchbox{padding:10px;background:#323232}#sidebar .searchbox input{width:100%;padding:10px;border:none;background:#404040;color:#ccc;border-radius:4px}#sidebar-toggle-span{display:none}#body{margin-left:300px}#body .padding{padding:3rem 6rem}#sidebar ul{list-style:none;padding:0;margin:0}#sidebar ul li a{display:block;padding:10px 20px;color:#ccc;text-decoration:none;border-left:4px solid transparent}#sidebar ul li a:hover{background:#404040;border-left-color:#599a3e}#sidebar ul li.active>a{background:#404040;border-left-color:#599a3e;color:#ccc}#sidebar ul ul{padding-left:20px}#sidebar ul ul li a{padding:8px 20px;font-size:.9em}#sidebar #header{padding:2rem 1rem;text-align:center}#sidebar #header .baseurl{color:#599a3e;font-size:1.5rem;font-weight:700}.language-switcher{position:relative;padding:20px}.language-switcher a{color:#599a3e;text-decoration:none;margin-left:10px}h1,h2,h3,h4,h5,h6{color:#5e5e5e;font-weight:400}h1{font-size:3rem}.chapter h1{color:#599a3e;border-bottom:4px solid #f0f2f4;padding-bottom:1rem;margin-bottom:2rem}.page-list{margin-top:2rem}.page-item{margin:1rem 0;padding:1rem;border:1px solid #e0e0e0;border-radius:4px}.page-item h2{margin:0 0 .5rem}.page-item h2 a{color:#599a3e;text-decoration:none}.page-item h2 a:hover{text-decoration:underline}.page-item p{color:#666;margin:0}.breadcrumbs{margin-bottom:2rem;color:#999}.breadcrumbs a{color:#599a3e;text-decoration:none}.breadcrumbs a:hover{text-decoration:underline}@media(max-width:768px){#sidebar{transform:translateX(-300px);transition:transform .3s}#sidebar.open{transform:translateX(0)}#body{margin-left:0}#body .padding{padding:1rem 2rem}#sidebar-toggle-span{display:block;position:fixed;top:10px;left:10px;z-index:1001}#sidebar-toggle{background:#599a3e;color:#fff;padding:10px;border:none;border-radius:4px}}</style></head><body><nav id=sidebar><div id=header><a id=logo href=/><div style=text-align:center;padding:20px><h2 style=color:var(--MENU-SEARCH-BOX-color,#33a1ff);font-size:2rem;font-weight:700;margin:0>LEARN</h2><p style="color:var(--MENU-SEARCH-BOX-ICONS-color,#a1d2fd);font-size:.9rem;margin:5px 0 0">RDS Performance Insights</p></div></a></div><div class=searchbox><input type=search placeholder=Search... id=search-input></div><ul class=topics><li><a href=http://localhost:1313/><i class="fas fa-home"></i> Home</a></li><li><a href=/vi/introduction/><i class="fas fa-book"></i> 1. Giới Thiệu</a></li><li><a href=/vi/preparation/><i class="fas fa-book"></i> 2. Chuẩn Bị</a></li><li><a href=/vi/performance-baseline/><i class="fas fa-book"></i> 3. Thiết lập Đường cơ sở Hiệu suất</a></li><li><a href=/vi/performance-insights/><i class="fas fa-book"></i> Performance Insights</a></li><li><a href=/vi/monitoring-dashboard/><i class="fas fa-book"></i> 4. Bảng điều khiển Giám sát</a></li><li><a href=/vi/alerting-system/><i class="fas fa-book"></i> 5. Hệ thống Cảnh báo</a></li><li><a href=/vi/query-optimization/><i class="fas fa-book"></i> 6. Kỹ thuật Tối ưu hóa Truy vấn</a></li><li><a href=/vi/automated-tuning/><i class="fas fa-book"></i> 7. Đề xuất Điều chỉnh Tự động</a></li><li><a href=/vi/capacity-planning/><i class="fas fa-book"></i> 8. Lập kế hoạch Năng lực</a></li><li><a href=/vi/monitoring/><i class="fas fa-book"></i> 9. Giám sát & Cảnh báo</a></li><li><a href=/vi/best-practices/><i class="fas fa-book"></i> 10. Dọn dẹp tài nguyên</a></li></ul><div class=language-switcher><a href=/vi/en><i class="fas fa-language"></i> English</a></div></nav><span id=sidebar-toggle-span><a href=# id=sidebar-toggle><i class="fas fa-bars"></i></a></span><section id=body><div id=overlay></div><div class=padding><div id=body-inner><div class=breadcrumbs><a href=http://localhost:1313/>Home</a>
+<span>> </span><a href=/vi/>RDS Performance Insights & Tối Ưu Hóa Truy Vấn</a>
+<span>> </span><a href=/vi/monitoring-dashboard/>4. Bảng điều khiển Giám sát</a>
+<span>> </span>4.1 Thiết lập CloudWatch Dashboard</div><div class=chapter><h1>4.1 Thiết lập CloudWatch Dashboard</h1><h1 id=thiết-lập-cloudwatch-dashboard>Thiết lập CloudWatch Dashboard</h1><h2 id=bước-1-truy-cập-cloudwatch>Bước 1: Truy cập CloudWatch</h2><ol><li>Tìm kiếm &ldquo;CloudWatch&rdquo; trong AWS Console</li><li>Click vào &ldquo;Amazon CloudWatch&rdquo;</li></ol><h2 id=bước-2-tạo-dashboard>Bước 2: Tạo Dashboard</h2><img src=/images/2025-07-14_16-15-20.png alt=2025-07-14_16-15-20 width=800><ol><li>Trong menu bên trái, click &ldquo;Dashboards&rdquo;</li><li>Click &ldquo;Create dashboard&rdquo;</li></ol><img src=/images/2025-07-14_16-16-13.png alt=2025-07-14_16-16-13 width=800><ol start=3><li>Dashboard name: RDS-Performance-Dashboard</li><li>Click &ldquo;Create dashboard&rdquo;</li></ol><h2 id=bước-3-thêm-widget-đầu-tiên---cpu-utilization>Bước 3: Thêm Widget đầu tiên - CPU Utilization</h2><img src=/images/2025-07-14_16-17-19.png alt=2025-07-14_16-17-19 width=800><ol><li>Chọn &ldquo;Line&rdquo; widget type</li><li>Click &ldquo;Next&rdquo;</li></ol><img src=/images/2025-07-14_16-25-18.png alt=2025-07-14_16-25-18 width=800><ol start=3><li>Metrics:
 • <strong>Namespace:</strong> AWS/RDS
 • <strong>Metric name:</strong> CPUUtilization
-• <strong>DBInstanceIdentifier:</strong> Chọn instance vừa tạo</li>
-<li>Period: 5 minutes</li>
-<li>Click &ldquo;Create widget&rdquo;</li>
-</ol>
-<h2 id="bước-4-thêm-widget-thứ-hai---database-connections">Bước 4: Thêm Widget thứ hai - Database Connections</h2>
-<ol>
-<li>Click &ldquo;Add widget&rdquo;</li>
-<li>Chọn &ldquo;Line&rdquo; → &ldquo;Next&rdquo;</li>
-<li>Metrics:
+• <strong>DBInstanceIdentifier:</strong> Chọn instance vừa tạo</li><li>Period: 5 minutes</li><li>Click &ldquo;Create widget&rdquo;</li></ol><h2 id=bước-4-thêm-widget-thứ-hai---database-connections>Bước 4: Thêm Widget thứ hai - Database Connections</h2><ol><li>Click &ldquo;Add widget&rdquo;</li><li>Chọn &ldquo;Line&rdquo; → &ldquo;Next&rdquo;</li><li>Metrics:
 • <strong>Namespace:</strong> AWS/RDS
 • <strong>Metric name:</strong> DatabaseConnections
-• <strong>DBInstanceIdentifier:</strong> Chọn instance của bạn</li>
-<li>Click &ldquo;Create widget&rdquo;</li>
-</ol>
-<h2 id="bước-5-thêm-widget-thứ-ba---free-memory">Bước 5: Thêm Widget thứ ba - Free Memory</h2>
-<ol>
-<li>Click &ldquo;Add widget&rdquo;</li>
-<li>Chọn &ldquo;Line&rdquo; → &ldquo;Next&rdquo;</li>
-<li>Metrics:
+• <strong>DBInstanceIdentifier:</strong> Chọn instance của bạn</li><li>Click &ldquo;Create widget&rdquo;</li></ol><h2 id=bước-5-thêm-widget-thứ-ba---free-memory>Bước 5: Thêm Widget thứ ba - Free Memory</h2><ol><li>Click &ldquo;Add widget&rdquo;</li><li>Chọn &ldquo;Line&rdquo; → &ldquo;Next&rdquo;</li><li>Metrics:
 • <strong>Namespace:</strong> AWS/RDS
 • <strong>Metric name:</strong> FreeableMemory
-• <strong>DBInstanceIdentifier:</strong> Chọn instance của bạn</li>
-<li>Click &ldquo;Create widget&rdquo;</li>
-</ol>
-<h2 id="bước-6-thêm-widget-bổ-sung">Bước 6: Thêm Widget bổ sung</h2>
-<h3 id="widget-readwrite-iops">Widget Read/Write IOPS</h3>
-<ol>
-<li>Click &ldquo;Add widget&rdquo;</li>
-<li>Chọn &ldquo;Line&rdquo; → &ldquo;Next&rdquo;</li>
-<li>Thêm hai metrics:
+• <strong>DBInstanceIdentifier:</strong> Chọn instance của bạn</li><li>Click &ldquo;Create widget&rdquo;</li></ol><h2 id=bước-6-thêm-widget-bổ-sung>Bước 6: Thêm Widget bổ sung</h2><h3 id=widget-readwrite-iops>Widget Read/Write IOPS</h3><ol><li>Click &ldquo;Add widget&rdquo;</li><li>Chọn &ldquo;Line&rdquo; → &ldquo;Next&rdquo;</li><li>Thêm hai metrics:
 • <strong>ReadIOPS:</strong> Số lượng read operations per second
-• <strong>WriteIOPS:</strong> Số lượng write operations per second</li>
-<li>Click &ldquo;Create widget&rdquo;</li>
-</ol>
-<h3 id="widget-readwrite-latency">Widget Read/Write Latency</h3>
-<ol>
-<li>Click &ldquo;Add widget&rdquo;</li>
-<li>Chọn &ldquo;Line&rdquo; → &ldquo;Next&rdquo;</li>
-<li>Thêm hai metrics:
+• <strong>WriteIOPS:</strong> Số lượng write operations per second</li><li>Click &ldquo;Create widget&rdquo;</li></ol><h3 id=widget-readwrite-latency>Widget Read/Write Latency</h3><ol><li>Click &ldquo;Add widget&rdquo;</li><li>Chọn &ldquo;Line&rdquo; → &ldquo;Next&rdquo;</li><li>Thêm hai metrics:
 • <strong>ReadLatency:</strong> Độ trễ read operations
-• <strong>WriteLatency:</strong> Độ trễ write operations</li>
-<li>Click &ldquo;Create widget&rdquo;</li>
-</ol>
-<h3 id="widget-network-throughput">Widget Network Throughput</h3>
-<ol>
-<li>Click &ldquo;Add widget&rdquo;</li>
-<li>Chọn &ldquo;Line&rdquo; → &ldquo;Next&rdquo;</li>
-<li>Thêm hai metrics:
+• <strong>WriteLatency:</strong> Độ trễ write operations</li><li>Click &ldquo;Create widget&rdquo;</li></ol><h3 id=widget-network-throughput>Widget Network Throughput</h3><ol><li>Click &ldquo;Add widget&rdquo;</li><li>Chọn &ldquo;Line&rdquo; → &ldquo;Next&rdquo;</li><li>Thêm hai metrics:
 • <strong>NetworkReceiveThroughput:</strong> Lưu lượng mạng nhận
-• <strong>NetworkTransmitThroughput:</strong> Lưu lượng mạng gửi</li>
-<li>Click &ldquo;Create widget&rdquo;</li>
-</ol>
-<h2 id="bước-7-tùy-chỉnh-dashboard">Bước 7: Tùy chỉnh Dashboard</h2>
-<h3 id="sắp-xếp-widgets">Sắp xếp Widgets</h3>
-<ol>
-<li>Kéo thả các widgets để sắp xếp theo ý muốn</li>
-<li>Resize widgets bằng cách kéo góc</li>
-<li>Nhóm các metrics liên quan gần nhau</li>
-</ol>
-<h3 id="thiết-lập-time-range">Thiết lập Time Range</h3>
-<ol>
-<li>Ở góc trên bên phải, chọn time range:
+• <strong>NetworkTransmitThroughput:</strong> Lưu lượng mạng gửi</li><li>Click &ldquo;Create widget&rdquo;</li></ol><h2 id=bước-7-tùy-chỉnh-dashboard>Bước 7: Tùy chỉnh Dashboard</h2><h3 id=sắp-xếp-widgets>Sắp xếp Widgets</h3><ol><li>Kéo thả các widgets để sắp xếp theo ý muốn</li><li>Resize widgets bằng cách kéo góc</li><li>Nhóm các metrics liên quan gần nhau</li></ol><h3 id=thiết-lập-time-range>Thiết lập Time Range</h3><ol><li>Ở góc trên bên phải, chọn time range:
 • <strong>1h</strong> - 1 giờ
 • <strong>3h</strong> - 3 giờ
 • <strong>12h</strong> - 12 giờ
 • <strong>1d</strong> - 1 ngày
 • <strong>3d</strong> - 3 ngày
-• <strong>1w</strong> - 1 tuần</li>
-</ol>
-<h3 id="auto-refresh">Auto Refresh</h3>
-<ol>
-<li>Click vào biểu tượng refresh</li>
-<li>Chọn auto refresh interval:
+• <strong>1w</strong> - 1 tuần</li></ol><h3 id=auto-refresh>Auto Refresh</h3><ol><li>Click vào biểu tượng refresh</li><li>Chọn auto refresh interval:
 • <strong>10s</strong> - 10 giây
 • <strong>1m</strong> - 1 phút
 • <strong>2m</strong> - 2 phút
 • <strong>5m</strong> - 5 phút
-• <strong>15m</strong> - 15 phút</li>
-</ol>
-<h2 id="bước-8-lưu-và-chia-sẻ-dashboard">Bước 8: Lưu và Chia sẻ Dashboard</h2>
-<img src="/images/2025-07-14_16-30-33.png" alt="2025-07-14_16-30-33" width="800">
-<h3 id="lưu-dashboard">Lưu Dashboard</h3>
-<ol>
-<li>Click &ldquo;Save dashboard&rdquo;</li>
-<li>Dashboard sẽ được lưu tự động</li>
-</ol>
-<h3 id="chia-sẻ-dashboard">Chia sẻ Dashboard</h3>
-<ol>
-<li>Click &ldquo;Share dashboard&rdquo;</li>
-<li>Chọn permissions:
+• <strong>15m</strong> - 15 phút</li></ol><h2 id=bước-8-lưu-và-chia-sẻ-dashboard>Bước 8: Lưu và Chia sẻ Dashboard</h2><img src=/images/2025-07-14_16-30-33.png alt=2025-07-14_16-30-33 width=800><h3 id=lưu-dashboard>Lưu Dashboard</h3><ol><li>Click &ldquo;Save dashboard&rdquo;</li><li>Dashboard sẽ được lưu tự động</li></ol><h3 id=chia-sẻ-dashboard>Chia sẻ Dashboard</h3><ol><li>Click &ldquo;Share dashboard&rdquo;</li><li>Chọn permissions:
 • <strong>Public:</strong> Ai cũng có thể xem
 • <strong>Account:</strong> Chỉ account hiện tại
-• <strong>Specific users:</strong> Chỉ users được chỉ định</li>
-</ol>
-<h3 id="export-dashboard">Export Dashboard</h3>
-<ol>
-<li>Click &ldquo;Actions&rdquo; → &ldquo;View/edit source&rdquo;</li>
-<li>Copy JSON configuration</li>
-<li>Có thể import vào account khác</li>
-</ol>
-<h2 id="bước-9-best-practices">Bước 9: Best Practices</h2>
-<h3 id="tổ-chức-widgets">Tổ chức Widgets</h3>
-<ol>
-<li>
-<p><strong>Nhóm theo chức năng:</strong>
+• <strong>Specific users:</strong> Chỉ users được chỉ định</li></ol><h3 id=export-dashboard>Export Dashboard</h3><ol><li>Click &ldquo;Actions&rdquo; → &ldquo;View/edit source&rdquo;</li><li>Copy JSON configuration</li><li>Có thể import vào account khác</li></ol><h2 id=bước-9-best-practices>Bước 9: Best Practices</h2><h3 id=tổ-chức-widgets>Tổ chức Widgets</h3><ol><li><p><strong>Nhóm theo chức năng:</strong>
 • Performance metrics (CPU, Memory)
 • I/O metrics (IOPS, Latency)
 • Network metrics (Throughput)
-• Connection metrics (Connections, Queries)</p>
-</li>
-<li>
-<p><strong>Sử dụng màu sắc nhất quán:</strong>
+• Connection metrics (Connections, Queries)</p></li><li><p><strong>Sử dụng màu sắc nhất quán:</strong>
 • Đỏ: Critical metrics
 • Vàng: Warning metrics
-• Xanh: Normal metrics</p>
-</li>
-</ol>
-<h3 id="monitoring-strategy">Monitoring Strategy</h3>
-<ol>
-<li><strong>Real-time monitoring:</strong> 1-5 phút intervals</li>
-<li><strong>Historical analysis:</strong> 1 giờ - 1 tuần</li>
-<li><strong>Capacity planning:</strong> 1 tháng - 1 năm</li>
-<li><strong>Alerting:</strong> Thiết lập thresholds phù hợp</li>
-</ol>
-<h3 id="performance-optimization">Performance Optimization</h3>
-<ol>
-<li><strong>Giới hạn số widgets:</strong> Không quá 20 widgets/dashboard</li>
-<li><strong>Sử dụng appropriate time ranges:</strong> Không query quá nhiều data points</li>
-<li><strong>Group related metrics:</strong> Dễ dàng phân tích và so sánh</li>
-</ol>
-
-                </div>
-                
-                
-            </div>
-        </div>
-    </section>
-
-    <script>
-        
-        document.getElementById('sidebar-toggle').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('sidebar').classList.toggle('open');
-        });
-    </script>
-</body>
-</html>
+• Xanh: Normal metrics</p></li></ol><h3 id=monitoring-strategy>Monitoring Strategy</h3><ol><li><strong>Real-time monitoring:</strong> 1-5 phút intervals</li><li><strong>Historical analysis:</strong> 1 giờ - 1 tuần</li><li><strong>Capacity planning:</strong> 1 tháng - 1 năm</li><li><strong>Alerting:</strong> Thiết lập thresholds phù hợp</li></ol><h3 id=performance-optimization>Performance Optimization</h3><ol><li><strong>Giới hạn số widgets:</strong> Không quá 20 widgets/dashboard</li><li><strong>Sử dụng appropriate time ranges:</strong> Không query quá nhiều data points</li><li><strong>Group related metrics:</strong> Dễ dàng phân tích và so sánh</li></ol></div></div></div></section><script>document.getElementById("sidebar-toggle").addEventListener("click",function(e){e.preventDefault(),document.getElementById("sidebar").classList.toggle("open")})</script></body></html>

@@ -1,40 +1,7 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Performance Insights on RDS Performance Insights &amp; Query Optimization</title>
-    <link>http://localhost:1313/performance-insights/</link>
-    <description>Recent content in Performance Insights on RDS Performance Insights &amp; Query Optimization</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Sun, 14 Jul 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/performance-insights/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Performance Insights Overview</title>
-      <link>http://localhost:1313/performance-insights/overview/</link>
-      <pubDate>Sun, 14 Jul 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/performance-insights/overview/</guid>
-      <description>What is Performance Insights? Amazon RDS Performance Insights is a database performance monitoring tool that helps you:&#xA;Analyze database performance visually and intuitively Identify bottlenecks and performance issues Optimize queries based on real data Monitor real-time and historical performance Key Features 1. Database Load Monitoring DB Load: Average number of active sessions Wait Events: Database wait events Top SQL: Most resource-intensive queries 2. Visual Dashboard Timeline view: View performance over time Top dimensions: Analyze by user, host, database Drill-down capability: Deep dive into specific metrics 3.</description>
-    </item>
-    <item>
-      <title>Setting up RDS Instance with Performance Insights</title>
-      <link>http://localhost:1313/performance-insights/setup/</link>
-      <pubDate>Sun, 14 Jul 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/performance-insights/setup/</guid>
-      <description>1. Creating RDS Instance with Performance Insights Step 1: Access RDS Console Log in to AWS Console Search for &amp;ldquo;RDS&amp;rdquo; in the search bar Click on &amp;ldquo;Amazon RDS&amp;rdquo; Step 2: Create Database Click the orange &amp;ldquo;Create database&amp;rdquo; button Select &amp;ldquo;Standard create&amp;rdquo; (not Easy create) Engine options: • Choose MySQL (or PostgreSQL as needed) • Version: Select the latest version (e.g., MySQL 8.0.35) Step 3: Templates and Settings Templates: Choose &amp;ldquo;Free tier&amp;rdquo; (if eligible) or &amp;ldquo;Dev/Test&amp;rdquo; Settings: • DB instance identifier: mydb-performance-test • Master username: admin • Master password: Create a strong password or select &amp;ldquo;Auto generate&amp;rdquo; Step 4: Instance Configuration DB instance class: • Select &amp;ldquo;Burstable classes (includes t classes)&amp;rdquo; • Choose db.</description>
-    </item>
-    <item>
-      <title>Understanding the Performance Insights Dashboard</title>
-      <link>http://localhost:1313/performance-insights/dashboard/</link>
-      <pubDate>Sun, 14 Jul 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/performance-insights/dashboard/</guid>
-      <description>Dashboard Overview The Performance Insights dashboard provides a comprehensive view of your database performance with several key sections:&#xA;1. Database Load Chart The main chart shows database load over time, measured in Average Active Sessions (AAS).&#xA;Key Elements:&#xA;Y-axis: Database load (AAS) X-axis: Time Horizontal line: vCPU count (performance baseline) Colored areas: Different wait event types 2. Top Dimensions Panel Shows the top contributors to database load by various dimensions:</description>
-    </item>
-    <item>
-      <title>Query Optimization with Performance Insights</title>
-      <link>http://localhost:1313/performance-insights/optimization/</link>
-      <pubDate>Sun, 14 Jul 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/performance-insights/optimization/</guid>
-      <description>Query Optimization Process Using Performance Insights for query optimization follows a systematic approach:&#xA;Identify problematic queries using Top SQL Analyze query execution patterns and wait events Investigate query execution plans Apply optimization techniques Monitor optimization results Identifying Problematic Queries Using Top SQL Panel The Top SQL panel shows queries ranked by their contribution to database load:&#xA;Top SQL (by Load) ┌─────────────────────────────────────────────────────────┐ │ SQL ID: 0x1A2B3C4D5E6F | Load: 3.2 AAS (40%) │ │ SELECT * FROM orders WHERE order_date &amp;gt; ?</description>
-    </item>
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Performance Insights on RDS Performance Insights &amp; Query Optimization</title><link>http://localhost:1313/performance-insights/</link><description>Recent content in Performance Insights on RDS Performance Insights &amp; Query Optimization</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 14 Jul 2024 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/performance-insights/index.xml" rel="self" type="application/rss+xml"/><item><title>Performance Insights Overview</title><link>http://localhost:1313/performance-insights/overview/</link><pubDate>Sun, 14 Jul 2024 00:00:00 +0000</pubDate><guid>http://localhost:1313/performance-insights/overview/</guid><description>What is Performance Insights? Amazon RDS Performance Insights is a database performance monitoring tool that helps you:
+Analyze database performance visually and intuitively Identify bottlenecks and performance issues Optimize queries based on real data Monitor real-time and historical performance Key Features 1. Database Load Monitoring DB Load: Average number of active sessions Wait Events: Database wait events Top SQL: Most resource-intensive queries 2. Visual Dashboard Timeline view: View performance over time Top dimensions: Analyze by user, host, database Drill-down capability: Deep dive into specific metrics 3.</description></item><item><title>Setting up RDS Instance with Performance Insights</title><link>http://localhost:1313/performance-insights/setup/</link><pubDate>Sun, 14 Jul 2024 00:00:00 +0000</pubDate><guid>http://localhost:1313/performance-insights/setup/</guid><description>1. Creating RDS Instance with Performance Insights Step 1: Access RDS Console Log in to AWS Console Search for &amp;ldquo;RDS&amp;rdquo; in the search bar Click on &amp;ldquo;Amazon RDS&amp;rdquo; Step 2: Create Database Click the orange &amp;ldquo;Create database&amp;rdquo; button Select &amp;ldquo;Standard create&amp;rdquo; (not Easy create) Engine options: • Choose MySQL (or PostgreSQL as needed) • Version: Select the latest version (e.g., MySQL 8.0.35) Step 3: Templates and Settings Templates: Choose &amp;ldquo;Free tier&amp;rdquo; (if eligible) or &amp;ldquo;Dev/Test&amp;rdquo; Settings: • DB instance identifier: mydb-performance-test • Master username: admin • Master password: Create a strong password or select &amp;ldquo;Auto generate&amp;rdquo; Step 4: Instance Configuration DB instance class: • Select &amp;ldquo;Burstable classes (includes t classes)&amp;rdquo; • Choose db.</description></item><item><title>Understanding the Performance Insights Dashboard</title><link>http://localhost:1313/performance-insights/dashboard/</link><pubDate>Sun, 14 Jul 2024 00:00:00 +0000</pubDate><guid>http://localhost:1313/performance-insights/dashboard/</guid><description>Dashboard Overview The Performance Insights dashboard provides a comprehensive view of your database performance with several key sections:
+1. Database Load Chart The main chart shows database load over time, measured in Average Active Sessions (AAS).
+Key Elements:
+Y-axis: Database load (AAS) X-axis: Time Horizontal line: vCPU count (performance baseline) Colored areas: Different wait event types 2. Top Dimensions Panel Shows the top contributors to database load by various dimensions:</description></item><item><title>Query Optimization with Performance Insights</title><link>http://localhost:1313/performance-insights/optimization/</link><pubDate>Sun, 14 Jul 2024 00:00:00 +0000</pubDate><guid>http://localhost:1313/performance-insights/optimization/</guid><description>Query Optimization Process Using Performance Insights for query optimization follows a systematic approach:
+Identify problematic queries using Top SQL Analyze query execution patterns and wait events Investigate query execution plans Apply optimization techniques Monitor optimization results Identifying Problematic Queries Using Top SQL Panel The Top SQL panel shows queries ranked by their contribution to database load:
+Top SQL (by Load) ┌─────────────────────────────────────────────────────────┐ │ SQL ID: 0x1A2B3C4D5E6F | Load: 3.2 AAS (40%) │ │ SELECT * FROM orders WHERE order_date &amp;gt; ?</description></item></channel></rss>

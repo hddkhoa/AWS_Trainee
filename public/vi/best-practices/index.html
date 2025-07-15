@@ -1,422 +1,150 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>10. Dọn dẹp tài nguyên - RDS Performance Insights &amp; Tối Ưu Hóa Truy Vấn</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif; font-weight: 300; line-height: 1.6; font-size: 18px; }
-        
-        #sidebar { position: fixed; top: 0; left: 0; width: 300px; height: 100vh; background: #282828; color: #ccc; overflow-y: auto; z-index: 1000; }
-        #sidebar .searchbox { padding: 10px; background: #323232; }
-        #sidebar .searchbox input { width: 100%; padding: 10px; border: none; background: #404040; color: #ccc; border-radius: 4px; }
-        
-        #sidebar-toggle-span { display: none; }
-        
-        #body { margin-left: 300px; }
-        #body .padding { padding: 3rem 6rem; }
-        
-         
-        #sidebar ul { list-style: none; padding: 0; margin: 0; }
-        #sidebar ul li a { display: block; padding: 10px 20px; color: #ccc; text-decoration: none; border-left: 4px solid transparent; }
-        #sidebar ul li a:hover { background: #404040; border-left-color: #599a3e; }
-        #sidebar ul li.active > a { background: #404040; border-left-color: #599a3e; color: #ccc; }
-        #sidebar ul ul { padding-left: 20px; }
-        #sidebar ul ul li a { padding: 8px 20px; font-size: 0.9em; }
-        
-         
-        #sidebar #header { padding: 2rem 1rem; text-align: center; }
-        #sidebar #header .baseurl { color: #599a3e; font-size: 1.5rem; font-weight: bold; }
-        
-         
-        .language-switcher { position: relative; padding: 20px; }
-        .language-switcher a { color: #599a3e; text-decoration: none; margin-left: 10px; }
-        
-         
-        h1, h2, h3, h4, h5, h6 { color: #5e5e5e; font-weight: 400; }
-        h1 { font-size: 3rem; }
-        
-         
-        .chapter h1 { color: #599a3e; border-bottom: 4px solid #F0F2F4; padding-bottom: 1rem; margin-bottom: 2rem; }
-        
-         
-        .page-list { margin-top: 2rem; }
-        .page-item { margin: 1rem 0; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 4px; }
-        .page-item h2 { margin: 0 0 0.5rem 0; }
-        .page-item h2 a { color: #599a3e; text-decoration: none; }
-        .page-item h2 a:hover { text-decoration: underline; }
-        .page-item p { color: #666; margin: 0; }
-        
-         
-        .breadcrumbs { margin-bottom: 2rem; color: #999; }
-        .breadcrumbs a { color: #599a3e; text-decoration: none; }
-        .breadcrumbs a:hover { text-decoration: underline; }
-        
-         
-        @media (max-width: 768px) {
-            #sidebar { transform: translateX(-300px); transition: transform 0.3s; }
-            #sidebar.open { transform: translateX(0); }
-            #body { margin-left: 0; }
-            #body .padding { padding: 1rem 2rem; }
-            #sidebar-toggle-span { display: block; position: fixed; top: 10px; left: 10px; z-index: 1001; }
-            #sidebar-toggle { background: #599a3e; color: white; padding: 10px; border: none; border-radius: 4px; }
-        }
-    </style>
-</head>
-<body>
-    <nav id="sidebar">
-        <div id="header">
-            <a id="logo" href='/'>
-  <div style="text-align: center; padding: 20px;">
-    <h2 style="color: var(--MENU-SEARCH-BOX-color, #33a1ff); font-size: 2rem; font-weight: bold; margin: 0;">
-      LEARN
-    </h2>
-    <p style="color: var(--MENU-SEARCH-BOX-ICONS-color, #a1d2fd); font-size: 0.9rem; margin: 5px 0 0 0;">
-      RDS Performance Insights
-    </p>
-  </div>
-</a>
-
-        </div>
-        
-        <div class="searchbox">
-            <input type="search" placeholder="Search..." id="search-input">
-        </div>
-        
-        <ul class="topics">
-            <li><a href="http://localhost:1313/"><i class="fas fa-home"></i> Home</a></li>
-            
-            <li class="">
-                <a href="/vi/introduction/"><i class="fas fa-book"></i> 1. Giới Thiệu</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/preparation/"><i class="fas fa-book"></i> 2. Chuẩn Bị</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/performance-baseline/"><i class="fas fa-book"></i> 3. Thiết lập Đường cơ sở Hiệu suất</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/performance-insights/"><i class="fas fa-book"></i> Performance Insights</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/monitoring-dashboard/"><i class="fas fa-book"></i> 4. Bảng điều khiển Giám sát</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/alerting-system/"><i class="fas fa-book"></i> 5. Hệ thống Cảnh báo</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/query-optimization/"><i class="fas fa-book"></i> 6. Kỹ thuật Tối ưu hóa Truy vấn</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/automated-tuning/"><i class="fas fa-book"></i> 7. Đề xuất Điều chỉnh Tự động</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/capacity-planning/"><i class="fas fa-book"></i> 8. Lập kế hoạch Năng lực</a>
-                
-            </li>
-            
-            <li class="">
-                <a href="/vi/monitoring/"><i class="fas fa-book"></i> 9. Giám sát &amp; Cảnh báo</a>
-                
-            </li>
-            
-            <li class="active">
-                <a href="/vi/best-practices/"><i class="fas fa-book"></i> 10. Dọn dẹp tài nguyên</a>
-                
-                <ul>
-                    
-                </ul>
-                
-            </li>
-            
-        </ul>
-        
-        <div class="language-switcher">
-            
-            
-            <a href="/vi/en"><i class="fas fa-language"></i> English</a>
-            
-            
-            
-            
-        </div>
-    </nav>
-
-    <span id="sidebar-toggle-span">
-        <a href="#" id="sidebar-toggle"><i class="fas fa-bars"></i></a>
-    </span>
-
-    <section id="body">
-        <div id="overlay"></div>
-        <div class="padding">
-            <div id="body-inner">
-                <div class="breadcrumbs">
-                    <a href="http://localhost:1313/">Home</a>
-                    
-                    <span> > </span><a href="/vi/">RDS Performance Insights &amp; Query Optimization</a>
-                    
-                    <span> > </span>10. Dọn dẹp tài nguyên
-                </div>
-                
-                <div class="chapter">
-                    <h1>10. Dọn dẹp tài nguyên</h1>
-                    <h3 id="chương-10">Chương 10</h3>
-<h1 id="dọn-dẹp-tài-nguyên">Dọn dẹp tài nguyên</h1>
-<p>Hướng dẫn chi tiết cách dọn dẹp và tối ưu hóa tài nguyên AWS để tiết kiệm chi phí.</p>
-<h2 id="mục-tiêu">Mục tiêu</h2>
-<p>Giảm thiểu chi phí phát sinh bằng cách dọn dẹp các tài nguyên không cần thiết và tối ưu hóa cấu hình hiện tại.</p>
-<h2 id="1-dọn-dẹp-rds-resources">1. Dọn dẹp RDS Resources</h2>
-<h3 id="xóa-rds-instances-không-sử-dụng">Xóa RDS Instances không sử dụng</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Liệt kê tất cả RDS instances</span>
-</span></span><span style="display:flex;"><span>aws rds describe-db-instances --query <span style="color:#e6db74">&#39;DBInstances[*].[DBInstanceIdentifier,DBInstanceStatus,Engine]&#39;</span> --output table
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Xóa RDS instance (tạo snapshot trước khi xóa)</span>
-</span></span><span style="display:flex;"><span>aws rds create-db-snapshot <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-instance-identifier mydb-instance <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-snapshot-identifier mydb-final-snapshot-<span style="color:#66d9ef">$(</span>date +%Y%m%d<span style="color:#66d9ef">)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Xóa RDS instance</span>
-</span></span><span style="display:flex;"><span>aws rds delete-db-instance <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-instance-identifier mydb-instance <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --final-db-snapshot-identifier mydb-final-snapshot-<span style="color:#66d9ef">$(</span>date +%Y%m%d<span style="color:#66d9ef">)</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --delete-automated-backups
-</span></span></code></pre></div><h3 id="xóa-read-replicas">Xóa Read Replicas</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Liệt kê Read Replicas</span>
-</span></span><span style="display:flex;"><span>aws rds describe-db-instances --query <span style="color:#e6db74">&#39;DBInstances[?ReadReplicaSourceDBInstanceIdentifier!=null].[DBInstanceIdentifier,ReadReplicaSourceDBInstanceIdentifier]&#39;</span> --output table
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Xóa Read Replica</span>
-</span></span><span style="display:flex;"><span>aws rds delete-db-instance <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-instance-identifier mydb-replica <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --skip-final-snapshot <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --delete-automated-backups
-</span></span></code></pre></div><h3 id="dọn-dẹp-snapshots-cũ">Dọn dẹp Snapshots cũ</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Liệt kê snapshots cũ hơn 30 ngày</span>
-</span></span><span style="display:flex;"><span>aws rds describe-db-snapshots <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --snapshot-type manual <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --query <span style="color:#e6db74">&#39;DBSnapshots[?SnapshotCreateTime&lt;=`2024-12-01`].[DBSnapshotIdentifier,SnapshotCreateTime]&#39;</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --output table
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Xóa snapshot cũ</span>
-</span></span><span style="display:flex;"><span>aws rds delete-db-snapshot --db-snapshot-identifier old-snapshot-name
-</span></span></code></pre></div><h2 id="2-dọn-dẹp-cloudwatch-resources">2. Dọn dẹp CloudWatch Resources</h2>
-<h3 id="xóa-custom-dashboards">Xóa Custom Dashboards</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Liệt kê dashboards</span>
-</span></span><span style="display:flex;"><span>aws cloudwatch list-dashboards --output table
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Xóa dashboard</span>
-</span></span><span style="display:flex;"><span>aws cloudwatch delete-dashboards --dashboard-names <span style="color:#e6db74">&#34;RDS-Performance-Dashboard&#34;</span>
-</span></span></code></pre></div><h3 id="dọn-dẹp-cloudwatch-alarms">Dọn dẹp CloudWatch Alarms</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Liệt kê alarms</span>
-</span></span><span style="display:flex;"><span>aws cloudwatch describe-alarms --query <span style="color:#e6db74">&#39;MetricAlarms[*].[AlarmName,StateValue]&#39;</span> --output table
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Xóa alarm không cần thiết</span>
-</span></span><span style="display:flex;"><span>aws cloudwatch delete-alarms --alarm-names <span style="color:#e6db74">&#34;RDS-CPU-High&#34;</span> <span style="color:#e6db74">&#34;RDS-Memory-Low&#34;</span>
-</span></span></code></pre></div><h3 id="xóa-log-groups-cũ">Xóa Log Groups cũ</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Liệt kê log groups</span>
-</span></span><span style="display:flex;"><span>aws logs describe-log-groups --query <span style="color:#e6db74">&#39;logGroups[*].[logGroupName,creationTime]&#39;</span> --output table
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Xóa log group</span>
-</span></span><span style="display:flex;"><span>aws logs delete-log-group --log-group-name <span style="color:#e6db74">&#34;/aws/rds/instance/mydb/slowquery&#34;</span>
-</span></span></code></pre></div><h2 id="3-tối-ưu-hóa-performance-insights">3. Tối ưu hóa Performance Insights</h2>
-<h3 id="giảm-retention-period">Giảm Retention Period</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Kiểm tra retention period hiện tại</span>
-</span></span><span style="display:flex;"><span>aws rds describe-db-instances <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-instance-identifier mydb-instance <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --query <span style="color:#e6db74">&#39;DBInstances[0].PerformanceInsightsRetentionPeriod&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Giảm retention period xuống 7 ngày (miễn phí)</span>
-</span></span><span style="display:flex;"><span>aws rds modify-db-instance <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-instance-identifier mydb-instance <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --performance-insights-retention-period <span style="color:#ae81ff">7</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --apply-immediately
-</span></span></code></pre></div><h2 id="4-dọn-dẹp-sns-và-lambda">4. Dọn dẹp SNS và Lambda</h2>
-<h3 id="xóa-sns-topics-và-subscriptions">Xóa SNS Topics và Subscriptions</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Liệt kê SNS topics</span>
-</span></span><span style="display:flex;"><span>aws sns list-topics --output table
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Xóa subscription</span>
-</span></span><span style="display:flex;"><span>aws sns unsubscribe --subscription-arn <span style="color:#e6db74">&#34;arn:aws:sns:region:account:topic:subscription&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Xóa topic</span>
-</span></span><span style="display:flex;"><span>aws sns delete-topic --topic-arn <span style="color:#e6db74">&#34;arn:aws:sns:region:account:rds-alerts&#34;</span>
-</span></span></code></pre></div><h3 id="xóa-lambda-functions">Xóa Lambda Functions</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Liệt kê Lambda functions</span>
-</span></span><span style="display:flex;"><span>aws lambda list-functions --query <span style="color:#e6db74">&#39;Functions[*].[FunctionName,Runtime,LastModified]&#39;</span> --output table
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Xóa Lambda function</span>
-</span></span><span style="display:flex;"><span>aws lambda delete-function --function-name rds-alert-processor
-</span></span></code></pre></div><h2 id="5-tối-ưu-hóa-instance-types">5. Tối ưu hóa Instance Types</h2>
-<h3 id="downgrade-instance-size">Downgrade Instance Size</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Kiểm tra utilization trước khi downgrade</span>
-</span></span><span style="display:flex;"><span>aws cloudwatch get-metric-statistics <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --namespace AWS/RDS <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --metric-name CPUUtilization <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --dimensions Name<span style="color:#f92672">=</span>DBInstanceIdentifier,Value<span style="color:#f92672">=</span>mydb-instance <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --start-time 2024-12-01T00:00:00Z <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --end-time 2024-12-31T23:59:59Z <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --period <span style="color:#ae81ff">3600</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --statistics Average
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Downgrade instance class nếu CPU &lt; 50%</span>
-</span></span><span style="display:flex;"><span>aws rds modify-db-instance <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-instance-identifier mydb-instance <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-instance-class db.t3.small <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --apply-immediately
-</span></span></code></pre></div><h2 id="6-dọn-dẹp-storage">6. Dọn dẹp Storage</h2>
-<h3 id="giảm-allocated-storage">Giảm Allocated Storage</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Lưu ý: Không thể giảm allocated storage, chỉ có thể tối ưu hóa</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Thay vào đó, tạo instance mới với storage nhỏ hơn và migrate data</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Kiểm tra storage utilization</span>
-</span></span><span style="display:flex;"><span>aws cloudwatch get-metric-statistics <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --namespace AWS/RDS <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --metric-name FreeStorageSpace <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --dimensions Name<span style="color:#f92672">=</span>DBInstanceIdentifier,Value<span style="color:#f92672">=</span>mydb-instance <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --start-time 2024-12-01T00:00:00Z <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --end-time 2024-12-31T23:59:59Z <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --period <span style="color:#ae81ff">3600</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --statistics Average
-</span></span></code></pre></div><h3 id="tắt-multi-az-nếu-không-cần-thiết">Tắt Multi-AZ nếu không cần thiết</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Tắt Multi-AZ deployment</span>
-</span></span><span style="display:flex;"><span>aws rds modify-db-instance <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-instance-identifier mydb-instance <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --no-multi-az <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --apply-immediately
-</span></span></code></pre></div><h2 id="7-script-tự-động-dọn-dẹp">7. Script tự động dọn dẹp</h2>
-<h3 id="bash-script-để-dọn-dẹp-hàng-loạt">Bash Script để dọn dẹp hàng loạt</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e"># cleanup-rds-resources.sh</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;=== Script Dọn dẹp Tài nguyên RDS ===&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># 1. Xóa snapshots cũ hơn 30 ngày</span>
-</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;Đang dọn dẹp snapshots cũ...&#34;</span>
-</span></span><span style="display:flex;"><span>OLD_SNAPSHOTS<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>aws rds describe-db-snapshots <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --snapshot-type manual <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --query <span style="color:#e6db74">&#39;DBSnapshots[?SnapshotCreateTime&lt;=`2024-11-01`].DBSnapshotIdentifier&#39;</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --output text<span style="color:#66d9ef">)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> snapshot in $OLD_SNAPSHOTS; <span style="color:#66d9ef">do</span>
-</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;Đang xóa snapshot: </span>$snapshot<span style="color:#e6db74">&#34;</span>
-</span></span><span style="display:flex;"><span>    aws rds delete-db-snapshot --db-snapshot-identifier $snapshot
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">done</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># 2. Xóa unused alarms</span>
-</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;Đang dọn dẹp CloudWatch alarms...&#34;</span>
-</span></span><span style="display:flex;"><span>aws cloudwatch delete-alarms --alarm-names <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    <span style="color:#e6db74">&#34;RDS-CPU-High-Test&#34;</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    <span style="color:#e6db74">&#34;RDS-Memory-Low-Test&#34;</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    <span style="color:#e6db74">&#34;RDS-Connection-High-Test&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># 3. Giảm Performance Insights retention</span>
-</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;Đang tối ưu hóa Performance Insights retention...&#34;</span>
-</span></span><span style="display:flex;"><span>aws rds modify-db-instance <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-instance-identifier mydb-instance <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --performance-insights-retention-period <span style="color:#ae81ff">7</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --apply-immediately
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;Dọn dẹp hoàn tất!&#34;</span>
-</span></span></code></pre></div><h2 id="8-giám-sát-chi-phí">8. Giám sát Chi phí</h2>
-<h3 id="thiết-lập-budget-alerts">Thiết lập Budget Alerts</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Tạo budget để theo dõi chi phí RDS</span>
-</span></span><span style="display:flex;"><span>aws budgets create-budget <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --account-id <span style="color:#ae81ff">123456789012</span> <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --budget <span style="color:#e6db74">&#39;{
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &#34;BudgetName&#34;: &#34;RDS-Monthly-Budget&#34;,
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &#34;BudgetLimit&#34;: {
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &#34;Amount&#34;: &#34;100&#34;,
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &#34;Unit&#34;: &#34;USD&#34;
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        },
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &#34;TimeUnit&#34;: &#34;MONTHLY&#34;,
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &#34;BudgetType&#34;: &#34;COST&#34;,
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &#34;CostFilters&#34;: {
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &#34;Service&#34;: [&#34;Amazon Relational Database Service&#34;]
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        }
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    }&#39;</span>
-</span></span></code></pre></div><h2 id="9-best-practices-cho-tối-ưu-hóa-chi-phí">9. Best Practices cho Tối ưu hóa Chi phí</h2>
-<h3 id="lịch-trình-tự-động">Lịch trình tự động</h3>
-<ul>
-<li><strong>Tắt Dev/Test instances</strong> vào cuối tuần</li>
-<li><strong>Automated snapshots cleanup</strong> hàng tuần</li>
-<li><strong>Performance Insights retention</strong> review hàng tháng</li>
-<li><strong>Instance right-sizing</strong> review hàng quý</li>
-</ul>
-<h3 id="checklist-dọn-dẹp-định-kỳ">Checklist dọn dẹp định kỳ</h3>
-<ul>
-<li><input disabled="" type="checkbox"> Xóa snapshots cũ hơn 30 ngày</li>
-<li><input disabled="" type="checkbox"> Review và xóa unused alarms</li>
-<li><input disabled="" type="checkbox"> Kiểm tra instance utilization</li>
-<li><input disabled="" type="checkbox"> Tối ưu hóa storage allocation</li>
-<li><input disabled="" type="checkbox"> Review Multi-AZ necessity</li>
-<li><input disabled="" type="checkbox"> Cleanup unused log groups</li>
-<li><input disabled="" type="checkbox"> Review Performance Insights retention</li>
-</ul>
-<h2 id="10-ước-tính-tiết-kiệm-chi-phí">10. Ước tính tiết kiệm chi phí</h2>
-<h3 id="potential-savings">Potential Savings</h3>
-<table>
-<thead>
-<tr>
-<th>Hành động</th>
-<th>Tiết kiệm ước tính/tháng</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Downgrade db.m5.large → db.t3.medium</td>
-<td>~$50-80</td>
-</tr>
-<tr>
-<td>Tắt Multi-AZ (nếu không cần)</td>
-<td>~50% chi phí instance</td>
-</tr>
-<tr>
-<td>Giảm Performance Insights retention</td>
-<td>~$10-20</td>
-</tr>
-<tr>
-<td>Xóa unused Read Replicas</td>
-<td>~$100-200</td>
-</tr>
-<tr>
-<td>Cleanup old snapshots</td>
-<td>~$5-15</td>
-</tr>
-</tbody>
-</table>
-<h3 id="cost-calculator">Cost Calculator</h3>
-<p>Sử dụng <a href="https://calculator.aws">AWS Pricing Calculator</a> để ước tính chính xác chi phí sau khi tối ưu hóa.</p>
-
-                </div>
-                
-                
-            </div>
-        </div>
-    </section>
-
-    <script>
-        
-        document.getElementById('sidebar-toggle').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('sidebar').classList.toggle('open');
-        });
-    </script>
-</body>
-</html>
+<!doctype html><html lang=vi><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>10. Dọn dẹp tài nguyên - RDS Performance Insights & Tối Ưu Hóa Truy Vấn</title>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:work sans,helvetica,tahoma,geneva,arial,sans-serif;font-weight:300;line-height:1.6;font-size:18px}#sidebar{position:fixed;top:0;left:0;width:300px;height:100vh;background:#282828;color:#ccc;overflow-y:auto;z-index:1000}#sidebar .searchbox{padding:10px;background:#323232}#sidebar .searchbox input{width:100%;padding:10px;border:none;background:#404040;color:#ccc;border-radius:4px}#sidebar-toggle-span{display:none}#body{margin-left:300px}#body .padding{padding:3rem 6rem}#sidebar ul{list-style:none;padding:0;margin:0}#sidebar ul li a{display:block;padding:10px 20px;color:#ccc;text-decoration:none;border-left:4px solid transparent}#sidebar ul li a:hover{background:#404040;border-left-color:#599a3e}#sidebar ul li.active>a{background:#404040;border-left-color:#599a3e;color:#ccc}#sidebar ul ul{padding-left:20px}#sidebar ul ul li a{padding:8px 20px;font-size:.9em}#sidebar #header{padding:2rem 1rem;text-align:center}#sidebar #header .baseurl{color:#599a3e;font-size:1.5rem;font-weight:700}.language-switcher{position:relative;padding:20px}.language-switcher a{color:#599a3e;text-decoration:none;margin-left:10px}h1,h2,h3,h4,h5,h6{color:#5e5e5e;font-weight:400}h1{font-size:3rem}.chapter h1{color:#599a3e;border-bottom:4px solid #f0f2f4;padding-bottom:1rem;margin-bottom:2rem}.page-list{margin-top:2rem}.page-item{margin:1rem 0;padding:1rem;border:1px solid #e0e0e0;border-radius:4px}.page-item h2{margin:0 0 .5rem}.page-item h2 a{color:#599a3e;text-decoration:none}.page-item h2 a:hover{text-decoration:underline}.page-item p{color:#666;margin:0}.breadcrumbs{margin-bottom:2rem;color:#999}.breadcrumbs a{color:#599a3e;text-decoration:none}.breadcrumbs a:hover{text-decoration:underline}@media(max-width:768px){#sidebar{transform:translateX(-300px);transition:transform .3s}#sidebar.open{transform:translateX(0)}#body{margin-left:0}#body .padding{padding:1rem 2rem}#sidebar-toggle-span{display:block;position:fixed;top:10px;left:10px;z-index:1001}#sidebar-toggle{background:#599a3e;color:#fff;padding:10px;border:none;border-radius:4px}}</style></head><body><nav id=sidebar><div id=header><a id=logo href=/><div style=text-align:center;padding:20px><h2 style=color:var(--MENU-SEARCH-BOX-color,#33a1ff);font-size:2rem;font-weight:700;margin:0>LEARN</h2><p style="color:var(--MENU-SEARCH-BOX-ICONS-color,#a1d2fd);font-size:.9rem;margin:5px 0 0">RDS Performance Insights</p></div></a></div><div class=searchbox><input type=search placeholder=Search... id=search-input></div><ul class=topics><li><a href=http://localhost:1313/><i class="fas fa-home"></i> Home</a></li><li><a href=/vi/introduction/><i class="fas fa-book"></i> 1. Giới Thiệu</a></li><li><a href=/vi/preparation/><i class="fas fa-book"></i> 2. Chuẩn Bị</a></li><li><a href=/vi/performance-baseline/><i class="fas fa-book"></i> 3. Thiết lập Đường cơ sở Hiệu suất</a></li><li><a href=/vi/performance-insights/><i class="fas fa-book"></i> Performance Insights</a></li><li><a href=/vi/monitoring-dashboard/><i class="fas fa-book"></i> 4. Bảng điều khiển Giám sát</a></li><li><a href=/vi/alerting-system/><i class="fas fa-book"></i> 5. Hệ thống Cảnh báo</a></li><li><a href=/vi/query-optimization/><i class="fas fa-book"></i> 6. Kỹ thuật Tối ưu hóa Truy vấn</a></li><li><a href=/vi/automated-tuning/><i class="fas fa-book"></i> 7. Đề xuất Điều chỉnh Tự động</a></li><li><a href=/vi/capacity-planning/><i class="fas fa-book"></i> 8. Lập kế hoạch Năng lực</a></li><li><a href=/vi/monitoring/><i class="fas fa-book"></i> 9. Giám sát & Cảnh báo</a></li><li class=active><a href=/vi/best-practices/><i class="fas fa-book"></i> 10. Dọn dẹp tài nguyên</a><ul></ul></li></ul><div class=language-switcher><a href=/vi/en><i class="fas fa-language"></i> English</a></div></nav><span id=sidebar-toggle-span><a href=# id=sidebar-toggle><i class="fas fa-bars"></i></a></span><section id=body><div id=overlay></div><div class=padding><div id=body-inner><div class=breadcrumbs><a href=http://localhost:1313/>Home</a>
+<span>> </span><a href=/vi/>RDS Performance Insights & Tối Ưu Hóa Truy Vấn</a>
+<span>> </span>10. Dọn dẹp tài nguyên</div><div class=chapter><h1>10. Dọn dẹp tài nguyên</h1><h3 id=chương-10>Chương 10</h3><h1 id=dọn-dẹp-tài-nguyên>Dọn dẹp tài nguyên</h1><p>Hướng dẫn chi tiết cách dọn dẹp và tối ưu hóa tài nguyên AWS để tiết kiệm chi phí.</p><h2 id=mục-tiêu>Mục tiêu</h2><p>Giảm thiểu chi phí phát sinh bằng cách dọn dẹp các tài nguyên không cần thiết và tối ưu hóa cấu hình hiện tại.</p><h2 id=1-dọn-dẹp-rds-resources>1. Dọn dẹp RDS Resources</h2><h3 id=xóa-rds-instances-không-sử-dụng>Xóa RDS Instances không sử dụng</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Liệt kê tất cả RDS instances</span>
+</span></span><span style=display:flex><span>aws rds describe-db-instances --query <span style=color:#e6db74>&#39;DBInstances[*].[DBInstanceIdentifier,DBInstanceStatus,Engine]&#39;</span> --output table
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Xóa RDS instance (tạo snapshot trước khi xóa)</span>
+</span></span><span style=display:flex><span>aws rds create-db-snapshot <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --db-instance-identifier mydb-instance <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --db-snapshot-identifier mydb-final-snapshot-<span style=color:#66d9ef>$(</span>date +%Y%m%d<span style=color:#66d9ef>)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Xóa RDS instance</span>
+</span></span><span style=display:flex><span>aws rds delete-db-instance <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --db-instance-identifier mydb-instance <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --final-db-snapshot-identifier mydb-final-snapshot-<span style=color:#66d9ef>$(</span>date +%Y%m%d<span style=color:#66d9ef>)</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --delete-automated-backups
+</span></span></code></pre></div><h3 id=xóa-read-replicas>Xóa Read Replicas</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Liệt kê Read Replicas</span>
+</span></span><span style=display:flex><span>aws rds describe-db-instances --query <span style=color:#e6db74>&#39;DBInstances[?ReadReplicaSourceDBInstanceIdentifier!=null].[DBInstanceIdentifier,ReadReplicaSourceDBInstanceIdentifier]&#39;</span> --output table
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Xóa Read Replica</span>
+</span></span><span style=display:flex><span>aws rds delete-db-instance <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --db-instance-identifier mydb-replica <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --skip-final-snapshot <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --delete-automated-backups
+</span></span></code></pre></div><h3 id=dọn-dẹp-snapshots-cũ>Dọn dẹp Snapshots cũ</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Liệt kê snapshots cũ hơn 30 ngày</span>
+</span></span><span style=display:flex><span>aws rds describe-db-snapshots <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --snapshot-type manual <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --query <span style=color:#e6db74>&#39;DBSnapshots[?SnapshotCreateTime&lt;=`2024-12-01`].[DBSnapshotIdentifier,SnapshotCreateTime]&#39;</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --output table
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Xóa snapshot cũ</span>
+</span></span><span style=display:flex><span>aws rds delete-db-snapshot --db-snapshot-identifier old-snapshot-name
+</span></span></code></pre></div><h2 id=2-dọn-dẹp-cloudwatch-resources>2. Dọn dẹp CloudWatch Resources</h2><h3 id=xóa-custom-dashboards>Xóa Custom Dashboards</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Liệt kê dashboards</span>
+</span></span><span style=display:flex><span>aws cloudwatch list-dashboards --output table
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Xóa dashboard</span>
+</span></span><span style=display:flex><span>aws cloudwatch delete-dashboards --dashboard-names <span style=color:#e6db74>&#34;RDS-Performance-Dashboard&#34;</span>
+</span></span></code></pre></div><h3 id=dọn-dẹp-cloudwatch-alarms>Dọn dẹp CloudWatch Alarms</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Liệt kê alarms</span>
+</span></span><span style=display:flex><span>aws cloudwatch describe-alarms --query <span style=color:#e6db74>&#39;MetricAlarms[*].[AlarmName,StateValue]&#39;</span> --output table
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Xóa alarm không cần thiết</span>
+</span></span><span style=display:flex><span>aws cloudwatch delete-alarms --alarm-names <span style=color:#e6db74>&#34;RDS-CPU-High&#34;</span> <span style=color:#e6db74>&#34;RDS-Memory-Low&#34;</span>
+</span></span></code></pre></div><h3 id=xóa-log-groups-cũ>Xóa Log Groups cũ</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Liệt kê log groups</span>
+</span></span><span style=display:flex><span>aws logs describe-log-groups --query <span style=color:#e6db74>&#39;logGroups[*].[logGroupName,creationTime]&#39;</span> --output table
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Xóa log group</span>
+</span></span><span style=display:flex><span>aws logs delete-log-group --log-group-name <span style=color:#e6db74>&#34;/aws/rds/instance/mydb/slowquery&#34;</span>
+</span></span></code></pre></div><h2 id=3-tối-ưu-hóa-performance-insights>3. Tối ưu hóa Performance Insights</h2><h3 id=giảm-retention-period>Giảm Retention Period</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Kiểm tra retention period hiện tại</span>
+</span></span><span style=display:flex><span>aws rds describe-db-instances <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --db-instance-identifier mydb-instance <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --query <span style=color:#e6db74>&#39;DBInstances[0].PerformanceInsightsRetentionPeriod&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Giảm retention period xuống 7 ngày (miễn phí)</span>
+</span></span><span style=display:flex><span>aws rds modify-db-instance <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --db-instance-identifier mydb-instance <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --performance-insights-retention-period <span style=color:#ae81ff>7</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --apply-immediately
+</span></span></code></pre></div><h2 id=4-dọn-dẹp-sns-và-lambda>4. Dọn dẹp SNS và Lambda</h2><h3 id=xóa-sns-topics-và-subscriptions>Xóa SNS Topics và Subscriptions</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Liệt kê SNS topics</span>
+</span></span><span style=display:flex><span>aws sns list-topics --output table
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Xóa subscription</span>
+</span></span><span style=display:flex><span>aws sns unsubscribe --subscription-arn <span style=color:#e6db74>&#34;arn:aws:sns:region:account:topic:subscription&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Xóa topic</span>
+</span></span><span style=display:flex><span>aws sns delete-topic --topic-arn <span style=color:#e6db74>&#34;arn:aws:sns:region:account:rds-alerts&#34;</span>
+</span></span></code></pre></div><h3 id=xóa-lambda-functions>Xóa Lambda Functions</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Liệt kê Lambda functions</span>
+</span></span><span style=display:flex><span>aws lambda list-functions --query <span style=color:#e6db74>&#39;Functions[*].[FunctionName,Runtime,LastModified]&#39;</span> --output table
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Xóa Lambda function</span>
+</span></span><span style=display:flex><span>aws lambda delete-function --function-name rds-alert-processor
+</span></span></code></pre></div><h2 id=5-tối-ưu-hóa-instance-types>5. Tối ưu hóa Instance Types</h2><h3 id=downgrade-instance-size>Downgrade Instance Size</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Kiểm tra utilization trước khi downgrade</span>
+</span></span><span style=display:flex><span>aws cloudwatch get-metric-statistics <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --namespace AWS/RDS <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --metric-name CPUUtilization <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --dimensions Name<span style=color:#f92672>=</span>DBInstanceIdentifier,Value<span style=color:#f92672>=</span>mydb-instance <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --start-time 2024-12-01T00:00:00Z <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --end-time 2024-12-31T23:59:59Z <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --period <span style=color:#ae81ff>3600</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --statistics Average
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Downgrade instance class nếu CPU &lt; 50%</span>
+</span></span><span style=display:flex><span>aws rds modify-db-instance <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --db-instance-identifier mydb-instance <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --db-instance-class db.t3.small <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --apply-immediately
+</span></span></code></pre></div><h2 id=6-dọn-dẹp-storage>6. Dọn dẹp Storage</h2><h3 id=giảm-allocated-storage>Giảm Allocated Storage</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Lưu ý: Không thể giảm allocated storage, chỉ có thể tối ưu hóa</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Thay vào đó, tạo instance mới với storage nhỏ hơn và migrate data</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Kiểm tra storage utilization</span>
+</span></span><span style=display:flex><span>aws cloudwatch get-metric-statistics <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --namespace AWS/RDS <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --metric-name FreeStorageSpace <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --dimensions Name<span style=color:#f92672>=</span>DBInstanceIdentifier,Value<span style=color:#f92672>=</span>mydb-instance <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --start-time 2024-12-01T00:00:00Z <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --end-time 2024-12-31T23:59:59Z <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --period <span style=color:#ae81ff>3600</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --statistics Average
+</span></span></code></pre></div><h3 id=tắt-multi-az-nếu-không-cần-thiết>Tắt Multi-AZ nếu không cần thiết</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Tắt Multi-AZ deployment</span>
+</span></span><span style=display:flex><span>aws rds modify-db-instance <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --db-instance-identifier mydb-instance <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --no-multi-az <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --apply-immediately
+</span></span></code></pre></div><h2 id=7-script-tự-động-dọn-dẹp>7. Script tự động dọn dẹp</h2><h3 id=bash-script-để-dọn-dẹp-hàng-loạt>Bash Script để dọn dẹp hàng loạt</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e>#!/bin/bash
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#75715e># cleanup-rds-resources.sh</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>echo <span style=color:#e6db74>&#34;=== Script Dọn dẹp Tài nguyên RDS ===&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 1. Xóa snapshots cũ hơn 30 ngày</span>
+</span></span><span style=display:flex><span>echo <span style=color:#e6db74>&#34;Đang dọn dẹp snapshots cũ...&#34;</span>
+</span></span><span style=display:flex><span>OLD_SNAPSHOTS<span style=color:#f92672>=</span><span style=color:#66d9ef>$(</span>aws rds describe-db-snapshots <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --snapshot-type manual <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --query <span style=color:#e6db74>&#39;DBSnapshots[?SnapshotCreateTime&lt;=`2024-11-01`].DBSnapshotIdentifier&#39;</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --output text<span style=color:#66d9ef>)</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>for</span> snapshot in $OLD_SNAPSHOTS; <span style=color:#66d9ef>do</span>
+</span></span><span style=display:flex><span>    echo <span style=color:#e6db74>&#34;Đang xóa snapshot: </span>$snapshot<span style=color:#e6db74>&#34;</span>
+</span></span><span style=display:flex><span>    aws rds delete-db-snapshot --db-snapshot-identifier $snapshot
+</span></span><span style=display:flex><span><span style=color:#66d9ef>done</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 2. Xóa unused alarms</span>
+</span></span><span style=display:flex><span>echo <span style=color:#e6db74>&#34;Đang dọn dẹp CloudWatch alarms...&#34;</span>
+</span></span><span style=display:flex><span>aws cloudwatch delete-alarms --alarm-names <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    <span style=color:#e6db74>&#34;RDS-CPU-High-Test&#34;</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    <span style=color:#e6db74>&#34;RDS-Memory-Low-Test&#34;</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    <span style=color:#e6db74>&#34;RDS-Connection-High-Test&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 3. Giảm Performance Insights retention</span>
+</span></span><span style=display:flex><span>echo <span style=color:#e6db74>&#34;Đang tối ưu hóa Performance Insights retention...&#34;</span>
+</span></span><span style=display:flex><span>aws rds modify-db-instance <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --db-instance-identifier mydb-instance <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --performance-insights-retention-period <span style=color:#ae81ff>7</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --apply-immediately
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>echo <span style=color:#e6db74>&#34;Dọn dẹp hoàn tất!&#34;</span>
+</span></span></code></pre></div><h2 id=8-giám-sát-chi-phí>8. Giám sát Chi phí</h2><h3 id=thiết-lập-budget-alerts>Thiết lập Budget Alerts</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Tạo budget để theo dõi chi phí RDS</span>
+</span></span><span style=display:flex><span>aws budgets create-budget <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --account-id <span style=color:#ae81ff>123456789012</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    --budget <span style=color:#e6db74>&#39;{
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &#34;BudgetName&#34;: &#34;RDS-Monthly-Budget&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &#34;BudgetLimit&#34;: {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            &#34;Amount&#34;: &#34;100&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            &#34;Unit&#34;: &#34;USD&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        },
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &#34;TimeUnit&#34;: &#34;MONTHLY&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &#34;BudgetType&#34;: &#34;COST&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &#34;CostFilters&#34;: {
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>            &#34;Service&#34;: [&#34;Amazon Relational Database Service&#34;]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        }
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    }&#39;</span>
+</span></span></code></pre></div><h2 id=9-best-practices-cho-tối-ưu-hóa-chi-phí>9. Best Practices cho Tối ưu hóa Chi phí</h2><h3 id=lịch-trình-tự-động>Lịch trình tự động</h3><ul><li><strong>Tắt Dev/Test instances</strong> vào cuối tuần</li><li><strong>Automated snapshots cleanup</strong> hàng tuần</li><li><strong>Performance Insights retention</strong> review hàng tháng</li><li><strong>Instance right-sizing</strong> review hàng quý</li></ul><h3 id=checklist-dọn-dẹp-định-kỳ>Checklist dọn dẹp định kỳ</h3><ul><li><input disabled type=checkbox> Xóa snapshots cũ hơn 30 ngày</li><li><input disabled type=checkbox> Review và xóa unused alarms</li><li><input disabled type=checkbox> Kiểm tra instance utilization</li><li><input disabled type=checkbox> Tối ưu hóa storage allocation</li><li><input disabled type=checkbox> Review Multi-AZ necessity</li><li><input disabled type=checkbox> Cleanup unused log groups</li><li><input disabled type=checkbox> Review Performance Insights retention</li></ul><h2 id=10-ước-tính-tiết-kiệm-chi-phí>10. Ước tính tiết kiệm chi phí</h2><h3 id=potential-savings>Potential Savings</h3><table><thead><tr><th>Hành động</th><th>Tiết kiệm ước tính/tháng</th></tr></thead><tbody><tr><td>Downgrade db.m5.large → db.t3.medium</td><td>~$50-80</td></tr><tr><td>Tắt Multi-AZ (nếu không cần)</td><td>~50% chi phí instance</td></tr><tr><td>Giảm Performance Insights retention</td><td>~$10-20</td></tr><tr><td>Xóa unused Read Replicas</td><td>~$100-200</td></tr><tr><td>Cleanup old snapshots</td><td>~$5-15</td></tr></tbody></table><h3 id=cost-calculator>Cost Calculator</h3><p>Sử dụng <a href=https://calculator.aws>AWS Pricing Calculator</a> để ước tính chính xác chi phí sau khi tối ưu hóa.</p></div></div></div></section><script>document.getElementById("sidebar-toggle").addEventListener("click",function(e){e.preventDefault(),document.getElementById("sidebar").classList.toggle("open")})</script></body></html>

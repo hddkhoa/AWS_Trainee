@@ -15,16 +15,16 @@ Dưới đây là mô hình triển khai bạn có thể tham khảo.
 Các bước sau đây sẽ giúp bạn khởi tạo thiết lập giám sát RDS Performance Insights mới. Nếu bạn chưa biết gì về AWS RDS, chúng tôi khuyến khích bạn tìm hiểu thêm bằng cách theo dõi [tài liệu tuyệt vời này dành cho người mới bắt đầu](https://docs.aws.amazon.com/rds/).
 
 ## Nội dung
-1. Giới thiệu
-2. Chuẩn bị
-3. Thiết lập Baseline Hiệu suất
-4. Performance Insights
-5. Dashboard Giám sát
-6. Hệ thống Cảnh báo
-7. Khuyến nghị Tự động Tối ưu hóa
-8. Lập kế hoạch Dung lượng
-9. Giám sát & Cảnh báo
-10. Dọn dẹp Tài nguyên
+1. [Giới thiệu](introduction/) - Hiểu các nguyên tắc cơ bản của Performance Insights
+2. [Chuẩn bị](preparation/) - Điều kiện tiên quyết và thiết lập môi trường
+3. [Thiết lập Baseline Hiệu suất](performance-baseline/) - Thiết lập các chỉ số baseline
+4. [Performance Insights](performance-insights/) - Tìm hiểu sâu về các tính năng Performance Insights
+5. [Dashboard Giám sát](monitoring-dashboard/) - Tạo dashboard toàn diện
+6. [Hệ thống Cảnh báo](alerting-system/) - Thiết lập cảnh báo và thông báo
+7. [Khuyến nghị Tự động Tối ưu hóa](automated-tuning/) - Triển khai tối ưu hóa tự động
+8. [Lập kế hoạch Dung lượng](capacity-planning/) - Lập kế hoạch cho sự phát triển tương lai
+9. [Giám sát & Cảnh báo](monitoring/) - Chiến lược giám sát liên tục
+10. [Dọn dẹp Tài nguyên](best-practices/) - Thực hành tốt nhất và quy trình dọn dẹp
 
 Tài liệu tham khảo [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html)
 

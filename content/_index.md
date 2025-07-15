@@ -15,16 +15,16 @@ Below is the deployment model you can refer to.
 The following steps are here to help you initialize your new RDS Performance Insights monitoring setup. If you don't know AWS RDS at all, we strongly suggest you learn more about it by following this [great documentation for beginners](https://docs.aws.amazon.com/rds/).
 
 ## Contents
-1. Introduction
-2. Preparation
-3. Performance Baseline Establishment
-4. Performance Insights
-5. Monitoring Dashboard
-6. Alerting System
-7. Automated Tuning Recommendations
-8. Capacity Planning
-9. Monitoring & Alert
-10. Resource Cleanup
+1. [Introduction](introduction/) - Understanding Performance Insights fundamentals
+2. [Preparation](preparation/) - Prerequisites and environment setup
+3. [Performance Baseline Establishment](performance-baseline/) - Establishing baseline metrics
+4. [Performance Insights](performance-insights/) - Deep dive into Performance Insights features
+5. [Monitoring Dashboard](monitoring-dashboard/) - Creating comprehensive dashboards
+6. [Alerting System](alerting-system/) - Setting up alerts and notifications
+7. [Automated Tuning Recommendations](automated-tuning/) - Implementing automated optimizations
+8. [Capacity Planning](capacity-planning/) - Planning for future growth
+9. [Monitoring & Alert](monitoring/) - Ongoing monitoring strategies
+10. [Resource Cleanup](best-practices/) - Best practices and cleanup procedures
 
 Reference [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html)
 

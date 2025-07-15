@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tối ưu hóa Query với Performance Insights - RDS Performance Insights &amp; Tối Ưu Hóa Truy Vấn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    
+    
+    <link rel="stylesheet" href="/css/theme-blue.css">
+    
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif; 
+            font-weight: 300; 
+            line-height: 1.6; 
+            font-size: 18px;
+            color: var(--MAIN-TEXT-color, #323232);
+        }
+        
+        #sidebar { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 300px; 
+            height: 100vh; 
+            background: var(--MENU-SECTIONS-BG-color, #252c31); 
+            color: #ccc; 
+            overflow-y: auto; 
+            z-index: 1000; 
+        }
+        
+        #sidebar #header { 
+            padding: 2rem 1rem; 
+            text-align: center; 
+            background: var(--MENU-HEADER-BG-color, #1C90F3);
+            border-bottom: 1px solid var(--MENU-HEADER-BORDER-color, #33a1ff);
+        }
+        
+        #sidebar #header .baseurl { 
+            color: var(--MENU-SEARCH-BOX-color, #33a1ff); 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+        }
+        
+        #sidebar .searchbox { 
+            padding: 10px; 
+            background: var(--MENU-SEARCH-BG-color, #167ad0);
+            border-bottom: 1px solid var(--MENU-SEARCH-BOX-color, #33a1ff);
+        }
+        
+        #sidebar .searchbox input { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid var(--MENU-SEARCH-BOX-color, #33a1ff); 
+            background: rgba(255,255,255,0.1); 
+            color: var(--MENU-SEARCH-BOX-ICONS-color, #a1d2fd); 
+            border-radius: 4px; 
+        }
+        
+        #sidebar-toggle-span { display: none; }
+        
+        #body { margin-left: 300px; }
+        #body .padding { padding: 3rem 6rem; }
+        
+         
+        #sidebar ul { list-style: none; padding: 0; margin: 0; }
+        #sidebar ul li a { 
+            display: block; 
+            padding: 10px 20px; 
+            color: var(--MENU-SECTIONS-LINK-color, #ccc); 
+            text-decoration: none; 
+            border-left: 4px solid transparent; 
+        }
+        #sidebar ul li a:hover { 
+            background: var(--MENU-SECTIONS-ACTIVE-BG-color, #20272b); 
+            border-left-color: var(--MAIN-LINK-color, #1C90F3);
+            color: var(--MENU-SECTIONS-LINK-HOVER-color, #e6e6e6);
+        }
+        #sidebar ul li.active > a { 
+            background: var(--MENU-SECTION-ACTIVE-CATEGORY-BG-color, #fff); 
+            border-left-color: var(--MAIN-LINK-color, #1C90F3); 
+            color: var(--MENU-SECTION-ACTIVE-CATEGORY-color, #777); 
+        }
+        #sidebar ul ul { padding-left: 20px; }
+        #sidebar ul ul li a { padding: 8px 20px; font-size: 0.9em; }
+        
+         
+        .language-switcher { position: relative; padding: 20px; }
+        .language-switcher a { 
+            color: var(--MAIN-LINK-color, #1C90F3); 
+            text-decoration: none; 
+            margin-left: 10px; 
+        }
+        .language-switcher a:hover { 
+            color: var(--MAIN-LINK-HOVER-color, #167ad0); 
+        }
+        
+         
+        h1, h2, h3, h4, h5, h6 { 
+            color: var(--MAIN-TITLES-TEXT-color, #5e5e5e); 
+            font-weight: 400; 
+        }
+        h1 { font-size: 3rem; }
+        h2 { font-size: 2.5rem; }
+        h3 { font-size: 2rem; }
+        
+         
+        a { color: var(--MAIN-LINK-color, #1C90F3); }
+        a:hover { color: var(--MAIN-LINK-HOVER-color, #167ad0); }
+        
+         
+        pre { background: #f8f8f8; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+        code { background: #f8f8f8; padding: 0.2rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+        
+         
+        .breadcrumbs { margin-bottom: 2rem; color: #999; }
+        .breadcrumbs a { 
+            color: var(--MAIN-LINK-color, #1C90F3); 
+            text-decoration: none; 
+        }
+        .breadcrumbs a:hover { 
+            color: var(--MAIN-LINK-HOVER-color, #167ad0);
+            text-decoration: underline; 
+        }
+        
+         
+        @media (max-width: 768px) {
+            #sidebar { transform: translateX(-300px); transition: transform 0.3s; }
+            #sidebar.open { transform: translateX(0); }
+            #body { margin-left: 0; }
+            #body .padding { padding: 1rem 2rem; }
+            #sidebar-toggle-span { display: block; position: fixed; top: 10px; left: 10px; z-index: 1001; }
+            #sidebar-toggle { background: var(--MAIN-LINK-color, #1C90F3); color: white; padding: 10px; border: none; border-radius: 4px; }
+        }
+    </style>
+</head>
+<body>
+    <nav id="sidebar">
+        <div id="header">
+            <a id="logo" href='/'>
+  <div style="text-align: center; padding: 20px;">
+    <h2 style="color: var(--MENU-SEARCH-BOX-color, #33a1ff); font-size: 2rem; font-weight: bold; margin: 0;">
+      LEARN
+    </h2>
+    <p style="color: var(--MENU-SEARCH-BOX-ICONS-color, #a1d2fd); font-size: 0.9rem; margin: 5px 0 0 0;">
+      RDS Performance Insights
+    </p>
+  </div>
+</a>
+
+        </div>
+        
+        <div class="searchbox">
+            <input type="search" placeholder="Search..." id="search-input">
+        </div>
+        
+        <ul class="topics">
+            <li><a href="http://localhost:1313/"><i class="fas fa-home"></i> Home</a></li>
+            
+            <li class="">
+                <a href="/vi/introduction/"><i class="fas fa-book"></i> 1. Giới Thiệu</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/preparation/"><i class="fas fa-book"></i> 2. Chuẩn Bị</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/performance-baseline/"><i class="fas fa-book"></i> 3. Thiết lập Đường cơ sở Hiệu suất</a>
+                
+            </li>
+            
+            <li class="active">
+                <a href="/vi/performance-insights/"><i class="fas fa-book"></i> Performance Insights</a>
+                
+                <ul>
+                    
+                    <li class="">
+                        <a href="/vi/performance-insights/overview/">Tổng quan về Performance Insights</a>
+                    </li>
+                    
+                    <li class="">
+                        <a href="/vi/performance-insights/setup/">Thiết lập RDS Instance với Performance Insights</a>
+                    </li>
+                    
+                    <li class="">
+                        <a href="/vi/performance-insights/dashboard/">Hiểu về Dashboard Performance Insights</a>
+                    </li>
+                    
+                    <li class="active">
+                        <a href="/vi/performance-insights/optimization/">Tối ưu hóa Query với Performance Insights</a>
+                    </li>
+                    
+                </ul>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/monitoring-dashboard/"><i class="fas fa-book"></i> 4. Bảng điều khiển Giám sát</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/alerting-system/"><i class="fas fa-book"></i> 5. Hệ thống Cảnh báo</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/query-optimization/"><i class="fas fa-book"></i> 6. Kỹ thuật Tối ưu hóa Truy vấn</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/automated-tuning/"><i class="fas fa-book"></i> 7. Đề xuất Điều chỉnh Tự động</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/capacity-planning/"><i class="fas fa-book"></i> 8. Lập kế hoạch Năng lực</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/monitoring/"><i class="fas fa-book"></i> 9. Giám sát &amp; Cảnh báo</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/best-practices/"><i class="fas fa-book"></i> 10. Dọn dẹp tài nguyên</a>
+                
+            </li>
+            
+        </ul>
+        
+        <div class="language-switcher">
+            
+            
+            <a href="/vi/en"><i class="fas fa-language"></i> English</a>
+            
+            
+            
+            
+        </div>
+    </nav>
+
+    <span id="sidebar-toggle-span">
+        <a href="#" id="sidebar-toggle"><i class="fas fa-bars"></i></a>
+    </span>
+
+    <section id="body">
+        <div id="overlay"></div>
+        <div class="padding">
+            <div id="body-inner">
+                <div class="breadcrumbs">
+                    <a href="http://localhost:1313/">Home</a>
+                    
+                    <span> > </span><a href="/vi/">RDS Performance Insights &amp; Query Optimization</a>
+                    
+                    <span> > </span><a href="/vi/performance-insights/">Performance Insights</a>
+                    
+                    <span> > </span>Tối ưu hóa Query với Performance Insights
+                </div>
+                
+                <h1>Tối ưu hóa Query với Performance Insights</h1>
+                <h2 id="quy-trình-tối-ưu-hóa-query">Quy trình Tối ưu hóa Query</h2>
+<p>Sử dụng Performance Insights để tối ưu hóa query theo cách tiếp cận có hệ thống:</p>
+<ol>
+<li><strong>Xác định các query có vấn đề</strong> sử dụng Top SQL</li>
+<li><strong>Phân tích patterns thực thi query</strong> và wait events</li>
+<li><strong>Điều tra execution plans của query</strong></li>
+<li><strong>Áp dụng kỹ thuật tối ưu hóa</strong></li>
+<li><strong>Giám sát kết quả tối ưu hóa</strong></li>
+</ol>
+<h2 id="xác-định-queries-có-vấn-đề">Xác định Queries có Vấn đề</h2>
+<h3 id="sử-dụng-panel-top-sql">Sử dụng Panel Top SQL</h3>
+<p>Panel Top SQL hiển thị các query được xếp hạng theo đóng góp vào database load:</p>
+<pre tabindex="0"><code>Top SQL (theo Load)
+┌─────────────────────────────────────────────────────────┐
+│ SQL ID: 0x1A2B3C4D5E6F | Load: 3.2 AAS (40%)          │
+│ SELECT * FROM orders WHERE order_date &gt; ?               │
+│ Thực thi: 150/phút | Độ trễ TB: 1.8s                   │
+├─────────────────────────────────────────────────────────┤
+│ SQL ID: 0x2B3C4D5E6F7A | Load: 2.1 AAS (26%)          │
+│ UPDATE inventory SET quantity = ? WHERE product_id = ?  │
+│ Thực thi: 80/phút | Độ trễ TB: 2.3s                    │
+└─────────────────────────────────────────────────────────┘
+</code></pre><h3 id="metrics-chính-cần-tập-trung">Metrics Chính cần Tập trung</h3>
+<ol>
+<li><strong>Đóng góp Load Cao:</strong> Queries đóng góp &gt;10% tổng load</li>
+<li><strong>Tần suất Thực thi Cao:</strong> Queries chạy &gt;100 lần/phút</li>
+<li><strong>Độ trễ Trung bình Cao:</strong> Queries mất &gt;1 giây trung bình</li>
+<li><strong>Xu hướng Tăng:</strong> Queries có load tăng theo thời gian</li>
+</ol>
+<h2 id="kỹ-thuật-phân-tích-query">Kỹ thuật Phân tích Query</h2>
+<h3 id="1-phân-tích-thống-kê-thực-thi">1. Phân tích Thống kê Thực thi</h3>
+<p>Với mỗi query có vấn đề, phân tích:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Ví dụ query có vấn đề
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> o.<span style="color:#f92672">*</span>, <span style="color:#66d9ef">c</span>.name, <span style="color:#66d9ef">c</span>.email 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> orders o 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">JOIN</span> customers <span style="color:#66d9ef">c</span> <span style="color:#66d9ef">ON</span> o.customer_id <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>.id 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> o.order_date <span style="color:#f92672">&gt;=</span> <span style="color:#e6db74">&#39;2024-01-01&#39;</span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> o.order_date <span style="color:#66d9ef">DESC</span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">100</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Metrics Performance Insights:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">-</span> <span style="color:#66d9ef">Load</span>: <span style="color:#ae81ff">2</span>.<span style="color:#ae81ff">5</span> AAS (<span style="color:#ae81ff">31</span><span style="color:#f92672">%</span> tổng)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">-</span> Thực thi: <span style="color:#ae81ff">200</span><span style="color:#f92672">/</span>phút
+</span></span><span style="display:flex;"><span><span style="color:#f92672">-</span> <span style="color:#960050;background-color:#1e0010">Độ</span> trễ TB: <span style="color:#ae81ff">1</span>.<span style="color:#ae81ff">2</span>s
+</span></span><span style="display:flex;"><span><span style="color:#f92672">-</span> <span style="color:#66d9ef">Rows</span> Examined: <span style="color:#ae81ff">500</span>K
+</span></span><span style="display:flex;"><span><span style="color:#f92672">-</span> <span style="color:#66d9ef">Rows</span> Returned: <span style="color:#ae81ff">100</span>
+</span></span></code></pre></div><p><strong>Phân tích:</strong></p>
+<ul>
+<li>Tỷ lệ rows examined vs returned cao (5000:1)</li>
+<li>Gợi ý thiếu hoặc indexes không hiệu quả</li>
+<li>ORDER BY không có index gây filesort</li>
+</ul>
+<h3 id="2-phân-tích-wait-events">2. Phân tích Wait Events</h3>
+<p>Kiểm tra query đang chờ gì:</p>
+<pre tabindex="0"><code>Wait Events cho SQL ID 0x1A2B3C4D5E6F:
+├── io/table/sql/handler: 60% (I/O operations)
+├── filesort: 25% (Sorting không có index)
+├── CPU: 10% (Xử lý)
+└── synch/mutex/innodb: 5% (Lock contention)
+</code></pre><p><strong>Diễn giải:</strong></p>
+<ul>
+<li>I/O waits cao gợi ý thiếu indexes</li>
+<li>Filesort waits chỉ ra cần tối ưu ORDER BY</li>
+<li>CPU thấp cho thấy không bị computation-bound</li>
+</ul>
+<h2 id="kỹ-thuật-tối-ưu-hóa-phổ-biến">Kỹ thuật Tối ưu hóa Phổ biến</h2>
+<h3 id="1-tối-ưu-hóa-index">1. Tối ưu hóa Index</h3>
+<h4 id="phát-hiện-index-thiếu">Phát hiện Index Thiếu</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Trước tối ưu hóa
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> orders 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> order_date <span style="color:#f92672">&gt;=</span> <span style="color:#e6db74">&#39;2024-01-01&#39;</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">AND</span> status <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;pending&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Performance Insights hiển thị:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- - High io/table/sql/handler waits
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- - Rows examined: 1M, Rows returned: 1K
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Thêm composite index
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">INDEX</span> idx_orders_date_status 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ON</span> orders(order_date, status);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Sau tối ưu hóa:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- - Rows examined: 1K, Rows returned: 1K
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- - Độ trễ giảm từ 2.1s xuống 0.05s
+</span></span></span></code></pre></div><h4 id="triển-khai-covering-index">Triển khai Covering Index</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Các cột được truy cập thường xuyên
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> order_id, customer_id, order_date, total_amount 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> orders 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> status <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;completed&#39;</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">AND</span> order_date <span style="color:#f92672">&gt;=</span> <span style="color:#e6db74">&#39;2024-01-01&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Tạo covering index
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">INDEX</span> idx_orders_covering 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ON</span> orders(status, order_date, order_id, customer_id, total_amount);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Lợi ích:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- - Loại bỏ table lookups
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- - Giảm I/O operations
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- - Cải thiện hiệu suất query 70%
+</span></span></span></code></pre></div><h3 id="2-viết-lại-query">2. Viết lại Query</h3>
+<h4 id="tránh-select-">Tránh SELECT *</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Query có vấn đề
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> products p 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">JOIN</span> categories <span style="color:#66d9ef">c</span> <span style="color:#66d9ef">ON</span> p.category_id <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>.id 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> p.price <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">100</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Query được tối ưu
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> p.id, p.name, p.price, <span style="color:#66d9ef">c</span>.name <span style="color:#66d9ef">as</span> category_name 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> products p 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">JOIN</span> categories <span style="color:#66d9ef">c</span> <span style="color:#66d9ef">ON</span> p.category_id <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>.id 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> p.price <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">100</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Cải thiện hiệu suất:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- - Giảm data transfer
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- - Sử dụng memory thấp hơn
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- - Truyền tải mạng nhanh hơn
+</span></span></span></code></pre></div><h4 id="tối-ưu-hóa-joins">Tối ưu hóa JOINs</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Thứ tự JOIN không hiệu quả
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> o.order_id, <span style="color:#66d9ef">c</span>.name, p.product_name 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> orders o 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">JOIN</span> order_items oi <span style="color:#66d9ef">ON</span> o.order_id <span style="color:#f92672">=</span> oi.order_id 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">JOIN</span> products p <span style="color:#66d9ef">ON</span> oi.product_id <span style="color:#f92672">=</span> p.product_id 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">JOIN</span> customers <span style="color:#66d9ef">c</span> <span style="color:#66d9ef">ON</span> o.customer_id <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>.customer_id 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> o.order_date <span style="color:#f92672">&gt;=</span> <span style="color:#e6db74">&#39;2024-01-01&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Tối ưu với thứ tự JOIN và điều kiện phù hợp
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> o.order_id, <span style="color:#66d9ef">c</span>.name, p.product_name 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> orders o 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">JOIN</span> customers <span style="color:#66d9ef">c</span> <span style="color:#66d9ef">ON</span> o.customer_id <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>.customer_id 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">JOIN</span> order_items oi <span style="color:#66d9ef">ON</span> o.order_id <span style="color:#f92672">=</span> oi.order_id 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">JOIN</span> products p <span style="color:#66d9ef">ON</span> oi.product_id <span style="color:#f92672">=</span> p.product_id 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> o.order_date <span style="color:#f92672">&gt;=</span> <span style="color:#e6db74">&#39;2024-01-01&#39;</span> 
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">AND</span> o.status <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;completed&#39;</span>;
+</span></span></code></pre></div><h3 id="3-tối-ưu-hóa-pagination">3. Tối ưu hóa Pagination</h3>
+<h4 id="offset-pagination-không-hiệu-quả">OFFSET Pagination Không hiệu quả</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Có vấn đề với offset lớn
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> orders 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> order_date <span style="color:#66d9ef">DESC</span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">20</span> <span style="color:#66d9ef">OFFSET</span> <span style="color:#ae81ff">10000</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Performance Insights hiển thị:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- - High filesort waits
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- - Độ trễ tăng với offset lớn hơn
+</span></span></span></code></pre></div><h4 id="cursor-based-pagination">Cursor-based Pagination</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Cách tiếp cận cursor-based hiệu quả
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> orders 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> order_date <span style="color:#f92672">&lt;</span> <span style="color:#e6db74">&#39;2024-01-15 10:30:00&#39;</span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> order_date <span style="color:#66d9ef">DESC</span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">LIMIT</span> <span style="color:#ae81ff">20</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Lợi ích:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- - Hiệu suất ổn định bất kể trang nào
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- - Sử dụng index hiệu quả
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">-- - Loại bỏ filesort operations
+</span></span></span></code></pre></div><h2 id="tối-ưu-hóa-theo-database-cụ-thể">Tối ưu hóa Theo Database Cụ thể</h2>
+<h3 id="tối-ưu-hóa-mysql">Tối ưu hóa MySQL</h3>
+<h4 id="cấu-hình-innodb">Cấu hình InnoDB</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Kiểm tra cài đặt hiện tại
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SHOW</span> VARIABLES <span style="color:#66d9ef">LIKE</span> <span style="color:#e6db74">&#39;innodb_buffer_pool_size&#39;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SHOW</span> VARIABLES <span style="color:#66d9ef">LIKE</span> <span style="color:#e6db74">&#39;innodb_log_file_size&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Tối ưu cho workload của bạn
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">GLOBAL</span> innodb_buffer_pool_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">1073741824</span>; <span style="color:#75715e">-- 1GB
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">GLOBAL</span> innodb_log_buffer_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">16777216</span>;    <span style="color:#75715e">-- 16MB
+</span></span></span></code></pre></div><h4 id="query-cache-mysql-57-và-cũ-hơn">Query Cache (MySQL 5.7 và cũ hơn)</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Bật query cache cho read-heavy workloads
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">GLOBAL</span> query_cache_type <span style="color:#f92672">=</span> <span style="color:#66d9ef">ON</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">GLOBAL</span> query_cache_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">268435456</span>; <span style="color:#75715e">-- 256MB
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Giám sát hiệu quả cache
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SHOW</span> STATUS <span style="color:#66d9ef">LIKE</span> <span style="color:#e6db74">&#39;Qcache%&#39;</span>;
+</span></span></code></pre></div><h3 id="tối-ưu-hóa-postgresql">Tối ưu hóa PostgreSQL</h3>
+<h4 id="tuning-cấu-hình">Tuning Cấu hình</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Tối ưu shared_buffers
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">ALTER</span> <span style="color:#66d9ef">SYSTEM</span> <span style="color:#66d9ef">SET</span> shared_buffers <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;256MB&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Tối ưu work_mem cho sorting/hashing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">ALTER</span> <span style="color:#66d9ef">SYSTEM</span> <span style="color:#66d9ef">SET</span> work_mem <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;4MB&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Tối ưu effective_cache_size
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">ALTER</span> <span style="color:#66d9ef">SYSTEM</span> <span style="color:#66d9ef">SET</span> effective_cache_size <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1GB&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Reload cấu hình
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> pg_reload_conf();
+</span></span></code></pre></div><h4 id="statistics-và-vacuum">Statistics và Vacuum</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Cập nhật table statistics
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">ANALYZE</span> orders;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Vacuum để reclaim space
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">VACUUM</span> <span style="color:#66d9ef">ANALYZE</span> orders;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Cấu hình auto-vacuum
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">ALTER</span> <span style="color:#66d9ef">SYSTEM</span> <span style="color:#66d9ef">SET</span> autovacuum <span style="color:#f92672">=</span> <span style="color:#66d9ef">on</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ALTER</span> <span style="color:#66d9ef">SYSTEM</span> <span style="color:#66d9ef">SET</span> autovacuum_vacuum_scale_factor <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">1</span>;
+</span></span></code></pre></div><h2 id="giám-sát-kết-quả-tối-ưu-hóa">Giám sát Kết quả Tối ưu hóa</h2>
+<h3 id="so-sánh-trước-và-sau">So sánh Trước và Sau</h3>
+<p>Theo dõi các metrics này trong Performance Insights:</p>
+<pre tabindex="0"><code>Kết quả Tối ưu hóa Query:
+┌─────────────────────────────────────────────────────────┐
+│                    TRƯỚC     │    SAU     │ CẢI THIỆN   │
+├─────────────────────────────────────────────────────────┤
+│ Load (AAS)         │  2.5    │    0.3     │    -88%     │
+│ Độ trễ TB          │  1.8s   │    0.2s    │    -89%     │
+│ Thực thi/phút      │  150    │    150     │     0%      │
+│ Rows Examined      │  500K   │    1K      │    -99.8%   │
+│ CPU Wait %         │  15%    │    60%     │   Thay đổi  │
+│ I/O Wait %         │  70%    │    25%     │   Giảm      │
+└─────────────────────────────────────────────────────────┘
+</code></pre><h3 id="giám-sát-dài-hạn">Giám sát Dài hạn</h3>
+<p>Thiết lập giám sát cho:</p>
+<ol>
+<li>
+<p><strong>Xu hướng Hiệu suất Query</strong></p>
+<ul>
+<li>Theo dõi độ trễ theo thời gian</li>
+<li>Giám sát thay đổi tần suất thực thi</li>
+<li>Theo dõi performance regressions</li>
+</ul>
+</li>
+<li>
+<p><strong>Sử dụng Tài nguyên</strong></p>
+<ul>
+<li>Patterns sử dụng CPU</li>
+<li>Xu hướng I/O operations</li>
+<li>Sử dụng memory</li>
+</ul>
+</li>
+<li>
+<p><strong>Thay đổi Wait Events</strong></p>
+<ul>
+<li>Chuyển từ I/O sang CPU waits (tốt)</li>
+<li>Xuất hiện wait events mới</li>
+<li>Patterns lock contention</li>
+</ul>
+</li>
+</ol>
+<h2 id="workflow-tối-ưu-hóa">Workflow Tối ưu hóa</h2>
+<h3 id="1-giai-đoạn-xác-định">1. Giai đoạn Xác định</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Sử dụng Performance Insights để xác định top queries</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Tập trung vào queries có:</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># - Load &gt; 10% tổng</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># - Độ trễ &gt; 1 giây</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># - Tần suất thực thi cao</span>
+</span></span></code></pre></div><h3 id="2-giai-đoạn-phân-tích">2. Giai đoạn Phân tích</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Lấy query execution plan
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">EXPLAIN</span> (<span style="color:#66d9ef">ANALYZE</span>, BUFFERS) 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> orders <span style="color:#66d9ef">WHERE</span> order_date <span style="color:#f92672">&gt;</span> <span style="color:#e6db74">&#39;2024-01-01&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Kiểm tra sử dụng index
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SHOW</span> <span style="color:#66d9ef">INDEX</span> <span style="color:#66d9ef">FROM</span> orders;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Phân tích table statistics
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SHOW</span> <span style="color:#66d9ef">TABLE</span> STATUS <span style="color:#66d9ef">LIKE</span> <span style="color:#e6db74">&#39;orders&#39;</span>;
+</span></span></code></pre></div><h3 id="3-giai-đoạn-tối-ưu-hóa">3. Giai đoạn Tối ưu hóa</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Áp dụng tối ưu hóa
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">INDEX</span> idx_orders_date <span style="color:#66d9ef">ON</span> orders(order_date);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Viết lại query nếu cần
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> order_id, customer_id, total_amount 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> orders 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> order_date <span style="color:#f92672">&gt;</span> <span style="color:#e6db74">&#39;2024-01-01&#39;</span>;
+</span></span></code></pre></div><h3 id="4-giai-đoạn-validation">4. Giai đoạn Validation</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Giám sát trong Performance Insights cho:</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># - Giảm query load</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># - Cải thiện độ trễ</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># - Thay đổi wait event patterns</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># - Hiệu suất database tổng thể</span>
+</span></span></code></pre></div><h2 id="best-practices">Best Practices</h2>
+<h3 id="1-cách-tiếp-cận-có-hệ-thống">1. Cách tiếp cận Có hệ thống</h3>
+<ul>
+<li>Luôn đo lường trước khi tối ưu</li>
+<li>Tập trung vào queries có impact cao nhất trước</li>
+<li>Test tối ưu hóa trong staging environment</li>
+<li>Giám sát kết quả theo thời gian</li>
+</ul>
+<h3 id="2-chiến-lược-index">2. Chiến lược Index</h3>
+<ul>
+<li>Tạo indexes dựa trên query patterns</li>
+<li>Tránh over-indexing (ảnh hưởng writes)</li>
+<li>Sử dụng composite indexes hiệu quả</li>
+<li>Bảo trì index thường xuyên</li>
+</ul>
+<h3 id="3-thiết-kế-query">3. Thiết kế Query</h3>
+<ul>
+<li>Chỉ select các cột cần thiết</li>
+<li>Sử dụng WHERE clauses phù hợp</li>
+<li>Tối ưu JOIN conditions</li>
+<li>Cân nhắc query caching</li>
+</ul>
+<h3 id="4-giám-sát-liên-tục">4. Giám sát Liên tục</h3>
+<ul>
+<li>Review Performance Insights thường xuyên</li>
+<li>Thiết lập alerts cho performance degradation</li>
+<li>Theo dõi kết quả tối ưu hóa</li>
+<li>Lập kế hoạch cho capacity growth</li>
+</ul>
+<h2 id="lỗi-phổ-biến">Lỗi Phổ biến</h2>
+<h3 id="1-over-optimization">1. Over-Optimization</h3>
+<ul>
+<li>Thêm quá nhiều indexes</li>
+<li>Tối ưu hóa sớm</li>
+<li>Bỏ qua impact đến write performance</li>
+</ul>
+<h3 id="2-phân-tích-không-đầy-đủ">2. Phân tích Không đầy đủ</h3>
+<ul>
+<li>Chỉ tập trung vào individual queries</li>
+<li>Bỏ qua overall system impact</li>
+<li>Không cân nhắc concurrent workloads</li>
+</ul>
+<h3 id="3-thiếu-giám-sát">3. Thiếu Giám sát</h3>
+<ul>
+<li>Không theo dõi kết quả tối ưu hóa</li>
+<li>Bỏ lỡ performance regressions</li>
+<li>Thiết lập alerting không đầy đủ</li>
+</ul>
+<h2 id="bước-tiếp-theo">Bước tiếp theo</h2>
+<ol>
+<li><strong><a href="../alerting/">Performance Alerting</a></strong> - Thiết lập performance alerts</li>
+<li><strong><a href="/vi/capacity-planning/">Capacity Planning</a></strong> - Lập kế hoạch cho tăng trưởng tương lai</li>
+<li><strong><a href="/vi/best-practices/">Best Practices</a></strong> - Tuân theo optimization best practices</li>
+</ol>
+
+            </div>
+        </div>
+    </section>
+
+    <script>
+        
+        document.getElementById('sidebar-toggle').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+    </script>
+</body>
+</html>

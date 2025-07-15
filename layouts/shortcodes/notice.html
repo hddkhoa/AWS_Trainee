@@ -1,0 +1,33 @@
+{{- $type := .Get 0 | default "note" -}}
+{{- $icon := "" -}}
+{{- $class := "" -}}
+
+{{- if eq $type "note" -}}
+  {{- $icon = "fas fa-info-circle" -}}
+  {{- $class = "info" -}}
+{{- else if eq $type "info" -}}
+  {{- $icon = "fas fa-info-circle" -}}
+  {{- $class = "info" -}}
+{{- else if eq $type "tip" -}}
+  {{- $icon = "fas fa-lightbulb" -}}
+  {{- $class = "tip" -}}
+{{- else if eq $type "warning" -}}
+  {{- $icon = "fas fa-exclamation-triangle" -}}
+  {{- $class = "warning" -}}
+{{- else if eq $type "important" -}}
+  {{- $icon = "fas fa-exclamation-circle" -}}
+  {{- $class = "important" -}}
+{{- else if eq $type "caution" -}}
+  {{- $icon = "fas fa-fire" -}}
+  {{- $class = "caution" -}}
+{{- end -}}
+
+<div class="notices {{ $class }}">
+  <div class="label">
+    <i class="{{ $icon }}"></i>
+    {{ T $type | default (title $type) }}
+  </div>
+  <div class="content">
+    {{ .Inner | markdownify }}
+  </div>
+</div>

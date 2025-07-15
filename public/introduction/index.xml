@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>1. Introduction on RDS Performance Insights &amp; Query Optimization</title>
+    <link>http://localhost:1313/introduction/</link>
+    <description>Recent content in 1. Introduction on RDS Performance Insights &amp; Query Optimization</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 11 Jul 2025 11:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/introduction/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>What is RDS Performance Insights?</title>
+      <link>http://localhost:1313/introduction/overview/</link>
+      <pubDate>Fri, 11 Jul 2025 11:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/introduction/overview/</guid>
+      <description>What is RDS Performance Insights? 📊 Overview Amazon RDS Performance Insights is a database performance tuning and monitoring feature that helps you quickly assess the load on your database and determine when and where to take action. It provides a comprehensive view of your database performance, making it easier to identify bottlenecks and optimize query performance.&#xA;Info Performance Insights is available for Amazon Aurora, RDS for MySQL, MariaDB, PostgreSQL, Oracle, and SQL Server.</description>
+    </item>
+    <item>
+      <title>Benefits &amp; ROI</title>
+      <link>http://localhost:1313/introduction/benefits/</link>
+      <pubDate>Fri, 11 Jul 2025 11:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/introduction/benefits/</guid>
+      <description>Benefits &amp;amp; Return on Investment 💰 Financial Impact Cost Savings Breakdown Category Annual Savings Percentage Infrastructure Optimization $350,000 54% Operational Efficiency $200,000 31% Reduced Downtime $100,000 15% Total Annual Savings $650,000 100% ROI Calculation Initial Investment: $260,000 (implementation + training) Annual Savings: $650,000 ROI: 250% in 18 months Break-even Point: 6.2 months 📊 Performance Improvements Before vs After Implementation Metric Before After Improvement Average Query Response Time 3-5 seconds 1-1.5 seconds 70% Database Availability 97.</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,113 @@
+[Search-placeholder]
+other = "Search..."
+
+[Clear-History]
+other = "Clear History"
+
+[Attachments-label]
+other = "Attachments"
+
+[title-404]
+other = "Error"
+
+[message-404]
+other = "Oops! This page doesn't exist."
+
+[Go-to-homepage]
+other = "Go to Homepage"
+
+[Edit-this-page]
+other = "Edit this page"
+
+[Shortcuts-Title]
+other = "More"
+
+[Expand-title]
+other = "Expand me..."
+
+[Navigation-toggle]
+other = "Toggle navigation"
+
+[Sidebar-toggle]
+other = "Toggle sidebar"
+
+[Menu-Home]
+other = "Home"
+
+[Breadcrumb-Home]
+other = "Home"
+
+[Search-Results-Title]
+other = "Search Results"
+
+[Search-Results-Empty]
+other = "No results found for \"{0}\""
+
+[Search-Results-Count]
+other = "Found {0} results for \"{1}\""
+
+[Print-this-page]
+other = "Print this page"
+
+[Language-switch-title]
+other = "Select Language"
+
+[Copy-to-clipboard]
+other = "Copy to clipboard"
+
+[Copied-to-clipboard]
+other = "Copied!"
+
+[Copy-link]
+other = "Copy link"
+
+[Link-copied]
+other = "Link copied!"
+
+[Chapter]
+other = "Chapter"
+
+[Next]
+other = "Next"
+
+[Previous]
+other = "Previous"
+
+[Last-modified]
+other = "Last modified"
+
+[by-author]
+other = "by"
+
+[on-date]
+other = "on"
+
+[minute-read]
+other = "minute read"
+
+[minutes-read]
+other = "minutes read"
+
+[Table-of-contents]
+other = "Table of Contents"
+
+[Note]
+other = "Note"
+
+[Tip]
+other = "Tip"
+
+[Warning]
+other = "Warning"
+
+[Important]
+other = "Important"
+
+[Caution]
+other = "Caution"
+
+[Example]
+other = "Example"
+
+[Info]
+other = "Info"

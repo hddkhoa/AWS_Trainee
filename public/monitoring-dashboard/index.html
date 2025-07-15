@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4. Monitoring Dashboard - RDS Performance Insights &amp; Query Optimization</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif; font-weight: 300; line-height: 1.6; font-size: 18px; }
+        
+        #sidebar { position: fixed; top: 0; left: 0; width: 300px; height: 100vh; background: #282828; color: #ccc; overflow-y: auto; z-index: 1000; }
+        #sidebar .searchbox { padding: 10px; background: #323232; }
+        #sidebar .searchbox input { width: 100%; padding: 10px; border: none; background: #404040; color: #ccc; border-radius: 4px; }
+        
+        #sidebar-toggle-span { display: none; }
+        
+        #body { margin-left: 300px; }
+        #body .padding { padding: 3rem 6rem; }
+        
+         
+        #sidebar ul { list-style: none; padding: 0; margin: 0; }
+        #sidebar ul li a { display: block; padding: 10px 20px; color: #ccc; text-decoration: none; border-left: 4px solid transparent; }
+        #sidebar ul li a:hover { background: #404040; border-left-color: #599a3e; }
+        #sidebar ul li.active > a { background: #404040; border-left-color: #599a3e; color: #ccc; }
+        #sidebar ul ul { padding-left: 20px; }
+        #sidebar ul ul li a { padding: 8px 20px; font-size: 0.9em; }
+        
+         
+        #sidebar #header { padding: 2rem 1rem; text-align: center; }
+        #sidebar #header .baseurl { color: #599a3e; font-size: 1.5rem; font-weight: bold; }
+        
+         
+        .language-switcher { position: relative; padding: 20px; }
+        .language-switcher a { color: #599a3e; text-decoration: none; margin-left: 10px; }
+        
+         
+        h1, h2, h3, h4, h5, h6 { color: #5e5e5e; font-weight: 400; }
+        h1 { font-size: 3rem; }
+        
+         
+        .chapter h1 { color: #599a3e; border-bottom: 4px solid #F0F2F4; padding-bottom: 1rem; margin-bottom: 2rem; }
+        
+         
+        .page-list { margin-top: 2rem; }
+        .page-item { margin: 1rem 0; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 4px; }
+        .page-item h2 { margin: 0 0 0.5rem 0; }
+        .page-item h2 a { color: #599a3e; text-decoration: none; }
+        .page-item h2 a:hover { text-decoration: underline; }
+        .page-item p { color: #666; margin: 0; }
+        
+         
+        .breadcrumbs { margin-bottom: 2rem; color: #999; }
+        .breadcrumbs a { color: #599a3e; text-decoration: none; }
+        .breadcrumbs a:hover { text-decoration: underline; }
+        
+         
+        @media (max-width: 768px) {
+            #sidebar { transform: translateX(-300px); transition: transform 0.3s; }
+            #sidebar.open { transform: translateX(0); }
+            #body { margin-left: 0; }
+            #body .padding { padding: 1rem 2rem; }
+            #sidebar-toggle-span { display: block; position: fixed; top: 10px; left: 10px; z-index: 1001; }
+            #sidebar-toggle { background: #599a3e; color: white; padding: 10px; border: none; border-radius: 4px; }
+        }
+    </style>
+</head>
+<body>
+    <nav id="sidebar">
+        <div id="header">
+            <a id="logo" href='/'>
+  <div style="text-align: center; padding: 20px;">
+    <h2 style="color: var(--MENU-SEARCH-BOX-color, #33a1ff); font-size: 2rem; font-weight: bold; margin: 0;">
+      LEARN
+    </h2>
+    <p style="color: var(--MENU-SEARCH-BOX-ICONS-color, #a1d2fd); font-size: 0.9rem; margin: 5px 0 0 0;">
+      RDS Performance Insights
+    </p>
+  </div>
+</a>
+
+        </div>
+        
+        <div class="searchbox">
+            <input type="search" placeholder="Search..." id="search-input">
+        </div>
+        
+        <ul class="topics">
+            <li><a href="http://localhost:1313/"><i class="fas fa-home"></i> Home</a></li>
+            
+            <li class="">
+                <a href="/introduction/"><i class="fas fa-book"></i> 1. Introduction</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/preparation/"><i class="fas fa-book"></i> 2. Preparation</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/performance-baseline/"><i class="fas fa-book"></i> 3. Performance Baseline Establishment</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/performance-insights/"><i class="fas fa-book"></i> Performance Insights</a>
+                
+            </li>
+            
+            <li class="active">
+                <a href="/monitoring-dashboard/"><i class="fas fa-book"></i> 4. Monitoring Dashboard</a>
+                
+                <ul>
+                    
+                    <li><a href="/monitoring-dashboard/cloudwatch-dashboard-setup/">4.1 CloudWatch Dashboard Setup</a></li>
+                    
+                </ul>
+                
+            </li>
+            
+            <li class="">
+                <a href="/alerting-system/"><i class="fas fa-book"></i> 5. Alerting System</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/query-optimization/"><i class="fas fa-book"></i> 6. Query Optimization Techniques</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/automated-tuning/"><i class="fas fa-book"></i> 7. Automated Tuning Recommendations</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/capacity-planning/"><i class="fas fa-book"></i> 8. Capacity Planning</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/monitoring/"><i class="fas fa-book"></i> 9. Monitoring &amp; Alerting</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/best-practices/"><i class="fas fa-book"></i> 10. Best Practices &amp; Resource Cleanup</a>
+                
+            </li>
+            
+        </ul>
+        
+        <div class="language-switcher">
+            
+            
+            
+            
+            <a href="/vi"><i class="fas fa-language"></i> Tiếng Việt</a>
+            
+            
+        </div>
+    </nav>
+
+    <span id="sidebar-toggle-span">
+        <a href="#" id="sidebar-toggle"><i class="fas fa-bars"></i></a>
+    </span>
+
+    <section id="body">
+        <div id="overlay"></div>
+        <div class="padding">
+            <div id="body-inner">
+                <div class="breadcrumbs">
+                    <a href="http://localhost:1313/">Home</a>
+                    
+                    <span> > </span><a href="/">RDS Performance Insights &amp; Query Optimization</a>
+                    
+                    <span> > </span>4. Monitoring Dashboard
+                </div>
+                
+                <div class="chapter">
+                    <h1>4. Monitoring Dashboard</h1>
+                    <h3 id="chapter-4">Chapter 4</h3>
+<h1 id="monitoring-dashboard">Monitoring Dashboard</h1>
+<p>Create comprehensive dashboards to visualize database performance metrics and trends.</p>
+<h2 id="objectives">Objectives</h2>
+<p>Build intuitive dashboards that provide real-time visibility into database performance, enabling quick identification of issues and trends.</p>
+<h2 id="dashboard-components">Dashboard Components</h2>
+<h3 id="core-performance-metrics">Core Performance Metrics</h3>
+<ul>
+<li><strong>CPU Utilization</strong>: Monitor processor usage</li>
+<li><strong>Memory Usage</strong>: Track available memory</li>
+<li><strong>Disk I/O</strong>: Monitor read/write operations</li>
+<li><strong>Network Throughput</strong>: Track data transfer rates</li>
+</ul>
+<h3 id="database-specific-metrics">Database-Specific Metrics</h3>
+<ul>
+<li><strong>Connection Count</strong>: Active database connections</li>
+<li><strong>Query Performance</strong>: Slow query identification</li>
+<li><strong>Lock Statistics</strong>: Deadlock and wait events</li>
+<li><strong>Replication Lag</strong>: For read replicas</li>
+</ul>
+<h3 id="business-metrics">Business Metrics</h3>
+<ul>
+<li><strong>Transaction Volume</strong>: Queries per second</li>
+<li><strong>Response Time</strong>: Average query execution time</li>
+<li><strong>Error Rates</strong>: Failed queries and connections</li>
+<li><strong>Availability</strong>: Uptime and downtime tracking</li>
+</ul>
+<h2 id="dashboard-types">Dashboard Types</h2>
+<h3 id="executive-dashboard">Executive Dashboard</h3>
+<ul>
+<li><strong>High-level KPIs</strong>: Key performance indicators</li>
+<li><strong>Cost metrics</strong>: Monthly spending trends</li>
+<li><strong>Availability summary</strong>: SLA compliance</li>
+<li><strong>Alert summary</strong>: Critical issues overview</li>
+</ul>
+<h3 id="operations-dashboard">Operations Dashboard</h3>
+<ul>
+<li><strong>Real-time metrics</strong>: Live performance data</li>
+<li><strong>Resource utilization</strong>: Detailed usage statistics</li>
+<li><strong>Alert status</strong>: Current active alerts</li>
+<li><strong>Trend analysis</strong>: Historical performance</li>
+</ul>
+<h3 id="developer-dashboard">Developer Dashboard</h3>
+<ul>
+<li><strong>Query performance</strong>: Slow query analysis</li>
+<li><strong>Application metrics</strong>: Connection pooling</li>
+<li><strong>Error tracking</strong>: Database errors and warnings</li>
+<li><strong>Performance insights</strong>: Optimization opportunities</li>
+</ul>
+<h2 id="implementation-tools">Implementation Tools</h2>
+<h3 id="aws-cloudwatch">AWS CloudWatch</h3>
+<ul>
+<li><strong>Native integration</strong>: Built-in RDS metrics</li>
+<li><strong>Custom dashboards</strong>: Flexible visualization</li>
+<li><strong>Automated alerts</strong>: Threshold-based notifications</li>
+<li><strong>Cost-effective</strong>: Included with AWS services</li>
+</ul>
+<h3 id="grafana">Grafana</h3>
+<ul>
+<li><strong>Advanced visualization</strong>: Rich chart types</li>
+<li><strong>Multi-source data</strong>: Combine multiple data sources</li>
+<li><strong>Alerting</strong>: Sophisticated alert rules</li>
+<li><strong>Community plugins</strong>: Extensive ecosystem</li>
+</ul>
+<h3 id="datadog">DataDog</h3>
+<ul>
+<li><strong>Comprehensive monitoring</strong>: Full-stack visibility</li>
+<li><strong>Machine learning</strong>: Anomaly detection</li>
+<li><strong>Collaboration</strong>: Team-based dashboards</li>
+<li><strong>Mobile access</strong>: Monitor on-the-go</li>
+</ul>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="dashboard-design">Dashboard Design</h3>
+<ul>
+<li><strong>Clear hierarchy</strong>: Organize by importance</li>
+<li><strong>Consistent styling</strong>: Use standard colors and fonts</li>
+<li><strong>Appropriate charts</strong>: Choose right visualization types</li>
+<li><strong>Mobile-friendly</strong>: Ensure mobile accessibility</li>
+</ul>
+<h3 id="metric-selection">Metric Selection</h3>
+<ul>
+<li><strong>Relevant metrics</strong>: Focus on actionable data</li>
+<li><strong>Balanced view</strong>: Include leading and lagging indicators</li>
+<li><strong>Context</strong>: Provide historical comparison</li>
+<li><strong>Thresholds</strong>: Show acceptable ranges</li>
+</ul>
+<h3 id="performance-optimization">Performance Optimization</h3>
+<ul>
+<li><strong>Efficient queries</strong>: Optimize dashboard queries</li>
+<li><strong>Caching</strong>: Use data caching where appropriate</li>
+<li><strong>Refresh rates</strong>: Balance freshness with performance</li>
+<li><strong>Resource usage</strong>: Monitor dashboard overhead</li>
+</ul>
+<h2 id="key-features">Key Features</h2>
+<h3 id="real-time-updates">Real-time Updates</h3>
+<ul>
+<li><strong>Live data</strong>: Sub-minute refresh rates</li>
+<li><strong>Auto-refresh</strong>: Automatic data updates</li>
+<li><strong>Push notifications</strong>: Instant alert delivery</li>
+<li><strong>Mobile alerts</strong>: SMS and push notifications</li>
+</ul>
+<h3 id="historical-analysis">Historical Analysis</h3>
+<ul>
+<li><strong>Time range selection</strong>: Flexible time periods</li>
+<li><strong>Trend visualization</strong>: Long-term pattern analysis</li>
+<li><strong>Comparative analysis</strong>: Period-over-period comparison</li>
+<li><strong>Data retention</strong>: Configurable retention policies</li>
+</ul>
+<h3 id="collaboration">Collaboration</h3>
+<ul>
+<li><strong>Shared dashboards</strong>: Team access</li>
+<li><strong>Annotations</strong>: Add context to metrics</li>
+<li><strong>Export capabilities</strong>: PDF and image export</li>
+<li><strong>Embedding</strong>: Integrate with other tools</li>
+</ul>
+<h2 id="implementation-steps">Implementation Steps</h2>
+<ol>
+<li><strong>Requirements gathering</strong>: Define dashboard needs</li>
+<li><strong>Tool selection</strong>: Choose appropriate platform</li>
+<li><strong>Data source configuration</strong>: Connect to metrics</li>
+<li><strong>Dashboard creation</strong>: Build initial dashboards</li>
+<li><strong>Testing and validation</strong>: Verify accuracy</li>
+<li><strong>User training</strong>: Educate team members</li>
+<li><strong>Maintenance</strong>: Regular updates and improvements</li>
+</ol>
+<h2 id="success-metrics">Success Metrics</h2>
+<ul>
+<li><strong>Mean Time to Detection</strong>: &lt; 5 minutes</li>
+<li><strong>Dashboard adoption</strong>: 90%+ team usage</li>
+<li><strong>Alert accuracy</strong>: &lt; 5% false positives</li>
+<li><strong>User satisfaction</strong>: Regular feedback collection</li>
+</ul>
+
+                </div>
+                
+                
+                <div class="page-list">
+                    
+                    <div class="page-item">
+                        <h2><a href="/monitoring-dashboard/cloudwatch-dashboard-setup/">4.1 CloudWatch Dashboard Setup</a></h2>
+                        
+                        <p>CloudWatch Dashboard Setup Step 1: Access CloudWatch Search for &ldquo;CloudWatch&rdquo; in AWS Console Click on &ldquo;Amazon CloudWatch&rdquo; Step 2: Create Dashboard In the left menu, click &ldquo;Dashboards&rdquo; Click &ldquo;Create dashboard&rdquo; Dashboard name: RDS-Performance-Dashboard Click &ldquo;Create dashboard&rdquo; Step 3: Add First Widget - CPU Utilization Select &ldquo;Line&rdquo; widget type Click &ldquo;Next&rdquo; Metrics: • Namespace: AWS/RDS • Metric name: CPUUtilization • DBInstanceIdentifier: Select the newly created instance Period: 5 minutes Click &ldquo;Create widget&rdquo; Step 4: Add Second Widget - Database Connections Click &ldquo;Add widget&rdquo; Select &ldquo;Line&rdquo; → &ldquo;Next&rdquo; Metrics: • Namespace: AWS/RDS • Metric name: DatabaseConnections • DBInstanceIdentifier: Select your instance Click &ldquo;Create widget&rdquo; Step 5: Add Third Widget - Free Memory Click &ldquo;Add widget&rdquo; Select &ldquo;Line&rdquo; → &ldquo;Next&rdquo; Metrics: • Namespace: AWS/RDS • Metric name: FreeableMemory • DBInstanceIdentifier: Select your instance Click &ldquo;Create widget&rdquo; Step 6: Add Additional Widgets Read/Write IOPS Widget Click &ldquo;Add widget&rdquo; Select &ldquo;Line&rdquo; → &ldquo;Next&rdquo; Add two metrics: • ReadIOPS: Number of read operations per second • WriteIOPS: Number of write operations per second Click &ldquo;Create widget&rdquo; Read/Write Latency Widget Click &ldquo;Add widget&rdquo; Select &ldquo;Line&rdquo; → &ldquo;Next&rdquo; Add two metrics: • ReadLatency: Read operations latency • WriteLatency: Write operations latency Click &ldquo;Create widget&rdquo; Network Throughput Widget Click &ldquo;Add widget&rdquo; Select &ldquo;Line&rdquo; → &ldquo;Next&rdquo; Add two metrics: • NetworkReceiveThroughput: Network receive throughput • NetworkTransmitThroughput: Network transmit throughput Click &ldquo;Create widget&rdquo; Step 7: Customize Dashboard Arrange Widgets Drag and drop widgets to arrange as desired Resize widgets by dragging corners Group related metrics together Set Time Range In the top right corner, select time range: • 1h - 1 hour • 3h - 3 hours • 12h - 12 hours • 1d - 1 day • 3d - 3 days • 1w - 1 week Auto Refresh Click the refresh icon Select auto refresh interval: • 10s - 10 seconds • 1m - 1 minute • 2m - 2 minutes • 5m - 5 minutes • 15m - 15 minutes Step 8: Save and Share Dashboard Save Dashboard Click &ldquo;Save dashboard&rdquo; Dashboard will be saved automatically Share Dashboard Click &ldquo;Share dashboard&rdquo; Choose permissions: • Public: Anyone can view • Account: Current account only • Specific users: Only designated users Export Dashboard Click &ldquo;Actions&rdquo; → &ldquo;View/edit source&rdquo; Copy JSON configuration Can import to other accounts Step 9: Best Practices Organize Widgets Group by function: • Performance metrics (CPU, Memory) • I/O metrics (IOPS, Latency) • Network metrics (Throughput) • Connection metrics (Connections, Queries)</p>
+                        
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <script>
+        
+        document.getElementById('sidebar-toggle').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5.1 CloudWatch Alarms Setup - RDS Performance Insights &amp; Query Optimization</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif; font-weight: 300; line-height: 1.6; font-size: 18px; }
+        
+        #sidebar { position: fixed; top: 0; left: 0; width: 300px; height: 100vh; background: #282828; color: #ccc; overflow-y: auto; z-index: 1000; }
+        #sidebar .searchbox { padding: 10px; background: #323232; }
+        #sidebar .searchbox input { width: 100%; padding: 10px; border: none; background: #404040; color: #ccc; border-radius: 4px; }
+        
+        #sidebar-toggle-span { display: none; }
+        
+        #body { margin-left: 300px; }
+        #body .padding { padding: 3rem 6rem; }
+        
+         
+        #sidebar ul { list-style: none; padding: 0; margin: 0; }
+        #sidebar ul li a { display: block; padding: 10px 20px; color: #ccc; text-decoration: none; border-left: 4px solid transparent; }
+        #sidebar ul li a:hover { background: #404040; border-left-color: #599a3e; }
+        #sidebar ul li.active > a { background: #404040; border-left-color: #599a3e; color: #ccc; }
+        #sidebar ul ul { padding-left: 20px; }
+        #sidebar ul ul li a { padding: 8px 20px; font-size: 0.9em; }
+        
+         
+        #sidebar #header { padding: 2rem 1rem; text-align: center; }
+        #sidebar #header .baseurl { color: #599a3e; font-size: 1.5rem; font-weight: bold; }
+        
+         
+        .language-switcher { position: relative; padding: 20px; }
+        .language-switcher a { color: #599a3e; text-decoration: none; margin-left: 10px; }
+        
+         
+        h1, h2, h3, h4, h5, h6 { color: #5e5e5e; font-weight: 400; }
+        h1 { font-size: 3rem; }
+        
+         
+        .chapter h1 { color: #599a3e; border-bottom: 4px solid #F0F2F4; padding-bottom: 1rem; margin-bottom: 2rem; }
+        
+         
+        .page-list { margin-top: 2rem; }
+        .page-item { margin: 1rem 0; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 4px; }
+        .page-item h2 { margin: 0 0 0.5rem 0; }
+        .page-item h2 a { color: #599a3e; text-decoration: none; }
+        .page-item h2 a:hover { text-decoration: underline; }
+        .page-item p { color: #666; margin: 0; }
+        
+         
+        .breadcrumbs { margin-bottom: 2rem; color: #999; }
+        .breadcrumbs a { color: #599a3e; text-decoration: none; }
+        .breadcrumbs a:hover { text-decoration: underline; }
+        
+         
+        @media (max-width: 768px) {
+            #sidebar { transform: translateX(-300px); transition: transform 0.3s; }
+            #sidebar.open { transform: translateX(0); }
+            #body { margin-left: 0; }
+            #body .padding { padding: 1rem 2rem; }
+            #sidebar-toggle-span { display: block; position: fixed; top: 10px; left: 10px; z-index: 1001; }
+            #sidebar-toggle { background: #599a3e; color: white; padding: 10px; border: none; border-radius: 4px; }
+        }
+    </style>
+</head>
+<body>
+    <nav id="sidebar">
+        <div id="header">
+            <a id="logo" href='/'>
+  <div style="text-align: center; padding: 20px;">
+    <h2 style="color: var(--MENU-SEARCH-BOX-color, #33a1ff); font-size: 2rem; font-weight: bold; margin: 0;">
+      LEARN
+    </h2>
+    <p style="color: var(--MENU-SEARCH-BOX-ICONS-color, #a1d2fd); font-size: 0.9rem; margin: 5px 0 0 0;">
+      RDS Performance Insights
+    </p>
+  </div>
+</a>
+
+        </div>
+        
+        <div class="searchbox">
+            <input type="search" placeholder="Search..." id="search-input">
+        </div>
+        
+        <ul class="topics">
+            <li><a href="http://localhost:1313/"><i class="fas fa-home"></i> Home</a></li>
+            
+            <li class="">
+                <a href="/introduction/"><i class="fas fa-book"></i> 1. Introduction</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/preparation/"><i class="fas fa-book"></i> 2. Preparation</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/performance-baseline/"><i class="fas fa-book"></i> 3. Performance Baseline Establishment</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/performance-insights/"><i class="fas fa-book"></i> Performance Insights</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/monitoring-dashboard/"><i class="fas fa-book"></i> 4. Monitoring Dashboard</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/alerting-system/"><i class="fas fa-book"></i> 5. Alerting System</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/query-optimization/"><i class="fas fa-book"></i> 6. Query Optimization Techniques</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/automated-tuning/"><i class="fas fa-book"></i> 7. Automated Tuning Recommendations</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/capacity-planning/"><i class="fas fa-book"></i> 8. Capacity Planning</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/monitoring/"><i class="fas fa-book"></i> 9. Monitoring &amp; Alerting</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/best-practices/"><i class="fas fa-book"></i> 10. Best Practices &amp; Resource Cleanup</a>
+                
+            </li>
+            
+        </ul>
+        
+        <div class="language-switcher">
+            
+            
+            
+            
+            <a href="/vi"><i class="fas fa-language"></i> Tiếng Việt</a>
+            
+            
+        </div>
+    </nav>
+
+    <span id="sidebar-toggle-span">
+        <a href="#" id="sidebar-toggle"><i class="fas fa-bars"></i></a>
+    </span>
+
+    <section id="body">
+        <div id="overlay"></div>
+        <div class="padding">
+            <div id="body-inner">
+                <div class="breadcrumbs">
+                    <a href="http://localhost:1313/">Home</a>
+                    
+                    <span> > </span><a href="/">RDS Performance Insights &amp; Query Optimization</a>
+                    
+                    <span> > </span><a href="/alerting-system/">5. Alerting System</a>
+                    
+                    <span> > </span>5.1 CloudWatch Alarms Setup
+                </div>
+                
+                <div class="chapter">
+                    <h1>5.1 CloudWatch Alarms Setup</h1>
+                    <h1 id="cloudwatch-alarms-setup">CloudWatch Alarms Setup</h1>
+<img src="/images/2025-07-14_16-36-57.png" alt="2025-07-14_16-36-57" width="800">
+<h2 id="step-1-create-cpu-alarm">Step 1: Create CPU Alarm</h2>
+<ol>
+<li>In CloudWatch, click &ldquo;Alarms&rdquo; → &ldquo;All alarms&rdquo;</li>
+<li>Click &ldquo;Create alarm&rdquo;</li>
+<li>Select metric:
+• <strong>Namespace:</strong> AWS/RDS
+• <strong>Metric name:</strong> CPUUtilization
+• <strong>DBInstanceIdentifier:</strong> Select your instance
+• Click &ldquo;Select metric&rdquo;</li>
+</ol>
+<img src="/images/2025-07-14_16-38-15.png" alt="2025-07-14_16-38-15" width="800">
+<h2 id="step-2-configure-alarm-conditions">Step 2: Configure Alarm Conditions</h2>
+<ol>
+<li>Conditions:
+• <strong>Threshold type:</strong> Static
+• <strong>Whenever CPUUtilization is:</strong> Greater than
+• <strong>Threshold value:</strong> 80</li>
+<li>Additional configuration:
+• <strong>Datapoints to alarm:</strong> 2 out of 2
+• <strong>Period:</strong> 5 minutes</li>
+</ol>
+<img src="/images/2025-07-14_16-42-46.png" alt="2025-07-14_16-42-46" width="800">
+<h2 id="step-3-configure-actions">Step 3: Configure Actions</h2>
+<ol>
+<li>Alarm state trigger: In alarm</li>
+<li>Send a notification to:
+• <strong>Create new topic</strong>
+• <strong>Topic name:</strong> rds-alerts
+• <strong>Email endpoints:</strong> Enter your email</li>
+<li>Click &ldquo;Create topic&rdquo;</li>
+</ol>
+<img src="/images/2025-07-14_16-43-53.png" alt="2025-07-14_16-43-53" width="800">
+<h2 id="step-4-add-name-and-description">Step 4: Add Name and Description</h2>
+<ol>
+<li>Alarm name: RDS-CPU-High</li>
+<li>Alarm description: RDS CPU utilization is above 80%</li>
+<li>Click &ldquo;Next&rdquo;</li>
+</ol>
+<img src="/images/2025-07-14_16-44-13.png" alt="2025-07-14_16-44-13" width="800">
+<h2 id="step-5-preview-and-create">Step 5: Preview and Create</h2>
+<ol>
+<li>Review all settings</li>
+<li>Click &ldquo;Create alarm&rdquo;</li>
+<li>Confirm email: Check your email and click confirm subscription</li>
+</ol>
+<img src="/images/2025-07-14_16-31-10.png" alt="2025-07-14_16-31-10" width="800">
+<h2 id="step-6-create-additional-alarms-for-other-metrics">Step 6: Create Additional Alarms for Other Metrics</h2>
+<h3 id="memory-alarm">Memory Alarm</h3>
+<ol>
+<li>Create new alarm with <strong>FreeableMemory</strong> metric</li>
+<li>Threshold: Less than 1GB (1073741824 bytes)</li>
+<li>Alarm name: RDS-Memory-Low</li>
+</ol>
+<h3 id="database-connections-alarm">Database Connections Alarm</h3>
+<ol>
+<li>Create new alarm with <strong>DatabaseConnections</strong> metric</li>
+<li>Threshold: Greater than 80% of max connections</li>
+<li>Alarm name: RDS-Connections-High</li>
+</ol>
+<h3 id="readwrite-latency-alarms">Read/Write Latency Alarms</h3>
+<ol>
+<li><strong>ReadLatency</strong>: Greater than 0.2 seconds</li>
+<li><strong>WriteLatency</strong>: Greater than 0.2 seconds</li>
+<li>Alarm names: RDS-ReadLatency-High, RDS-WriteLatency-High</li>
+</ol>
+<h3 id="iops-alarms">IOPS Alarms</h3>
+<ol>
+<li><strong>ReadIOPS</strong>: Monitor read operations per second</li>
+<li><strong>WriteIOPS</strong>: Monitor write operations per second</li>
+<li>Set thresholds based on instance capacity</li>
+</ol>
+<h2 id="step-7-verify-and-test-alarms">Step 7: Verify and Test Alarms</h2>
+<h3 id="verify-alarm-status">Verify Alarm Status</h3>
+<ol>
+<li>Return to CloudWatch Alarms dashboard</li>
+<li>Check status of all alarms</li>
+<li>Ensure alarms are in &ldquo;OK&rdquo; or &ldquo;INSUFFICIENT_DATA&rdquo; state</li>
+</ol>
+<h3 id="test-notifications">Test Notifications</h3>
+<ol>
+<li>Temporarily lower threshold to trigger alarm</li>
+<li>Check email notification</li>
+<li>Restore original threshold</li>
+</ol>
+<h2 id="step-8-best-practices">Step 8: Best Practices</h2>
+<h3 id="threshold-configuration">Threshold Configuration</h3>
+<ol>
+<li><strong>Based on baseline</strong>: Use historical data</li>
+<li><strong>Avoid false positives</strong>: Don&rsquo;t set thresholds too low</li>
+<li><strong>Datapoints to alarm</strong>: Use 2 out of 3 to reduce noise</li>
+<li><strong>Appropriate period</strong>: 5 minutes for most metrics</li>
+</ol>
+<h3 id="notification-strategy">Notification Strategy</h3>
+<ol>
+<li><strong>Critical alarms</strong>: Immediate notification</li>
+<li><strong>Warning alarms</strong>: Delayed notification</li>
+<li><strong>Multiple channels</strong>: Email + SMS for critical</li>
+<li><strong>Escalation</strong>: Auto-escalate if no response</li>
+</ol>
+<h3 id="monitoring-coverage">Monitoring Coverage</h3>
+<ol>
+<li><strong>Core metrics</strong>: CPU, Memory, Connections</li>
+<li><strong>Performance metrics</strong>: Latency, IOPS</li>
+<li><strong>Availability metrics</strong>: Database status</li>
+<li><strong>Custom metrics</strong>: Application-specific metrics</li>
+</ol>
+
+                </div>
+                
+                
+            </div>
+        </div>
+    </section>
+
+    <script>
+        
+        document.getElementById('sidebar-toggle').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+    </script>
+</body>
+</html>

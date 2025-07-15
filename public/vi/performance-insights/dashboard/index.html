@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hiểu về Dashboard Performance Insights - RDS Performance Insights &amp; Tối Ưu Hóa Truy Vấn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    
+    
+    <link rel="stylesheet" href="/css/theme-blue.css">
+    
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif; 
+            font-weight: 300; 
+            line-height: 1.6; 
+            font-size: 18px;
+            color: var(--MAIN-TEXT-color, #323232);
+        }
+        
+        #sidebar { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 300px; 
+            height: 100vh; 
+            background: var(--MENU-SECTIONS-BG-color, #252c31); 
+            color: #ccc; 
+            overflow-y: auto; 
+            z-index: 1000; 
+        }
+        
+        #sidebar #header { 
+            padding: 2rem 1rem; 
+            text-align: center; 
+            background: var(--MENU-HEADER-BG-color, #1C90F3);
+            border-bottom: 1px solid var(--MENU-HEADER-BORDER-color, #33a1ff);
+        }
+        
+        #sidebar #header .baseurl { 
+            color: var(--MENU-SEARCH-BOX-color, #33a1ff); 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+        }
+        
+        #sidebar .searchbox { 
+            padding: 10px; 
+            background: var(--MENU-SEARCH-BG-color, #167ad0);
+            border-bottom: 1px solid var(--MENU-SEARCH-BOX-color, #33a1ff);
+        }
+        
+        #sidebar .searchbox input { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid var(--MENU-SEARCH-BOX-color, #33a1ff); 
+            background: rgba(255,255,255,0.1); 
+            color: var(--MENU-SEARCH-BOX-ICONS-color, #a1d2fd); 
+            border-radius: 4px; 
+        }
+        
+        #sidebar-toggle-span { display: none; }
+        
+        #body { margin-left: 300px; }
+        #body .padding { padding: 3rem 6rem; }
+        
+         
+        #sidebar ul { list-style: none; padding: 0; margin: 0; }
+        #sidebar ul li a { 
+            display: block; 
+            padding: 10px 20px; 
+            color: var(--MENU-SECTIONS-LINK-color, #ccc); 
+            text-decoration: none; 
+            border-left: 4px solid transparent; 
+        }
+        #sidebar ul li a:hover { 
+            background: var(--MENU-SECTIONS-ACTIVE-BG-color, #20272b); 
+            border-left-color: var(--MAIN-LINK-color, #1C90F3);
+            color: var(--MENU-SECTIONS-LINK-HOVER-color, #e6e6e6);
+        }
+        #sidebar ul li.active > a { 
+            background: var(--MENU-SECTION-ACTIVE-CATEGORY-BG-color, #fff); 
+            border-left-color: var(--MAIN-LINK-color, #1C90F3); 
+            color: var(--MENU-SECTION-ACTIVE-CATEGORY-color, #777); 
+        }
+        #sidebar ul ul { padding-left: 20px; }
+        #sidebar ul ul li a { padding: 8px 20px; font-size: 0.9em; }
+        
+         
+        .language-switcher { position: relative; padding: 20px; }
+        .language-switcher a { 
+            color: var(--MAIN-LINK-color, #1C90F3); 
+            text-decoration: none; 
+            margin-left: 10px; 
+        }
+        .language-switcher a:hover { 
+            color: var(--MAIN-LINK-HOVER-color, #167ad0); 
+        }
+        
+         
+        h1, h2, h3, h4, h5, h6 { 
+            color: var(--MAIN-TITLES-TEXT-color, #5e5e5e); 
+            font-weight: 400; 
+        }
+        h1 { font-size: 3rem; }
+        h2 { font-size: 2.5rem; }
+        h3 { font-size: 2rem; }
+        
+         
+        a { color: var(--MAIN-LINK-color, #1C90F3); }
+        a:hover { color: var(--MAIN-LINK-HOVER-color, #167ad0); }
+        
+         
+        pre { background: #f8f8f8; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+        code { background: #f8f8f8; padding: 0.2rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+        
+         
+        .breadcrumbs { margin-bottom: 2rem; color: #999; }
+        .breadcrumbs a { 
+            color: var(--MAIN-LINK-color, #1C90F3); 
+            text-decoration: none; 
+        }
+        .breadcrumbs a:hover { 
+            color: var(--MAIN-LINK-HOVER-color, #167ad0);
+            text-decoration: underline; 
+        }
+        
+         
+        @media (max-width: 768px) {
+            #sidebar { transform: translateX(-300px); transition: transform 0.3s; }
+            #sidebar.open { transform: translateX(0); }
+            #body { margin-left: 0; }
+            #body .padding { padding: 1rem 2rem; }
+            #sidebar-toggle-span { display: block; position: fixed; top: 10px; left: 10px; z-index: 1001; }
+            #sidebar-toggle { background: var(--MAIN-LINK-color, #1C90F3); color: white; padding: 10px; border: none; border-radius: 4px; }
+        }
+    </style>
+</head>
+<body>
+    <nav id="sidebar">
+        <div id="header">
+            <a id="logo" href='/'>
+  <div style="text-align: center; padding: 20px;">
+    <h2 style="color: var(--MENU-SEARCH-BOX-color, #33a1ff); font-size: 2rem; font-weight: bold; margin: 0;">
+      LEARN
+    </h2>
+    <p style="color: var(--MENU-SEARCH-BOX-ICONS-color, #a1d2fd); font-size: 0.9rem; margin: 5px 0 0 0;">
+      RDS Performance Insights
+    </p>
+  </div>
+</a>
+
+        </div>
+        
+        <div class="searchbox">
+            <input type="search" placeholder="Search..." id="search-input">
+        </div>
+        
+        <ul class="topics">
+            <li><a href="http://localhost:1313/"><i class="fas fa-home"></i> Home</a></li>
+            
+            <li class="">
+                <a href="/vi/introduction/"><i class="fas fa-book"></i> 1. Giới Thiệu</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/preparation/"><i class="fas fa-book"></i> 2. Chuẩn Bị</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/performance-baseline/"><i class="fas fa-book"></i> 3. Thiết lập Đường cơ sở Hiệu suất</a>
+                
+            </li>
+            
+            <li class="active">
+                <a href="/vi/performance-insights/"><i class="fas fa-book"></i> Performance Insights</a>
+                
+                <ul>
+                    
+                    <li class="">
+                        <a href="/vi/performance-insights/overview/">Tổng quan về Performance Insights</a>
+                    </li>
+                    
+                    <li class="">
+                        <a href="/vi/performance-insights/setup/">Thiết lập RDS Instance với Performance Insights</a>
+                    </li>
+                    
+                    <li class="active">
+                        <a href="/vi/performance-insights/dashboard/">Hiểu về Dashboard Performance Insights</a>
+                    </li>
+                    
+                    <li class="">
+                        <a href="/vi/performance-insights/optimization/">Tối ưu hóa Query với Performance Insights</a>
+                    </li>
+                    
+                </ul>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/monitoring-dashboard/"><i class="fas fa-book"></i> 4. Bảng điều khiển Giám sát</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/alerting-system/"><i class="fas fa-book"></i> 5. Hệ thống Cảnh báo</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/query-optimization/"><i class="fas fa-book"></i> 6. Kỹ thuật Tối ưu hóa Truy vấn</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/automated-tuning/"><i class="fas fa-book"></i> 7. Đề xuất Điều chỉnh Tự động</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/capacity-planning/"><i class="fas fa-book"></i> 8. Lập kế hoạch Năng lực</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/monitoring/"><i class="fas fa-book"></i> 9. Giám sát &amp; Cảnh báo</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/best-practices/"><i class="fas fa-book"></i> 10. Dọn dẹp tài nguyên</a>
+                
+            </li>
+            
+        </ul>
+        
+        <div class="language-switcher">
+            
+            
+            <a href="/vi/en"><i class="fas fa-language"></i> English</a>
+            
+            
+            
+            
+        </div>
+    </nav>
+
+    <span id="sidebar-toggle-span">
+        <a href="#" id="sidebar-toggle"><i class="fas fa-bars"></i></a>
+    </span>
+
+    <section id="body">
+        <div id="overlay"></div>
+        <div class="padding">
+            <div id="body-inner">
+                <div class="breadcrumbs">
+                    <a href="http://localhost:1313/">Home</a>
+                    
+                    <span> > </span><a href="/vi/">RDS Performance Insights &amp; Query Optimization</a>
+                    
+                    <span> > </span><a href="/vi/performance-insights/">Performance Insights</a>
+                    
+                    <span> > </span>Hiểu về Dashboard Performance Insights
+                </div>
+                
+                <h1>Hiểu về Dashboard Performance Insights</h1>
+                <h2 id="tổng-quan-dashboard">Tổng quan Dashboard</h2>
+<p>Dashboard Performance Insights cung cấp cái nhìn toàn diện về hiệu suất database với các phần chính:</p>
+<h3 id="1-biểu-đồ-database-load">1. Biểu đồ Database Load</h3>
+<p>Biểu đồ chính hiển thị database load theo thời gian, đo bằng Average Active Sessions (AAS).</p>
+<p><strong>Các thành phần chính:</strong></p>
+<ul>
+<li><strong>Trục Y:</strong> Database load (AAS)</li>
+<li><strong>Trục X:</strong> Thời gian</li>
+<li><strong>Đường ngang:</strong> Số vCPU (baseline hiệu suất)</li>
+<li><strong>Vùng màu:</strong> Các loại wait event khác nhau</li>
+</ul>
+<h3 id="2-panel-top-dimensions">2. Panel Top Dimensions</h3>
+<p>Hiển thị các yếu tố đóng góp nhiều nhất vào database load:</p>
+<ul>
+<li><strong>Top SQL:</strong> Các query tiêu tốn tài nguyên nhiều nhất</li>
+<li><strong>Top Wait Events:</strong> Các wait event phổ biến nhất</li>
+<li><strong>Top Hosts:</strong> Các host tạo ra load nhiều nhất</li>
+<li><strong>Top Users:</strong> Các user tạo ra load nhiều nhất</li>
+<li><strong>Top Databases:</strong> Các database có load cao nhất</li>
+</ul>
+<h2 id="diễn-giải-biểu-đồ-database-load">Diễn giải Biểu đồ Database Load</h2>
+<h3 id="hiệu-suất-tốt">Hiệu suất Tốt</h3>
+<pre tabindex="0"><code>DB Load (AAS)
+     4 |                                    
+     3 |     ████                          
+     2 |  ████████████                     
+     1 |████████████████████               
+     0 |________________________________   
+       0    5    10   15   20   25   30   Thời gian (phút)
+       
+Số vCPU: 4 (hiển thị bằng đường ngang)
+Trạng thái: ✅ Tốt (Load &lt; số vCPU)
+</code></pre><h3 id="vấn-đề-hiệu-suất">Vấn đề Hiệu suất</h3>
+<pre tabindex="0"><code>DB Load (AAS)
+     8 |        ████████████               
+     6 |     ████████████████              
+     4 |  ████████████████████  ←── Giới hạn vCPU
+     2 |████████████████████████           
+     0 |________________________________   
+       0    5    10   15   20   25   30   Thời gian (phút)
+       
+Trạng thái: ⚠️ Quá tải (Load &gt; số vCPU)
+</code></pre><h2 id="phân-tích-wait-events">Phân tích Wait Events</h2>
+<h3 id="wait-events-phổ-biến-trong-mysql">Wait Events phổ biến trong MySQL</h3>
+<h4 id="1-cpu">1. CPU</h4>
+<ul>
+<li><strong>Màu:</strong> Thường là đỏ/cam</li>
+<li><strong>Ý nghĩa:</strong> Xử lý CPU đang hoạt động</li>
+<li><strong>Hành động:</strong> Kiểm tra các query tiêu tốn CPU</li>
+</ul>
+<h4 id="2-iofilesqlbinlog">2. io/file/sql/binlog</h4>
+<ul>
+<li><strong>Màu:</strong> Xanh dương</li>
+<li><strong>Ý nghĩa:</strong> Chờ ghi binary log</li>
+<li><strong>Hành động:</strong> Cân nhắc storage nhanh hơn hoặc tối ưu write operations</li>
+</ul>
+<h4 id="3-iotablesqlhandler">3. io/table/sql/handler</h4>
+<ul>
+<li><strong>Màu:</strong> Xanh lá</li>
+<li><strong>Ý nghĩa:</strong> Chờ các thao tác I/O trên table</li>
+<li><strong>Hành động:</strong> Kiểm tra indexes, cân nhắc read replicas</li>
+</ul>
+<h4 id="4-synchmutexinnodb">4. synch/mutex/innodb</h4>
+<ul>
+<li><strong>Màu:</strong> Tím</li>
+<li><strong>Ý nghĩa:</strong> Khóa nội bộ InnoDB</li>
+<li><strong>Hành động:</strong> Tối ưu transactions, giảm lock contention</li>
+</ul>
+<h3 id="wait-events-phổ-biến-trong-postgresql">Wait Events phổ biến trong PostgreSQL</h3>
+<h4 id="1-cpu-1">1. CPU</h4>
+<ul>
+<li><strong>Ý nghĩa:</strong> Xử lý CPU đang hoạt động</li>
+<li><strong>Hành động:</strong> Tối ưu queries, kiểm tra full table scans</li>
+</ul>
+<h4 id="2-iodatafileread">2. IO:DataFileRead</h4>
+<ul>
+<li><strong>Ý nghĩa:</strong> Đọc dữ liệu từ disk</li>
+<li><strong>Hành động:</strong> Tăng shared_buffers, thêm indexes</li>
+</ul>
+<h4 id="3-lockrelation">3. Lock:relation</h4>
+<ul>
+<li><strong>Ý nghĩa:</strong> Chờ table locks</li>
+<li><strong>Hành động:</strong> Tối ưu transactions, giảm thời gian lock</li>
+</ul>
+<h4 id="4-lwlockbuffer_mapping">4. LWLock:buffer_mapping</h4>
+<ul>
+<li><strong>Ý nghĩa:</strong> Tranh chấp quản lý buffer</li>
+<li><strong>Hành động:</strong> Tăng shared_buffers, tối ưu queries</li>
+</ul>
+<h2 id="phân-tích-top-sql">Phân tích Top SQL</h2>
+<h3 id="chi-tiết-sql-statement">Chi tiết SQL Statement</h3>
+<p>Khi bạn click vào một SQL statement, bạn sẽ thấy:</p>
+<ol>
+<li>
+<p><strong>SQL Text:</strong> Query thực tế (có thể bị cắt ngắn)</p>
+</li>
+<li>
+<p><strong>Thống kê:</strong></p>
+<ul>
+<li>Đóng góp load</li>
+<li>Số lần thực thi mỗi phút</li>
+<li>Độ trễ trung bình</li>
+<li>Số rows examined/returned</li>
+</ul>
+</li>
+<li>
+<p><strong>Xu hướng Hiệu suất:</strong></p>
+<ul>
+<li>Load theo thời gian</li>
+<li>Tần suất thực thi</li>
+<li>Xu hướng độ trễ</li>
+</ul>
+</li>
+</ol>
+<h3 id="ví-dụ-phân-tích">Ví dụ Phân tích</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Ví dụ query có load cao
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> orders o 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">JOIN</span> customers <span style="color:#66d9ef">c</span> <span style="color:#66d9ef">ON</span> o.customer_id <span style="color:#f92672">=</span> <span style="color:#66d9ef">c</span>.id 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">WHERE</span> o.order_date <span style="color:#f92672">&gt;</span> <span style="color:#e6db74">&#39;2024-01-01&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">ORDER</span> <span style="color:#66d9ef">BY</span> o.order_date <span style="color:#66d9ef">DESC</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Thống kê:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">-</span> <span style="color:#66d9ef">Load</span>: <span style="color:#ae81ff">2</span>.<span style="color:#ae81ff">5</span> AAS (<span style="color:#ae81ff">50</span><span style="color:#f92672">%</span> tổng <span style="color:#66d9ef">load</span>)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">-</span> Thực thi: <span style="color:#ae81ff">120</span><span style="color:#f92672">/</span>phút
+</span></span><span style="display:flex;"><span><span style="color:#f92672">-</span> <span style="color:#960050;background-color:#1e0010">Độ</span> trễ TB: <span style="color:#ae81ff">1</span>.<span style="color:#ae81ff">2</span>s
+</span></span><span style="display:flex;"><span><span style="color:#f92672">-</span> <span style="color:#66d9ef">Rows</span> Examined: <span style="color:#ae81ff">1</span>.<span style="color:#ae81ff">2</span>M
+</span></span><span style="display:flex;"><span><span style="color:#f92672">-</span> <span style="color:#66d9ef">Rows</span> Returned: <span style="color:#ae81ff">15</span>K
+</span></span></code></pre></div><p><strong>Cơ hội Tối ưu hóa:</strong></p>
+<ul>
+<li>Thêm index trên <code>order_date</code></li>
+<li>Cân nhắc phân vùng theo date range</li>
+<li>Giới hạn kích thước kết quả</li>
+<li>Sử dụng covering indexes</li>
+</ul>
+<h2 id="chọn-khoảng-thời-gian">Chọn Khoảng Thời gian</h2>
+<h3 id="các-khoảng-thời-gian-có-sẵn">Các Khoảng Thời gian Có sẵn</h3>
+<ul>
+<li><strong>Giờ qua:</strong> Troubleshooting real-time</li>
+<li><strong>3 giờ qua:</strong> Phân tích hiệu suất gần đây</li>
+<li><strong>Ngày qua:</strong> Phân tích pattern hàng ngày</li>
+<li><strong>Tuần qua:</strong> Phân tích xu hướng hàng tuần</li>
+<li><strong>Tùy chỉnh:</strong> Điều tra sự cố cụ thể</li>
+</ul>
+<h3 id="tùy-chọn-granularity">Tùy chọn Granularity</h3>
+<ul>
+<li><strong>5 phút:</strong> Mặc định cho free tier</li>
+<li><strong>1 phút:</strong> Có sẵn với extended retention</li>
+<li><strong>1 giờ:</strong> Cho phân tích xu hướng dài hạn</li>
+</ul>
+<h2 id="lọc-và-drill-down">Lọc và Drill-Down</h2>
+<h3 id="tùy-chọn-lọc">Tùy chọn Lọc</h3>
+<ol>
+<li><strong>Theo SQL ID:</strong> Tập trung vào queries cụ thể</li>
+<li><strong>Theo User:</strong> Phân tích load theo user</li>
+<li><strong>Theo Host:</strong> Xác định hosts có vấn đề</li>
+<li><strong>Theo Database:</strong> Phân tích multi-database</li>
+</ol>
+<h3 id="quy-trình-drill-down">Quy trình Drill-Down</h3>
+<ol>
+<li><strong>Xác định thời điểm high-load</strong> trong biểu đồ chính</li>
+<li><strong>Click vào khoảng thời gian</strong> để zoom in</li>
+<li><strong>Chọn top dimension</strong> (SQL, Wait Event, v.v.)</li>
+<li><strong>Phân tích contributor cụ thể</strong></li>
+<li><strong>Xem thống kê chi tiết</strong></li>
+</ol>
+<h2 id="mẹo-điều-hướng-dashboard">Mẹo Điều hướng Dashboard</h2>
+<h3 id="1-bắt-đầu-với-bức-tranh-tổng-thể">1. Bắt đầu với Bức tranh Tổng thể</h3>
+<ul>
+<li>Xem xu hướng load tổng thể</li>
+<li>Xác định thời điểm peak usage</li>
+<li>Kiểm tra xem load có vượt quá số vCPU không</li>
+</ul>
+<h3 id="2-xác-định-top-contributors">2. Xác định Top Contributors</h3>
+<ul>
+<li>Kiểm tra Top SQL cho expensive queries</li>
+<li>Xem Top Wait Events cho bottlenecks</li>
+<li>Review Top Users/Hosts cho nguồn load</li>
+</ul>
+<h3 id="3-tương-quan-metrics">3. Tương quan Metrics</h3>
+<ul>
+<li>Khớp thời điểm high load với SQL cụ thể</li>
+<li>Tương quan wait events với query patterns</li>
+<li>Tìm các vấn đề hiệu suất lặp lại</li>
+</ul>
+<h3 id="4-sử-dụng-time-correlation">4. Sử dụng Time Correlation</h3>
+<ul>
+<li>So sánh hiệu suất hiện tại với lịch sử</li>
+<li>Xác định patterns hàng ngày/tuần</li>
+<li>Phát hiện xu hướng suy giảm hiệu suất</li>
+</ul>
+<h2 id="patterns-dashboard-phổ-biến">Patterns Dashboard Phổ biến</h2>
+<h3 id="1-cpu-bound-workload">1. CPU Bound Workload</h3>
+<pre tabindex="0"><code>Wait Events:
+├── CPU: 70%
+├── Lock waits: 20%
+└── I/O waits: 10%
+
+Hành động: Tối ưu các query tiêu tốn CPU
+</code></pre><h3 id="2-io-bound-workload">2. I/O Bound Workload</h3>
+<pre tabindex="0"><code>Wait Events:
+├── I/O operations: 60%
+├── CPU: 25%
+└── Lock waits: 15%
+
+Hành động: Thêm indexes, tối ưu storage
+</code></pre><h3 id="3-lock-contention">3. Lock Contention</h3>
+<pre tabindex="0"><code>Wait Events:
+├── Lock waits: 50%
+├── CPU: 30%
+└── I/O operations: 20%
+
+Hành động: Tối ưu transactions, giảm thời gian lock
+</code></pre><h2 id="troubleshooting-với-dashboard">Troubleshooting với Dashboard</h2>
+<h3 id="tình-huống-1-suy-giảm-hiệu-suất-đột-ngột">Tình huống 1: Suy giảm Hiệu suất Đột ngột</h3>
+<ol>
+<li><strong>Kiểm tra timeline</strong> khi vấn đề bắt đầu</li>
+<li><strong>So sánh wait events</strong> trước/sau sự cố</li>
+<li><strong>Xác định SQL statements mới</strong> hoặc thay đổi</li>
+<li><strong>Tìm patterns cạn kiệt tài nguyên</strong></li>
+</ol>
+<h3 id="tình-huống-2-suy-giảm-hiệu-suất-dần-dần">Tình huống 2: Suy giảm Hiệu suất Dần dần</h3>
+<ol>
+<li><strong>Sử dụng khoảng thời gian dài</strong> (tuần/tháng)</li>
+<li><strong>Tìm trending metrics</strong> (load tăng dần)</li>
+<li><strong>Kiểm tra impact của data growth</strong></li>
+<li><strong>Xác định nhu cầu capacity planning</strong></li>
+</ol>
+<h3 id="tình-huống-3-vấn-đề-không-liên-tục">Tình huống 3: Vấn đề Không liên tục</h3>
+<ol>
+<li><strong>Sử dụng granularity chi tiết</strong> (1 phút)</li>
+<li><strong>Tìm spike patterns</strong></li>
+<li><strong>Tương quan với application events</strong></li>
+<li><strong>Kiểm tra impact của batch jobs</strong></li>
+</ol>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-giám-sát-thường-xuyên">1. Giám sát Thường xuyên</h3>
+<ul>
+<li>Kiểm tra dashboard hàng ngày trong giờ làm việc</li>
+<li>Thiết lập automated alerts cho key thresholds</li>
+<li>Review xu hướng hiệu suất hàng tuần</li>
+</ul>
+<h3 id="2-thiết-lập-baseline">2. Thiết lập Baseline</h3>
+<ul>
+<li>Ghi chép patterns hiệu suất bình thường</li>
+<li>Xác định thời điểm peak usage</li>
+<li>Đặt mục tiêu hiệu suất thực tế</li>
+</ul>
+<h3 id="3-phân-tích-proactive">3. Phân tích Proactive</h3>
+<ul>
+<li>Giám sát trending metrics</li>
+<li>Xác định suy giảm hiệu suất sớm</li>
+<li>Lập kế hoạch nâng cấp capacity proactively</li>
+</ul>
+<h3 id="4-tài-liệu-hóa">4. Tài liệu hóa</h3>
+<ul>
+<li>Ghi chép các sự cố hiệu suất</li>
+<li>Theo dõi kết quả tối ưu hóa</li>
+<li>Duy trì performance runbooks</li>
+</ul>
+<h2 id="tích-hợp-với-công-cụ-khác">Tích hợp với Công cụ Khác</h2>
+<h3 id="tích-hợp-cloudwatch">Tích hợp CloudWatch</h3>
+<ul>
+<li>Thiết lập alarms cho key Performance Insights metrics</li>
+<li>Tạo custom dashboards kết hợp PI và CloudWatch</li>
+<li>Sử dụng CloudWatch Logs cho phân tích query chi tiết</li>
+</ul>
+<h3 id="application-monitoring">Application Monitoring</h3>
+<ul>
+<li>Tương quan hiệu suất database với application metrics</li>
+<li>Theo dõi end-to-end request latency</li>
+<li>Giám sát connection pool utilization</li>
+</ul>
+<h3 id="database-logs">Database Logs</h3>
+<ul>
+<li>Sử dụng slow query logs cho phân tích chi tiết</li>
+<li>Bật general query log cho troubleshooting</li>
+<li>Tương quan log entries với Performance Insights data</li>
+</ul>
+<h2 id="bước-tiếp-theo">Bước tiếp theo</h2>
+<ol>
+<li><strong><a href="../optimization/">Tối ưu hóa Query</a></strong> - Học kỹ thuật tối ưu hóa query</li>
+<li><strong><a href="../alerting/">Thiết lập Alerting</a></strong> - Thiết lập performance alerts</li>
+<li><strong><a href="/vi/best-practices/">Best Practices</a></strong> - Tuân theo performance best practices</li>
+</ol>
+
+            </div>
+        </div>
+    </section>
+
+    <script>
+        
+        document.getElementById('sidebar-toggle').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+    </script>
+</body>
+</html>

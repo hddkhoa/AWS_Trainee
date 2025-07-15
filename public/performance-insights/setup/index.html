@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setting up RDS Instance with Performance Insights - RDS Performance Insights &amp; Query Optimization</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    
+    
+    <link rel="stylesheet" href="/css/theme-blue.css">
+    
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif; 
+            font-weight: 300; 
+            line-height: 1.6; 
+            font-size: 18px;
+            color: var(--MAIN-TEXT-color, #323232);
+        }
+        
+        #sidebar { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 300px; 
+            height: 100vh; 
+            background: var(--MENU-SECTIONS-BG-color, #252c31); 
+            color: #ccc; 
+            overflow-y: auto; 
+            z-index: 1000; 
+        }
+        
+        #sidebar #header { 
+            padding: 2rem 1rem; 
+            text-align: center; 
+            background: var(--MENU-HEADER-BG-color, #1C90F3);
+            border-bottom: 1px solid var(--MENU-HEADER-BORDER-color, #33a1ff);
+        }
+        
+        #sidebar #header .baseurl { 
+            color: var(--MENU-SEARCH-BOX-color, #33a1ff); 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+        }
+        
+        #sidebar .searchbox { 
+            padding: 10px; 
+            background: var(--MENU-SEARCH-BG-color, #167ad0);
+            border-bottom: 1px solid var(--MENU-SEARCH-BOX-color, #33a1ff);
+        }
+        
+        #sidebar .searchbox input { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid var(--MENU-SEARCH-BOX-color, #33a1ff); 
+            background: rgba(255,255,255,0.1); 
+            color: var(--MENU-SEARCH-BOX-ICONS-color, #a1d2fd); 
+            border-radius: 4px; 
+        }
+        
+        #sidebar-toggle-span { display: none; }
+        
+        #body { margin-left: 300px; }
+        #body .padding { padding: 3rem 6rem; }
+        
+         
+        #sidebar ul { list-style: none; padding: 0; margin: 0; }
+        #sidebar ul li a { 
+            display: block; 
+            padding: 10px 20px; 
+            color: var(--MENU-SECTIONS-LINK-color, #ccc); 
+            text-decoration: none; 
+            border-left: 4px solid transparent; 
+        }
+        #sidebar ul li a:hover { 
+            background: var(--MENU-SECTIONS-ACTIVE-BG-color, #20272b); 
+            border-left-color: var(--MAIN-LINK-color, #1C90F3);
+            color: var(--MENU-SECTIONS-LINK-HOVER-color, #e6e6e6);
+        }
+        #sidebar ul li.active > a { 
+            background: var(--MENU-SECTION-ACTIVE-CATEGORY-BG-color, #fff); 
+            border-left-color: var(--MAIN-LINK-color, #1C90F3); 
+            color: var(--MENU-SECTION-ACTIVE-CATEGORY-color, #777); 
+        }
+        #sidebar ul ul { padding-left: 20px; }
+        #sidebar ul ul li a { padding: 8px 20px; font-size: 0.9em; }
+        
+         
+        .language-switcher { position: relative; padding: 20px; }
+        .language-switcher a { 
+            color: var(--MAIN-LINK-color, #1C90F3); 
+            text-decoration: none; 
+            margin-left: 10px; 
+        }
+        .language-switcher a:hover { 
+            color: var(--MAIN-LINK-HOVER-color, #167ad0); 
+        }
+        
+         
+        h1, h2, h3, h4, h5, h6 { 
+            color: var(--MAIN-TITLES-TEXT-color, #5e5e5e); 
+            font-weight: 400; 
+        }
+        h1 { font-size: 3rem; }
+        h2 { font-size: 2.5rem; }
+        h3 { font-size: 2rem; }
+        
+         
+        a { color: var(--MAIN-LINK-color, #1C90F3); }
+        a:hover { color: var(--MAIN-LINK-HOVER-color, #167ad0); }
+        
+         
+        pre { background: #f8f8f8; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+        code { background: #f8f8f8; padding: 0.2rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+        
+         
+        .breadcrumbs { margin-bottom: 2rem; color: #999; }
+        .breadcrumbs a { 
+            color: var(--MAIN-LINK-color, #1C90F3); 
+            text-decoration: none; 
+        }
+        .breadcrumbs a:hover { 
+            color: var(--MAIN-LINK-HOVER-color, #167ad0);
+            text-decoration: underline; 
+        }
+        
+         
+        @media (max-width: 768px) {
+            #sidebar { transform: translateX(-300px); transition: transform 0.3s; }
+            #sidebar.open { transform: translateX(0); }
+            #body { margin-left: 0; }
+            #body .padding { padding: 1rem 2rem; }
+            #sidebar-toggle-span { display: block; position: fixed; top: 10px; left: 10px; z-index: 1001; }
+            #sidebar-toggle { background: var(--MAIN-LINK-color, #1C90F3); color: white; padding: 10px; border: none; border-radius: 4px; }
+        }
+    </style>
+</head>
+<body>
+    <nav id="sidebar">
+        <div id="header">
+            <a id="logo" href='/'>
+  <div style="text-align: center; padding: 20px;">
+    <h2 style="color: var(--MENU-SEARCH-BOX-color, #33a1ff); font-size: 2rem; font-weight: bold; margin: 0;">
+      LEARN
+    </h2>
+    <p style="color: var(--MENU-SEARCH-BOX-ICONS-color, #a1d2fd); font-size: 0.9rem; margin: 5px 0 0 0;">
+      RDS Performance Insights
+    </p>
+  </div>
+</a>
+
+        </div>
+        
+        <div class="searchbox">
+            <input type="search" placeholder="Search..." id="search-input">
+        </div>
+        
+        <ul class="topics">
+            <li><a href="http://localhost:1313/"><i class="fas fa-home"></i> Home</a></li>
+            
+            <li class="">
+                <a href="/introduction/"><i class="fas fa-book"></i> 1. Introduction</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/preparation/"><i class="fas fa-book"></i> 2. Preparation</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/performance-baseline/"><i class="fas fa-book"></i> 3. Performance Baseline Establishment</a>
+                
+            </li>
+            
+            <li class="active">
+                <a href="/performance-insights/"><i class="fas fa-book"></i> Performance Insights</a>
+                
+                <ul>
+                    
+                    <li class="">
+                        <a href="/performance-insights/overview/">Performance Insights Overview</a>
+                    </li>
+                    
+                    <li class="active">
+                        <a href="/performance-insights/setup/">Setting up RDS Instance with Performance Insights</a>
+                    </li>
+                    
+                    <li class="">
+                        <a href="/performance-insights/dashboard/">Understanding the Performance Insights Dashboard</a>
+                    </li>
+                    
+                    <li class="">
+                        <a href="/performance-insights/optimization/">Query Optimization with Performance Insights</a>
+                    </li>
+                    
+                </ul>
+                
+            </li>
+            
+            <li class="">
+                <a href="/monitoring-dashboard/"><i class="fas fa-book"></i> 4. Monitoring Dashboard</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/alerting-system/"><i class="fas fa-book"></i> 5. Alerting System</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/query-optimization/"><i class="fas fa-book"></i> 6. Query Optimization Techniques</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/automated-tuning/"><i class="fas fa-book"></i> 7. Automated Tuning Recommendations</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/capacity-planning/"><i class="fas fa-book"></i> 8. Capacity Planning</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/monitoring/"><i class="fas fa-book"></i> 9. Monitoring &amp; Alerting</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/best-practices/"><i class="fas fa-book"></i> 10. Best Practices &amp; Resource Cleanup</a>
+                
+            </li>
+            
+        </ul>
+        
+        <div class="language-switcher">
+            
+            
+            
+            
+            <a href="/vi"><i class="fas fa-language"></i> Tiếng Việt</a>
+            
+            
+        </div>
+    </nav>
+
+    <span id="sidebar-toggle-span">
+        <a href="#" id="sidebar-toggle"><i class="fas fa-bars"></i></a>
+    </span>
+
+    <section id="body">
+        <div id="overlay"></div>
+        <div class="padding">
+            <div id="body-inner">
+                <div class="breadcrumbs">
+                    <a href="http://localhost:1313/">Home</a>
+                    
+                    <span> > </span><a href="/">RDS Performance Insights &amp; Query Optimization</a>
+                    
+                    <span> > </span><a href="/performance-insights/">Performance Insights</a>
+                    
+                    <span> > </span>Setting up RDS Instance with Performance Insights
+                </div>
+                
+                <h1>Setting up RDS Instance with Performance Insights</h1>
+                <h2 id="1-creating-rds-instance-with-performance-insights">1. Creating RDS Instance with Performance Insights</h2>
+<h3 id="step-1-access-rds-console">Step 1: Access RDS Console</h3>
+<ol>
+<li>Log in to AWS Console</li>
+<li>Search for &ldquo;RDS&rdquo; in the search bar</li>
+<li>Click on &ldquo;Amazon RDS&rdquo;</li>
+</ol>
+<h3 id="step-2-create-database">Step 2: Create Database</h3>
+<img src="/images/2025-07-14_15-55-30.png" alt="2025-07-14_15-55-30" width="800">
+<ol>
+<li>Click the orange &ldquo;Create database&rdquo; button</li>
+<li>Select &ldquo;Standard create&rdquo; (not Easy create)</li>
+<li>Engine options:
+• Choose MySQL (or PostgreSQL as needed)
+• Version: Select the latest version (e.g., MySQL 8.0.35)</li>
+</ol>
+<h3 id="step-3-templates-and-settings">Step 3: Templates and Settings</h3>
+<img src="/images/2025-07-14_15-58-04.png" alt="2025-07-14_15-58-04" width="800">
+<ol>
+<li>Templates: Choose &ldquo;Free tier&rdquo; (if eligible) or &ldquo;Dev/Test&rdquo;</li>
+<li>Settings:
+• <strong>DB instance identifier:</strong> mydb-performance-test
+• <strong>Master username:</strong> admin
+• <strong>Master password:</strong> Create a strong password or select &ldquo;Auto generate&rdquo;</li>
+</ol>
+<h3 id="step-4-instance-configuration">Step 4: Instance Configuration</h3>
+<img src="/images/2025-07-14_16-02-05.png" alt="2025-07-14_16-02-05" width="800">
+<ol>
+<li>DB instance class:
+• Select &ldquo;Burstable classes (includes t classes)&rdquo;
+• Choose db.t3.micro (Free tier) or db.t3.small</li>
+<li>Storage:
+• <strong>Storage type:</strong> General Purpose SSD (gp2)
+• <strong>Allocated storage:</strong> 20 GB
+• Uncheck &ldquo;Enable storage autoscaling&rdquo; (to save costs)</li>
+</ol>
+<h3 id="step-5-connectivity">Step 5: Connectivity</h3>
+<img src="/images/2025-07-14_16-03-40.png" alt="2025-07-14_16-03-40" width="800">
+<ol>
+<li>Virtual private cloud (VPC): Select Default VPC</li>
+<li>Subnet group: default</li>
+<li>Public access: Select &ldquo;Yes&rdquo; (for external testing)</li>
+<li>VPC security group:
+• Select &ldquo;Create new&rdquo;
+• <strong>New VPC security group name:</strong> rds-performance-sg</li>
+</ol>
+<h3 id="step-6-database-authentication">Step 6: Database Authentication</h3>
+<ol>
+<li>Database authentication: Select &ldquo;Password authentication&rdquo;</li>
+</ol>
+<h3 id="step-7-monitoring-important">Step 7: Monitoring (Important!)</h3>
+<img src="/images/2025-07-14_16-08-09.png" alt="2025-07-14_16-08-09" width="800">
+<ol>
+<li>Enable Enhanced monitoring: Check the box
+• <strong>Granularity:</strong> 60 seconds
+• <strong>Monitoring Role:</strong> Select &ldquo;Default&rdquo; or create new</li>
+<li><strong>Enable Performance Insights: CHECK THIS ✅</strong>
+• <strong>Retention period:</strong> Select &ldquo;7 days (free)&rdquo;
+• <strong>Master key:</strong> Select &ldquo;Default&rdquo;</li>
+</ol>
+<h3 id="step-8-additional-configuration">Step 8: Additional Configuration</h3>
+<img src="/images/2025-07-14_16-10-09.png" alt="2025-07-14_16-10-09" width="800">
+<ol>
+<li>Initial database name: testdb</li>
+<li>DB parameter group: default</li>
+<li>Backup:
+• <strong>Backup retention period:</strong> 7 days
+• <strong>Backup window:</strong> Choose low-usage time</li>
+<li>Maintenance:
+• <strong>Enable auto minor version upgrade:</strong> Check
+• <strong>Maintenance window:</strong> Choose low-usage time</li>
+</ol>
+<h3 id="step-9-create-database">Step 9: Create Database</h3>
+<img src="/images/2025-07-14_16-11-19.png" alt="2025-07-14_16-11-19" width="800">
+<img src="/images/2025-07-14_16-45-15.png" alt="2025-07-14_16-45-15" width="800">
+<ol>
+<li>Click &ldquo;Create database&rdquo;</li>
+<li>Wait 10-15 minutes for database creation</li>
+<li>Status will change from &ldquo;Creating&rdquo; → &ldquo;Available&rdquo;</li>
+</ol>
+<h2 id="2-enabling-performance-insights-on-existing-rds">2. Enabling Performance Insights on Existing RDS</h2>
+<p>If you already have an RDS instance and want to enable Performance Insights:</p>
+<h3 id="step-1-select-database">Step 1: Select Database</h3>
+<img src="/images/22.png" alt="22" width="800">
+<ol>
+<li>Go to RDS Console</li>
+<li>Click &ldquo;Databases&rdquo; in the sidebar</li>
+<li>Select the database instance to enable</li>
+</ol>
+<h3 id="step-2-modify-database">Step 2: Modify Database</h3>
+<img src="/images/33.png" alt="33" width="800">
+<ol>
+<li>Click the &ldquo;Modify&rdquo; button</li>
+<li>Scroll down to &ldquo;Monitoring&rdquo; section</li>
+<li>Find &ldquo;Performance Insights&rdquo;</li>
+<li>Check &ldquo;Enable Performance Insights&rdquo;</li>
+<li>Select retention period (7 days free)</li>
+<li>Click &ldquo;Continue&rdquo;</li>
+</ol>
+<h3 id="step-3-apply-changes">Step 3: Apply Changes</h3>
+<ol>
+<li>Choose &ldquo;Apply immediately&rdquo; or &ldquo;Apply during maintenance window&rdquo;</li>
+<li>Click &ldquo;Modify DB instance&rdquo;</li>
+</ol>
+<h2 id="3-verify-performance-insights-is-working">3. Verify Performance Insights is Working</h2>
+<h3 id="check-status">Check Status:</h3>
+<ol>
+<li>Go to RDS Console</li>
+<li>Select database instance</li>
+<li>&ldquo;Configuration&rdquo; tab → check &ldquo;Performance Insights&rdquo; = Enabled</li>
+<li>&ldquo;Monitoring&rdquo; tab → should have &ldquo;View in Performance Insights&rdquo; link</li>
+</ol>
+<h3 id="access-performance-insights-dashboard">Access Performance Insights Dashboard:</h3>
+<ol>
+<li>Click &ldquo;View in Performance Insights&rdquo;</li>
+<li>Or go to &ldquo;Performance Insights&rdquo; menu in RDS sidebar</li>
+<li>Select database from dropdown</li>
+</ol>
+<h2 id="4-configure-security-group">4. Configure Security Group</h2>
+<p>To connect from outside, configure Security Group:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Find Security Group ID</span>
+</span></span><span style="display:flex;"><span>aws ec2 describe-security-groups --group-names rds-performance-sg
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Add rule for MySQL (port 3306)</span>
+</span></span><span style="display:flex;"><span>aws ec2 authorize-security-group-ingress <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --group-id sg-xxxxxxxxx <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --protocol tcp <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --port <span style="color:#ae81ff">3306</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --cidr 0.0.0.0/0
+</span></span></code></pre></div><p>⚠️ <strong>Security Note:</strong> Only open 0.0.0.0/0 for test environments. In production, restrict to specific IPs.</p>
+<h2 id="5-test-connection">5. Test Connection</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Install MySQL client</span>
+</span></span><span style="display:flex;"><span>sudo apt-get install mysql-client
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Connect to RDS</span>
+</span></span><span style="display:flex;"><span>mysql -h mydb-performance-test.xxxxxxxxx.us-east-1.rds.amazonaws.com <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>      -u admin -p testdb
+</span></span></code></pre></div><h2 id="6-using-aws-cli-to-create-rds-with-performance-insights">6. Using AWS CLI to Create RDS with Performance Insights</h2>
+<p>You can also create the RDS instance using AWS CLI:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Create RDS instance with Performance Insights enabled</span>
+</span></span><span style="display:flex;"><span>aws rds create-db-instance <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-instance-identifier mydb-performance-test <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-instance-class db.t3.micro <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --engine mysql <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --engine-version 8.0.35 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --master-username admin <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --master-user-password YourStrongPassword123! <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --allocated-storage <span style="color:#ae81ff">20</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --storage-type gp2 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --vpc-security-group-ids sg-xxxxxxxxx <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-name testdb <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --backup-retention-period <span style="color:#ae81ff">7</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --monitoring-interval <span style="color:#ae81ff">60</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --monitoring-role-arn arn:aws:iam::123456789012:role/rds-monitoring-role <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --enable-performance-insights <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --performance-insights-retention-period <span style="color:#ae81ff">7</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --publicly-accessible <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --region us-east-1
+</span></span></code></pre></div><h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues">Common Issues:</h3>
+<ol>
+<li>
+<p><strong>Performance Insights not showing data:</strong></p>
+<ul>
+<li>Wait 5-10 minutes after enabling</li>
+<li>Check if there&rsquo;s traffic to the database</li>
+</ul>
+</li>
+<li>
+<p><strong>Cannot connect to database:</strong></p>
+<ul>
+<li>Check Security Group rules</li>
+<li>Verify Public accessibility = Yes</li>
+<li>Check VPC and Subnet configuration</li>
+</ul>
+</li>
+<li>
+<p><strong>Enhanced Monitoring not working:</strong></p>
+<ul>
+<li>Check IAM role permissions</li>
+<li>Recreate monitoring role if needed</li>
+</ul>
+</li>
+<li>
+<p><strong>Performance Insights dashboard empty:</strong></p>
+<ul>
+<li>Ensure database has some query activity</li>
+<li>Check retention period settings</li>
+<li>Verify Performance Insights is enabled</li>
+</ul>
+</li>
+</ol>
+<h2 id="cost-estimation">Cost Estimation</h2>
+<ul>
+<li><strong>RDS db.t3.micro:</strong> ~$12.41/month (Free tier: 750 hours/month)</li>
+<li><strong>Performance Insights:</strong> Free for 7 days retention</li>
+<li><strong>Enhanced Monitoring:</strong> ~$2.50/month for 60-second granularity</li>
+<li><strong>Storage 20GB:</strong> ~$2.30/month</li>
+</ul>
+<p><strong>Total:</strong> ~$17/month (or free if within Free tier limits)</p>
+<h2 id="next-steps">Next Steps</h2>
+<p>Once your RDS instance is running with Performance Insights enabled:</p>
+<ol>
+<li>Generate some database load for testing</li>
+<li>Explore the Performance Insights dashboard</li>
+<li>Learn to interpret the metrics and wait events</li>
+<li>Set up CloudWatch alarms for key metrics</li>
+<li>Practice query optimization techniques</li>
+</ol>
+
+            </div>
+        </div>
+    </section>
+
+    <script>
+        
+        document.getElementById('sidebar-toggle').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+    </script>
+</body>
+</html>

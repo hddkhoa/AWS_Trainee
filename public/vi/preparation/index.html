@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2. Chuẩn Bị - RDS Performance Insights &amp; Tối Ưu Hóa Truy Vấn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif; font-weight: 300; line-height: 1.6; font-size: 18px; }
+        
+        #sidebar { position: fixed; top: 0; left: 0; width: 300px; height: 100vh; background: #282828; color: #ccc; overflow-y: auto; z-index: 1000; }
+        #sidebar .searchbox { padding: 10px; background: #323232; }
+        #sidebar .searchbox input { width: 100%; padding: 10px; border: none; background: #404040; color: #ccc; border-radius: 4px; }
+        
+        #sidebar-toggle-span { display: none; }
+        
+        #body { margin-left: 300px; }
+        #body .padding { padding: 3rem 6rem; }
+        
+         
+        #sidebar ul { list-style: none; padding: 0; margin: 0; }
+        #sidebar ul li a { display: block; padding: 10px 20px; color: #ccc; text-decoration: none; border-left: 4px solid transparent; }
+        #sidebar ul li a:hover { background: #404040; border-left-color: #599a3e; }
+        #sidebar ul li.active > a { background: #404040; border-left-color: #599a3e; color: #ccc; }
+        #sidebar ul ul { padding-left: 20px; }
+        #sidebar ul ul li a { padding: 8px 20px; font-size: 0.9em; }
+        
+         
+        #sidebar #header { padding: 2rem 1rem; text-align: center; }
+        #sidebar #header .baseurl { color: #599a3e; font-size: 1.5rem; font-weight: bold; }
+        
+         
+        .language-switcher { position: relative; padding: 20px; }
+        .language-switcher a { color: #599a3e; text-decoration: none; margin-left: 10px; }
+        
+         
+        h1, h2, h3, h4, h5, h6 { color: #5e5e5e; font-weight: 400; }
+        h1 { font-size: 3rem; }
+        
+         
+        .chapter h1 { color: #599a3e; border-bottom: 4px solid #F0F2F4; padding-bottom: 1rem; margin-bottom: 2rem; }
+        
+         
+        .page-list { margin-top: 2rem; }
+        .page-item { margin: 1rem 0; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 4px; }
+        .page-item h2 { margin: 0 0 0.5rem 0; }
+        .page-item h2 a { color: #599a3e; text-decoration: none; }
+        .page-item h2 a:hover { text-decoration: underline; }
+        .page-item p { color: #666; margin: 0; }
+        
+         
+        .breadcrumbs { margin-bottom: 2rem; color: #999; }
+        .breadcrumbs a { color: #599a3e; text-decoration: none; }
+        .breadcrumbs a:hover { text-decoration: underline; }
+        
+         
+        @media (max-width: 768px) {
+            #sidebar { transform: translateX(-300px); transition: transform 0.3s; }
+            #sidebar.open { transform: translateX(0); }
+            #body { margin-left: 0; }
+            #body .padding { padding: 1rem 2rem; }
+            #sidebar-toggle-span { display: block; position: fixed; top: 10px; left: 10px; z-index: 1001; }
+            #sidebar-toggle { background: #599a3e; color: white; padding: 10px; border: none; border-radius: 4px; }
+        }
+    </style>
+</head>
+<body>
+    <nav id="sidebar">
+        <div id="header">
+            <a id="logo" href='/'>
+  <div style="text-align: center; padding: 20px;">
+    <h2 style="color: var(--MENU-SEARCH-BOX-color, #33a1ff); font-size: 2rem; font-weight: bold; margin: 0;">
+      LEARN
+    </h2>
+    <p style="color: var(--MENU-SEARCH-BOX-ICONS-color, #a1d2fd); font-size: 0.9rem; margin: 5px 0 0 0;">
+      RDS Performance Insights
+    </p>
+  </div>
+</a>
+
+        </div>
+        
+        <div class="searchbox">
+            <input type="search" placeholder="Search..." id="search-input">
+        </div>
+        
+        <ul class="topics">
+            <li><a href="http://localhost:1313/"><i class="fas fa-home"></i> Home</a></li>
+            
+            <li class="">
+                <a href="/vi/introduction/"><i class="fas fa-book"></i> 1. Giới Thiệu</a>
+                
+            </li>
+            
+            <li class="active">
+                <a href="/vi/preparation/"><i class="fas fa-book"></i> 2. Chuẩn Bị</a>
+                
+                <ul>
+                    
+                    <li><a href="/vi/preparation/prerequisites/">Điều kiện tiên quyết &amp; Yêu cầu</a></li>
+                    
+                    <li><a href="/vi/preparation/environment-setup/">Thiết lập môi trường</a></li>
+                    
+                </ul>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/performance-baseline/"><i class="fas fa-book"></i> 3. Thiết lập Đường cơ sở Hiệu suất</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/performance-insights/"><i class="fas fa-book"></i> Performance Insights</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/monitoring-dashboard/"><i class="fas fa-book"></i> 4. Bảng điều khiển Giám sát</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/alerting-system/"><i class="fas fa-book"></i> 5. Hệ thống Cảnh báo</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/query-optimization/"><i class="fas fa-book"></i> 6. Kỹ thuật Tối ưu hóa Truy vấn</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/automated-tuning/"><i class="fas fa-book"></i> 7. Đề xuất Điều chỉnh Tự động</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/capacity-planning/"><i class="fas fa-book"></i> 8. Lập kế hoạch Năng lực</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/monitoring/"><i class="fas fa-book"></i> 9. Giám sát &amp; Cảnh báo</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/best-practices/"><i class="fas fa-book"></i> 10. Dọn dẹp tài nguyên</a>
+                
+            </li>
+            
+        </ul>
+        
+        <div class="language-switcher">
+            
+            
+            <a href="/vi/en"><i class="fas fa-language"></i> English</a>
+            
+            
+            
+            
+        </div>
+    </nav>
+
+    <span id="sidebar-toggle-span">
+        <a href="#" id="sidebar-toggle"><i class="fas fa-bars"></i></a>
+    </span>
+
+    <section id="body">
+        <div id="overlay"></div>
+        <div class="padding">
+            <div id="body-inner">
+                <div class="breadcrumbs">
+                    <a href="http://localhost:1313/">Home</a>
+                    
+                    <span> > </span><a href="/vi/">RDS Performance Insights &amp; Query Optimization</a>
+                    
+                    <span> > </span>2. Chuẩn Bị
+                </div>
+                
+                <div class="chapter">
+                    <h1>2. Chuẩn Bị</h1>
+                    <h3 id="chương-2">Chương 2</h3>
+<h1 id="chuẩn-bị">Chuẩn Bị</h1>
+<p>Tìm hiểu cách chuẩn bị môi trường và thu thập các điều kiện tiên quyết để triển khai RDS Performance Insights và tối ưu hóa truy vấn.</p>
+<h2 id="điều-kiện-tiên-quyết">Điều Kiện Tiên Quyết</h2>
+<p>Trước khi bắt đầu với RDS Performance Insights, hãy đảm bảo bạn có:</p>
+<ul>
+<li><strong>Tài khoản AWS</strong> với quyền phù hợp</li>
+<li><strong>RDS Instance</strong> chạy engine được hỗ trợ (MySQL, PostgreSQL, Oracle, SQL Server, MariaDB)</li>
+<li><strong>AWS CLI</strong> được cấu hình với thông tin xác thực phù hợp</li>
+<li><strong>Hiểu biết cơ bản</strong> về SQL và các khái niệm cơ sở dữ liệu</li>
+</ul>
+<h2 id="các-engine-cơ-sở-dữ-liệu-được-hỗ-trợ">Các Engine Cơ Sở Dữ Liệu Được Hỗ Trợ</h2>
+<p>Performance Insights có sẵn cho các RDS engines sau:</p>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Phiên Bản Tối Thiểu</th>
+<th>Ghi Chú</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MySQL</td>
+<td>5.6.10+</td>
+<td>Tất cả instance classes được hỗ trợ</td>
+</tr>
+<tr>
+<td>PostgreSQL</td>
+<td>9.6+</td>
+<td>Tất cả instance classes được hỗ trợ</td>
+</tr>
+<tr>
+<td>Oracle</td>
+<td>12.1.0.2+</td>
+<td>Yêu cầu Enterprise Edition</td>
+</tr>
+<tr>
+<td>SQL Server</td>
+<td>2016+</td>
+<td>Tất cả editions được hỗ trợ</td>
+</tr>
+<tr>
+<td>MariaDB</td>
+<td>10.1+</td>
+<td>Tất cả instance classes được hỗ trợ</td>
+</tr>
+</tbody>
+</table>
+<h2 id="quyền-yêu-cầu">Quyền Yêu Cầu</h2>
+<p>User hoặc role AWS của bạn cần các quyền sau:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;Version&#34;</span>: <span style="color:#e6db74">&#34;2012-10-17&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;Statement&#34;</span>: [
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Effect&#34;</span>: <span style="color:#e6db74">&#34;Allow&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Action&#34;</span>: [
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;rds:DescribeDBInstances&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;rds:DescribeDBClusters&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;rds:ModifyDBInstance&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;pi:DescribeDimensionKeys&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;pi:GetResourceMetrics&#34;</span>
+</span></span><span style="display:flex;"><span>            ],
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Resource&#34;</span>: <span style="color:#e6db74">&#34;*&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="thiết-lập-môi-trường">Thiết Lập Môi Trường</h2>
+<p>Thực hiện theo các bước sau để chuẩn bị môi trường của bạn:</p>
+<ol>
+<li><strong>Kích hoạt Performance Insights</strong> trên RDS instance của bạn</li>
+<li><strong>Cấu hình thời gian lưu trữ</strong> (7 ngày miễn phí, lên đến 2 năm với chi phí bổ sung)</li>
+<li><strong>Thiết lập công cụ giám sát</strong> và bảng điều khiển</li>
+<li><strong>Chuẩn bị khối lượng công việc thử nghiệm</strong> để phân tích hiệu suất</li>
+</ol>
+<h2 id="cân-nhắc-chi-phí">Cân Nhắc Chi Phí</h2>
+<ul>
+<li><strong>Gói miễn phí</strong>: 7 ngày lưu trữ dữ liệu Performance Insights</li>
+<li><strong>Lưu trữ mở rộng</strong>: Áp dụng phí bổ sung cho việc lưu trữ quá 7 ngày</li>
+<li><strong>Không có phí bổ sung</strong> cho chính tính năng Performance Insights</li>
+<li><strong>Giám sát chi phí</strong> thông qua AWS Cost Explorer và cảnh báo thanh toán</li>
+</ul>
+<p>Sẵn sàng tiếp tục? Hãy chuyển sang thiết lập Performance Insights!</p>
+
+                </div>
+                
+                
+                <div class="page-list">
+                    
+                    <div class="page-item">
+                        <h2><a href="/vi/preparation/prerequisites/">Điều kiện tiên quyết &amp; Yêu cầu</a></h2>
+                        
+                        <p>Điều kiện tiên quyết &amp; Yêu cầu 🔧 Điều kiện tiên quyết kỹ thuật Yêu cầu AWS Account AWS Account: Tài khoản AWS hoạt động với quyền phù hợp RDS Access: Khả năng sửa đổi RDS instances và parameter groups IAM Permissions: Quyền cần thiết cho Performance Insights và CloudWatch Billing Access: Hiểu biết về chi phí tiềm năng cho extended retention Database Engines được hỗ trợ Performance Insights có sẵn cho:</p>
+                        
+                    </div>
+                    
+                    <div class="page-item">
+                        <h2><a href="/vi/preparation/environment-setup/">Thiết lập môi trường</a></h2>
+                        
+                        <p>Thiết lập môi trường 🏗️ Môi trường phát triển Thiết lập môi trường phát triển cục bộ Cài đặt các công cụ cần thiết # Cài đặt AWS CLI curl &#34;https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip&#34; -o &#34;awscliv2.zip&#34; unzip awscliv2.zip sudo ./aws/install # Xác minh cài đặt aws --version # Cấu hình AWS credentials aws configure Công cụ Database Client # PostgreSQL client sudo apt-get install postgresql-client # MySQL client sudo apt-get install mysql-client # Universal database client (tùy chọn) sudo snap install dbeaver-ce Công cụ giám sát # Cài đặt Python cho custom scripts sudo apt-get install python3 python3-pip # Cài đặt các Python packages cần thiết pip3 install boto3 pandas matplotlib psycopg2-binary pymysql 🔧 Cấu hình môi trường AWS Thiết lập IAM Tạo Performance Insights Role # Tạo IAM policy cho Performance Insights aws iam create-policy \ --policy-name PerformanceInsightsPolicy \ --policy-document file://performance-insights-policy.</p>
+                        
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <script>
+        
+        document.getElementById('sidebar-toggle').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+    </script>
+</body>
+</html>

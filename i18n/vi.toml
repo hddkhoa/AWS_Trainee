@@ -1,0 +1,113 @@
+[Search-placeholder]
+other = "Tìm kiếm..."
+
+[Clear-History]
+other = "Xóa Lịch Sử"
+
+[Attachments-label]
+other = "Tệp Đính Kèm"
+
+[title-404]
+other = "Lỗi"
+
+[message-404]
+other = "Rất tiếc! Trang này không tồn tại."
+
+[Go-to-homepage]
+other = "Về Trang Chủ"
+
+[Edit-this-page]
+other = "Chỉnh Sửa Trang Này"
+
+[Shortcuts-Title]
+other = "Phím Tắt"
+
+[Expand-title]
+other = "Mở Rộng"
+
+[Navigation-toggle]
+other = "Chuyển Đổi Điều Hướng"
+
+[Sidebar-toggle]
+other = "Chuyển Đổi Thanh Bên"
+
+[Menu-Home]
+other = "Trang Chủ"
+
+[Breadcrumb-Home]
+other = "Trang Chủ"
+
+[Search-Results-Title]
+other = "Kết Quả Tìm Kiếm"
+
+[Search-Results-Empty]
+other = "Không tìm thấy kết quả nào cho \"{0}\""
+
+[Search-Results-Count]
+other = "Tìm thấy {0} kết quả cho \"{1}\""
+
+[Print-this-page]
+other = "In Trang Này"
+
+[Language-switch-title]
+other = "Chọn Ngôn Ngữ"
+
+[Copy-to-clipboard]
+other = "Sao Chép Vào Clipboard"
+
+[Copied-to-clipboard]
+other = "Đã Sao Chép!"
+
+[Copy-link]
+other = "Sao Chép Liên Kết"
+
+[Link-copied]
+other = "Đã Sao Chép Liên Kết!"
+
+[Chapter]
+other = "Chương"
+
+[Next]
+other = "Tiếp Theo"
+
+[Previous]
+other = "Trước"
+
+[Last-modified]
+other = "Cập nhật lần cuối"
+
+[by-author]
+other = "bởi"
+
+[on-date]
+other = "vào"
+
+[minute-read]
+other = "phút đọc"
+
+[minutes-read]
+other = "phút đọc"
+
+[Table-of-contents]
+other = "Mục Lục"
+
+[Note]
+other = "Ghi Chú"
+
+[Tip]
+other = "Mẹo"
+
+[Warning]
+other = "Cảnh Báo"
+
+[Important]
+other = "Quan Trọng"
+
+[Caution]
+other = "Thận Trọng"
+
+[Example]
+other = "Ví Dụ"
+
+[Info]
+other = "Thông Tin"

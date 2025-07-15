@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>1. Giới Thiệu on RDS Performance Insights &amp; Tối Ưu Hóa Truy Vấn</title>
+    <link>http://localhost:1313/vi/introduction/</link>
+    <description>Recent content in 1. Giới Thiệu on RDS Performance Insights &amp; Tối Ưu Hóa Truy Vấn</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>vi-vn</language>
+    <lastBuildDate>Fri, 11 Jul 2025 11:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/vi/introduction/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>RDS Performance Insights là gì?</title>
+      <link>http://localhost:1313/vi/introduction/overview/</link>
+      <pubDate>Fri, 11 Jul 2025 11:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/vi/introduction/overview/</guid>
+      <description>RDS Performance Insights là gì? 📊 Tổng quan Amazon RDS Performance Insights là một tính năng điều chỉnh và giám sát hiệu suất cơ sở dữ liệu giúp bạn nhanh chóng đánh giá tải trên cơ sở dữ liệu và xác định thời điểm và vị trí cần hành động. Nó cung cấp cái nhìn toàn diện về hiệu suất cơ sở dữ liệu, giúp dễ dàng xác định các nút thắt và tối ưu hóa hiệu suất truy vấn.</description>
+    </item>
+    <item>
+      <title>Lợi ích &amp; ROI</title>
+      <link>http://localhost:1313/vi/introduction/benefits/</link>
+      <pubDate>Fri, 11 Jul 2025 11:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/vi/introduction/benefits/</guid>
+      <description>Lợi ích &amp;amp; Lợi nhuận đầu tư 💰 Tác động tài chính Phân tích tiết kiệm chi phí Danh mục Tiết kiệm hàng năm Tỷ lệ phần trăm Tối ưu hóa hạ tầng $350,000 54% Hiệu quả vận hành $200,000 31% Giảm thời gian ngừng hoạt động $100,000 15% Tổng tiết kiệm hàng năm $650,000 100% Tính toán ROI Đầu tư ban đầu: $260,000 (triển khai + đào tạo) Tiết kiệm hàng năm: $650,000 ROI: 250% trong 18 tháng Điểm hòa vốn: 6.</description>
+    </item>
+  </channel>
+</rss>

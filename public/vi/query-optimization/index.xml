@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>6. Kỹ thuật Tối ưu hóa Truy vấn on RDS Performance Insights &amp; Tối Ưu Hóa Truy Vấn</title>
+    <link>http://localhost:1313/vi/query-optimization/</link>
+    <description>Recent content in 6. Kỹ thuật Tối ưu hóa Truy vấn on RDS Performance Insights &amp; Tối Ưu Hóa Truy Vấn</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>vi-vn</language>
+    <lastBuildDate>Fri, 11 Jul 2025 11:00:00 +0700</lastBuildDate>
+    <atom:link href="http://localhost:1313/vi/query-optimization/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Tổng quan</title>
+      <link>http://localhost:1313/vi/query-optimization/overview/</link>
+      <pubDate>Fri, 11 Jul 2025 11:00:00 +0700</pubDate>
+      <guid>http://localhost:1313/vi/query-optimization/overview/</guid>
+      <description>Tổng quan tối ưu hóa truy vấn 🎯 Tối ưu hóa truy vấn là gì? Tối ưu hóa truy vấn là quá trình cải thiện hiệu suất truy vấn cơ sở dữ liệu thông qua các kỹ thuật khác nhau bao gồm tối ưu hóa chỉ mục, viết lại truy vấn và phân tích kế hoạch thực thi.&#xA;Thông tin: Tối ưu hóa truy vấn hiệu quả có thể cải thiện hiệu suất 70% hoặc hơn trong khi giảm tiêu thụ tài nguyên.</description>
+    </item>
+  </channel>
+</rss>

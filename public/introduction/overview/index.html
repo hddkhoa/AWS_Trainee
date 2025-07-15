@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What is RDS Performance Insights? - RDS Performance Insights &amp; Query Optimization</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    
+    
+    <link rel="stylesheet" href="/css/theme-blue.css">
+    
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif; 
+            font-weight: 300; 
+            line-height: 1.6; 
+            font-size: 18px;
+            color: var(--MAIN-TEXT-color, #323232);
+        }
+        
+        #sidebar { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 300px; 
+            height: 100vh; 
+            background: var(--MENU-SECTIONS-BG-color, #252c31); 
+            color: #ccc; 
+            overflow-y: auto; 
+            z-index: 1000; 
+        }
+        
+        #sidebar #header { 
+            padding: 2rem 1rem; 
+            text-align: center; 
+            background: var(--MENU-HEADER-BG-color, #1C90F3);
+            border-bottom: 1px solid var(--MENU-HEADER-BORDER-color, #33a1ff);
+        }
+        
+        #sidebar #header .baseurl { 
+            color: var(--MENU-SEARCH-BOX-color, #33a1ff); 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+        }
+        
+        #sidebar .searchbox { 
+            padding: 10px; 
+            background: var(--MENU-SEARCH-BG-color, #167ad0);
+            border-bottom: 1px solid var(--MENU-SEARCH-BOX-color, #33a1ff);
+        }
+        
+        #sidebar .searchbox input { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid var(--MENU-SEARCH-BOX-color, #33a1ff); 
+            background: rgba(255,255,255,0.1); 
+            color: var(--MENU-SEARCH-BOX-ICONS-color, #a1d2fd); 
+            border-radius: 4px; 
+        }
+        
+        #sidebar-toggle-span { display: none; }
+        
+        #body { margin-left: 300px; }
+        #body .padding { padding: 3rem 6rem; }
+        
+         
+        #sidebar ul { list-style: none; padding: 0; margin: 0; }
+        #sidebar ul li a { 
+            display: block; 
+            padding: 10px 20px; 
+            color: var(--MENU-SECTIONS-LINK-color, #ccc); 
+            text-decoration: none; 
+            border-left: 4px solid transparent; 
+        }
+        #sidebar ul li a:hover { 
+            background: var(--MENU-SECTIONS-ACTIVE-BG-color, #20272b); 
+            border-left-color: var(--MAIN-LINK-color, #1C90F3);
+            color: var(--MENU-SECTIONS-LINK-HOVER-color, #e6e6e6);
+        }
+        #sidebar ul li.active > a { 
+            background: var(--MENU-SECTION-ACTIVE-CATEGORY-BG-color, #fff); 
+            border-left-color: var(--MAIN-LINK-color, #1C90F3); 
+            color: var(--MENU-SECTION-ACTIVE-CATEGORY-color, #777); 
+        }
+        #sidebar ul ul { padding-left: 20px; }
+        #sidebar ul ul li a { padding: 8px 20px; font-size: 0.9em; }
+        
+         
+        .language-switcher { position: relative; padding: 20px; }
+        .language-switcher a { 
+            color: var(--MAIN-LINK-color, #1C90F3); 
+            text-decoration: none; 
+            margin-left: 10px; 
+        }
+        .language-switcher a:hover { 
+            color: var(--MAIN-LINK-HOVER-color, #167ad0); 
+        }
+        
+         
+        h1, h2, h3, h4, h5, h6 { 
+            color: var(--MAIN-TITLES-TEXT-color, #5e5e5e); 
+            font-weight: 400; 
+        }
+        h1 { font-size: 3rem; }
+        h2 { font-size: 2.5rem; }
+        h3 { font-size: 2rem; }
+        
+         
+        a { color: var(--MAIN-LINK-color, #1C90F3); }
+        a:hover { color: var(--MAIN-LINK-HOVER-color, #167ad0); }
+        
+         
+        pre { background: #f8f8f8; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+        code { background: #f8f8f8; padding: 0.2rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+        
+         
+        .breadcrumbs { margin-bottom: 2rem; color: #999; }
+        .breadcrumbs a { 
+            color: var(--MAIN-LINK-color, #1C90F3); 
+            text-decoration: none; 
+        }
+        .breadcrumbs a:hover { 
+            color: var(--MAIN-LINK-HOVER-color, #167ad0);
+            text-decoration: underline; 
+        }
+        
+         
+        @media (max-width: 768px) {
+            #sidebar { transform: translateX(-300px); transition: transform 0.3s; }
+            #sidebar.open { transform: translateX(0); }
+            #body { margin-left: 0; }
+            #body .padding { padding: 1rem 2rem; }
+            #sidebar-toggle-span { display: block; position: fixed; top: 10px; left: 10px; z-index: 1001; }
+            #sidebar-toggle { background: var(--MAIN-LINK-color, #1C90F3); color: white; padding: 10px; border: none; border-radius: 4px; }
+        }
+    </style>
+</head>
+<body>
+    <nav id="sidebar">
+        <div id="header">
+            <a id="logo" href='/'>
+  <div style="text-align: center; padding: 20px;">
+    <h2 style="color: var(--MENU-SEARCH-BOX-color, #33a1ff); font-size: 2rem; font-weight: bold; margin: 0;">
+      LEARN
+    </h2>
+    <p style="color: var(--MENU-SEARCH-BOX-ICONS-color, #a1d2fd); font-size: 0.9rem; margin: 5px 0 0 0;">
+      RDS Performance Insights
+    </p>
+  </div>
+</a>
+
+        </div>
+        
+        <div class="searchbox">
+            <input type="search" placeholder="Search..." id="search-input">
+        </div>
+        
+        <ul class="topics">
+            <li><a href="http://localhost:1313/"><i class="fas fa-home"></i> Home</a></li>
+            
+            <li class="active">
+                <a href="/introduction/"><i class="fas fa-book"></i> 1. Introduction</a>
+                
+                <ul>
+                    
+                    <li class="active">
+                        <a href="/introduction/overview/">What is RDS Performance Insights?</a>
+                    </li>
+                    
+                    <li class="">
+                        <a href="/introduction/benefits/">Benefits &amp; ROI</a>
+                    </li>
+                    
+                </ul>
+                
+            </li>
+            
+            <li class="">
+                <a href="/preparation/"><i class="fas fa-book"></i> 2. Preparation</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/performance-baseline/"><i class="fas fa-book"></i> 3. Performance Baseline Establishment</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/performance-insights/"><i class="fas fa-book"></i> Performance Insights</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/monitoring-dashboard/"><i class="fas fa-book"></i> 4. Monitoring Dashboard</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/alerting-system/"><i class="fas fa-book"></i> 5. Alerting System</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/query-optimization/"><i class="fas fa-book"></i> 6. Query Optimization Techniques</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/automated-tuning/"><i class="fas fa-book"></i> 7. Automated Tuning Recommendations</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/capacity-planning/"><i class="fas fa-book"></i> 8. Capacity Planning</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/monitoring/"><i class="fas fa-book"></i> 9. Monitoring &amp; Alerting</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/best-practices/"><i class="fas fa-book"></i> 10. Best Practices &amp; Resource Cleanup</a>
+                
+            </li>
+            
+        </ul>
+        
+        <div class="language-switcher">
+            
+            
+            
+            
+            <a href="/vi"><i class="fas fa-language"></i> Tiếng Việt</a>
+            
+            
+        </div>
+    </nav>
+
+    <span id="sidebar-toggle-span">
+        <a href="#" id="sidebar-toggle"><i class="fas fa-bars"></i></a>
+    </span>
+
+    <section id="body">
+        <div id="overlay"></div>
+        <div class="padding">
+            <div id="body-inner">
+                <div class="breadcrumbs">
+                    <a href="http://localhost:1313/">Home</a>
+                    
+                    <span> > </span><a href="/">RDS Performance Insights &amp; Query Optimization</a>
+                    
+                    <span> > </span><a href="/introduction/">1. Introduction</a>
+                    
+                    <span> > </span>What is RDS Performance Insights?
+                </div>
+                
+                <h1>What is RDS Performance Insights?</h1>
+                <h1 id="what-is-rds-performance-insights">What is RDS Performance Insights?</h1>
+<h2 id="-overview">📊 Overview</h2>
+<p>Amazon RDS Performance Insights is a database performance tuning and monitoring feature that helps you quickly assess the load on your database and determine when and where to take action. It provides a comprehensive view of your database performance, making it easier to identify bottlenecks and optimize query performance.</p>
+<div class="notices info">
+  <div class="label">
+    <i class="fas fa-info-circle"></i>
+    Info
+  </div>
+  <div class="content">
+    Performance Insights is available for Amazon Aurora, RDS for MySQL, MariaDB, PostgreSQL, Oracle, and SQL Server.
+  </div>
+</div>
+<hr>
+<h2 id="-key-benefits">🎯 Key Benefits</h2>
+<h3 id="real-time-performance-monitoring">Real-time Performance Monitoring</h3>
+<ul>
+<li><strong>Database Load Visualization</strong>: See your database load in real-time with an intuitive dashboard</li>
+<li><strong>Wait Event Analysis</strong>: Identify what your database is waiting for</li>
+<li><strong>Top SQL Identification</strong>: Find the queries consuming the most resources</li>
+<li><strong>Historical Analysis</strong>: Access up to 7 days of performance history (free tier)</li>
+</ul>
+<h3 id="cost-effective-solution">Cost-Effective Solution</h3>
+<ul>
+<li><strong>No Additional Infrastructure</strong>: Built into RDS, no separate monitoring servers needed</li>
+<li><strong>Free Tier Available</strong>: 7 days of performance history at no additional cost</li>
+<li><strong>Extended Retention</strong>: Up to 2 years of history available for additional cost</li>
+</ul>
+<hr>
+<h2 id="-how-it-works">🏗️ How It Works</h2>
+<p>Performance Insights collects and analyzes database performance data in real-time:</p>
+<pre tabindex="0"><code>┌─────────────────────────────────────────────────────────────┐
+│                    RDS DATABASE ENGINE                      │
+├─────────────────────────────────────────────────────────────┤
+│ • SQL Queries        │ • Wait Events      │ • Resource Usage │
+│ • Connection Info    │ • Lock Information │ • I/O Statistics │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 PERFORMANCE INSIGHTS                        │
+├─────────────────────────────────────────────────────────────┤
+│ • Data Collection    │ • Analysis Engine  │ • Visualization  │
+│ • Metric Aggregation │ • Trend Detection  │ • Alert System   │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    DASHBOARD &amp; APIS                         │
+├─────────────────────────────────────────────────────────────┤
+│ • Web Console       │ • CLI Access       │ • API Integration │
+│ • Custom Dashboards │ • Automated Reports│ • Third-party Tools│
+└─────────────────────────────────────────────────────────────┘
+</code></pre><hr>
+<h2 id="-performance-metrics">📈 Performance Metrics</h2>
+<h3 id="database-load-db-load">Database Load (DB Load)</h3>
+<p>The primary metric showing average active sessions:</p>
+<ul>
+<li><strong>Target</strong>: Keep DB Load below the number of vCPUs</li>
+<li><strong>Interpretation</strong>: Higher values indicate performance bottlenecks</li>
+<li><strong>Granularity</strong>: Down to 1-second resolution</li>
+</ul>
+<h3 id="wait-events">Wait Events</h3>
+<p>Categories of what the database is waiting for:</p>
+<ul>
+<li><strong>CPU</strong>: Processing time</li>
+<li><strong>I/O</strong>: Disk read/write operations</li>
+<li><strong>Lock</strong>: Waiting for locks to be released</li>
+<li><strong>Network</strong>: Communication delays</li>
+</ul>
+<h3 id="top-sql-statements">Top SQL Statements</h3>
+<p>Identification of resource-intensive queries:</p>
+<ul>
+<li><strong>Execution Count</strong>: How often queries run</li>
+<li><strong>Total Time</strong>: Cumulative execution time</li>
+<li><strong>Average Time</strong>: Mean execution duration</li>
+<li><strong>Rows Examined</strong>: Data volume processed</li>
+</ul>
+<hr>
+<h2 id="-use-cases">🎯 Use Cases</h2>
+<h3 id="performance-troubleshooting">Performance Troubleshooting</h3>
+<ul>
+<li><strong>Identify Slow Queries</strong>: Find queries taking too long to execute</li>
+<li><strong>Detect Resource Contention</strong>: Spot CPU, memory, or I/O bottlenecks</li>
+<li><strong>Analyze Wait Events</strong>: Understand what&rsquo;s causing delays</li>
+</ul>
+<h3 id="capacity-planning">Capacity Planning</h3>
+<ul>
+<li><strong>Monitor Trends</strong>: Track performance over time</li>
+<li><strong>Predict Growth</strong>: Forecast resource needs</li>
+<li><strong>Right-size Instances</strong>: Optimize instance types and sizes</li>
+</ul>
+<h3 id="application-optimization">Application Optimization</h3>
+<ul>
+<li><strong>Query Optimization</strong>: Improve SQL query performance</li>
+<li><strong>Index Strategy</strong>: Identify missing or unused indexes</li>
+<li><strong>Connection Management</strong>: Optimize database connections</li>
+</ul>
+<hr>
+<h2 id="-success-stories">💡 Success Stories</h2>
+<h3 id="e-commerce-platform">E-commerce Platform</h3>
+<ul>
+<li><strong>Challenge</strong>: 5-second page load times during peak hours</li>
+<li><strong>Solution</strong>: Used Performance Insights to identify slow product search queries</li>
+<li><strong>Result</strong>: Reduced load times to 1.2 seconds with targeted indexing</li>
+</ul>
+<h3 id="financial-services">Financial Services</h3>
+<ul>
+<li><strong>Challenge</strong>: Monthly reporting jobs taking 8+ hours</li>
+<li><strong>Solution</strong>: Analyzed wait events and optimized batch processing queries</li>
+<li><strong>Result</strong>: Reduced reporting time to 2 hours, 75% improvement</li>
+</ul>
+<h3 id="saas-application">SaaS Application</h3>
+<ul>
+<li><strong>Challenge</strong>: Database CPU utilization consistently above 80%</li>
+<li><strong>Solution</strong>: Identified inefficient queries and implemented query optimization</li>
+<li><strong>Result</strong>: Reduced CPU usage to 45%, improved application responsiveness</li>
+</ul>
+<hr>
+<h2 id="-integration-ecosystem">🔗 Integration Ecosystem</h2>
+<h3 id="aws-services">AWS Services</h3>
+<ul>
+<li><strong>CloudWatch</strong>: Metrics and alerting integration</li>
+<li><strong>Lambda</strong>: Automated response to performance issues</li>
+<li><strong>SNS</strong>: Notification system for alerts</li>
+<li><strong>QuickSight</strong>: Advanced analytics and reporting</li>
+</ul>
+<h3 id="third-party-tools">Third-party Tools</h3>
+<ul>
+<li><strong>Grafana</strong>: Custom dashboard creation</li>
+<li><strong>Datadog</strong>: Comprehensive monitoring platform</li>
+<li><strong>New Relic</strong>: Application performance monitoring</li>
+<li><strong>PagerDuty</strong>: Incident management integration</li>
+</ul>
+<hr>
+<h2 id="-getting-started">🚀 Getting Started</h2>
+<p>Ready to start optimizing your database performance? Here&rsquo;s what&rsquo;s next:</p>
+<ol>
+<li><strong><a href="/preparation/">Preparation</a></strong> - Set up your environment and prerequisites</li>
+<li><strong><a href="/performance-insights/">Performance Insights Setup</a></strong> - Enable and configure monitoring</li>
+<li><strong><a href="/query-optimization/">Query Optimization</a></strong> - Learn optimization techniques</li>
+<li><strong><a href="/best-practices/">Best Practices</a></strong> - Follow proven methodologies</li>
+</ol>
+<div class="notices tip">
+  <div class="label">
+    <i class="fas fa-lightbulb"></i>
+    Tip
+  </div>
+  <div class="content">
+    Start with the Preparation chapter to ensure you have all prerequisites in place before enabling Performance Insights.
+  </div>
+</div>
+
+            </div>
+        </div>
+    </section>
+
+    <script>
+        
+        document.getElementById('sidebar-toggle').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thiết lập môi trường - RDS Performance Insights &amp; Tối Ưu Hóa Truy Vấn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    
+    
+    <link rel="stylesheet" href="/css/theme-blue.css">
+    
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif; 
+            font-weight: 300; 
+            line-height: 1.6; 
+            font-size: 18px;
+            color: var(--MAIN-TEXT-color, #323232);
+        }
+        
+        #sidebar { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 300px; 
+            height: 100vh; 
+            background: var(--MENU-SECTIONS-BG-color, #252c31); 
+            color: #ccc; 
+            overflow-y: auto; 
+            z-index: 1000; 
+        }
+        
+        #sidebar #header { 
+            padding: 2rem 1rem; 
+            text-align: center; 
+            background: var(--MENU-HEADER-BG-color, #1C90F3);
+            border-bottom: 1px solid var(--MENU-HEADER-BORDER-color, #33a1ff);
+        }
+        
+        #sidebar #header .baseurl { 
+            color: var(--MENU-SEARCH-BOX-color, #33a1ff); 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+        }
+        
+        #sidebar .searchbox { 
+            padding: 10px; 
+            background: var(--MENU-SEARCH-BG-color, #167ad0);
+            border-bottom: 1px solid var(--MENU-SEARCH-BOX-color, #33a1ff);
+        }
+        
+        #sidebar .searchbox input { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid var(--MENU-SEARCH-BOX-color, #33a1ff); 
+            background: rgba(255,255,255,0.1); 
+            color: var(--MENU-SEARCH-BOX-ICONS-color, #a1d2fd); 
+            border-radius: 4px; 
+        }
+        
+        #sidebar-toggle-span { display: none; }
+        
+        #body { margin-left: 300px; }
+        #body .padding { padding: 3rem 6rem; }
+        
+         
+        #sidebar ul { list-style: none; padding: 0; margin: 0; }
+        #sidebar ul li a { 
+            display: block; 
+            padding: 10px 20px; 
+            color: var(--MENU-SECTIONS-LINK-color, #ccc); 
+            text-decoration: none; 
+            border-left: 4px solid transparent; 
+        }
+        #sidebar ul li a:hover { 
+            background: var(--MENU-SECTIONS-ACTIVE-BG-color, #20272b); 
+            border-left-color: var(--MAIN-LINK-color, #1C90F3);
+            color: var(--MENU-SECTIONS-LINK-HOVER-color, #e6e6e6);
+        }
+        #sidebar ul li.active > a { 
+            background: var(--MENU-SECTION-ACTIVE-CATEGORY-BG-color, #fff); 
+            border-left-color: var(--MAIN-LINK-color, #1C90F3); 
+            color: var(--MENU-SECTION-ACTIVE-CATEGORY-color, #777); 
+        }
+        #sidebar ul ul { padding-left: 20px; }
+        #sidebar ul ul li a { padding: 8px 20px; font-size: 0.9em; }
+        
+         
+        .language-switcher { position: relative; padding: 20px; }
+        .language-switcher a { 
+            color: var(--MAIN-LINK-color, #1C90F3); 
+            text-decoration: none; 
+            margin-left: 10px; 
+        }
+        .language-switcher a:hover { 
+            color: var(--MAIN-LINK-HOVER-color, #167ad0); 
+        }
+        
+         
+        h1, h2, h3, h4, h5, h6 { 
+            color: var(--MAIN-TITLES-TEXT-color, #5e5e5e); 
+            font-weight: 400; 
+        }
+        h1 { font-size: 3rem; }
+        h2 { font-size: 2.5rem; }
+        h3 { font-size: 2rem; }
+        
+         
+        a { color: var(--MAIN-LINK-color, #1C90F3); }
+        a:hover { color: var(--MAIN-LINK-HOVER-color, #167ad0); }
+        
+         
+        pre { background: #f8f8f8; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+        code { background: #f8f8f8; padding: 0.2rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+        
+         
+        .breadcrumbs { margin-bottom: 2rem; color: #999; }
+        .breadcrumbs a { 
+            color: var(--MAIN-LINK-color, #1C90F3); 
+            text-decoration: none; 
+        }
+        .breadcrumbs a:hover { 
+            color: var(--MAIN-LINK-HOVER-color, #167ad0);
+            text-decoration: underline; 
+        }
+        
+         
+        @media (max-width: 768px) {
+            #sidebar { transform: translateX(-300px); transition: transform 0.3s; }
+            #sidebar.open { transform: translateX(0); }
+            #body { margin-left: 0; }
+            #body .padding { padding: 1rem 2rem; }
+            #sidebar-toggle-span { display: block; position: fixed; top: 10px; left: 10px; z-index: 1001; }
+            #sidebar-toggle { background: var(--MAIN-LINK-color, #1C90F3); color: white; padding: 10px; border: none; border-radius: 4px; }
+        }
+    </style>
+</head>
+<body>
+    <nav id="sidebar">
+        <div id="header">
+            <a id="logo" href='/'>
+  <div style="text-align: center; padding: 20px;">
+    <h2 style="color: var(--MENU-SEARCH-BOX-color, #33a1ff); font-size: 2rem; font-weight: bold; margin: 0;">
+      LEARN
+    </h2>
+    <p style="color: var(--MENU-SEARCH-BOX-ICONS-color, #a1d2fd); font-size: 0.9rem; margin: 5px 0 0 0;">
+      RDS Performance Insights
+    </p>
+  </div>
+</a>
+
+        </div>
+        
+        <div class="searchbox">
+            <input type="search" placeholder="Search..." id="search-input">
+        </div>
+        
+        <ul class="topics">
+            <li><a href="http://localhost:1313/"><i class="fas fa-home"></i> Home</a></li>
+            
+            <li class="">
+                <a href="/vi/introduction/"><i class="fas fa-book"></i> 1. Giới Thiệu</a>
+                
+            </li>
+            
+            <li class="active">
+                <a href="/vi/preparation/"><i class="fas fa-book"></i> 2. Chuẩn Bị</a>
+                
+                <ul>
+                    
+                    <li class="">
+                        <a href="/vi/preparation/prerequisites/">Điều kiện tiên quyết &amp; Yêu cầu</a>
+                    </li>
+                    
+                    <li class="active">
+                        <a href="/vi/preparation/environment-setup/">Thiết lập môi trường</a>
+                    </li>
+                    
+                </ul>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/performance-baseline/"><i class="fas fa-book"></i> 3. Thiết lập Đường cơ sở Hiệu suất</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/performance-insights/"><i class="fas fa-book"></i> Performance Insights</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/monitoring-dashboard/"><i class="fas fa-book"></i> 4. Bảng điều khiển Giám sát</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/alerting-system/"><i class="fas fa-book"></i> 5. Hệ thống Cảnh báo</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/query-optimization/"><i class="fas fa-book"></i> 6. Kỹ thuật Tối ưu hóa Truy vấn</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/automated-tuning/"><i class="fas fa-book"></i> 7. Đề xuất Điều chỉnh Tự động</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/capacity-planning/"><i class="fas fa-book"></i> 8. Lập kế hoạch Năng lực</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/monitoring/"><i class="fas fa-book"></i> 9. Giám sát &amp; Cảnh báo</a>
+                
+            </li>
+            
+            <li class="">
+                <a href="/vi/best-practices/"><i class="fas fa-book"></i> 10. Dọn dẹp tài nguyên</a>
+                
+            </li>
+            
+        </ul>
+        
+        <div class="language-switcher">
+            
+            
+            <a href="/vi/en"><i class="fas fa-language"></i> English</a>
+            
+            
+            
+            
+        </div>
+    </nav>
+
+    <span id="sidebar-toggle-span">
+        <a href="#" id="sidebar-toggle"><i class="fas fa-bars"></i></a>
+    </span>
+
+    <section id="body">
+        <div id="overlay"></div>
+        <div class="padding">
+            <div id="body-inner">
+                <div class="breadcrumbs">
+                    <a href="http://localhost:1313/">Home</a>
+                    
+                    <span> > </span><a href="/vi/">RDS Performance Insights &amp; Query Optimization</a>
+                    
+                    <span> > </span><a href="/vi/preparation/">2. Chuẩn Bị</a>
+                    
+                    <span> > </span>Thiết lập môi trường
+                </div>
+                
+                <h1>Thiết lập môi trường</h1>
+                <h1 id="thiết-lập-môi-trường">Thiết lập môi trường</h1>
+<h2 id="-môi-trường-phát-triển">🏗️ Môi trường phát triển</h2>
+<h3 id="thiết-lập-môi-trường-phát-triển-cục-bộ">Thiết lập môi trường phát triển cục bộ</h3>
+<h4 id="cài-đặt-các-công-cụ-cần-thiết">Cài đặt các công cụ cần thiết</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Cài đặt AWS CLI</span>
+</span></span><span style="display:flex;"><span>curl <span style="color:#e6db74">&#34;https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip&#34;</span> -o <span style="color:#e6db74">&#34;awscliv2.zip&#34;</span>
+</span></span><span style="display:flex;"><span>unzip awscliv2.zip
+</span></span><span style="display:flex;"><span>sudo ./aws/install
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Xác minh cài đặt</span>
+</span></span><span style="display:flex;"><span>aws --version
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Cấu hình AWS credentials</span>
+</span></span><span style="display:flex;"><span>aws configure
+</span></span></code></pre></div><h4 id="công-cụ-database-client">Công cụ Database Client</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># PostgreSQL client</span>
+</span></span><span style="display:flex;"><span>sudo apt-get install postgresql-client
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># MySQL client  </span>
+</span></span><span style="display:flex;"><span>sudo apt-get install mysql-client
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Universal database client (tùy chọn)</span>
+</span></span><span style="display:flex;"><span>sudo snap install dbeaver-ce
+</span></span></code></pre></div><h4 id="công-cụ-giám-sát">Công cụ giám sát</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Cài đặt Python cho custom scripts</span>
+</span></span><span style="display:flex;"><span>sudo apt-get install python3 python3-pip
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Cài đặt các Python packages cần thiết</span>
+</span></span><span style="display:flex;"><span>pip3 install boto3 pandas matplotlib psycopg2-binary pymysql
+</span></span></code></pre></div><hr>
+<h2 id="-cấu-hình-môi-trường-aws">🔧 Cấu hình môi trường AWS</h2>
+<h3 id="thiết-lập-iam">Thiết lập IAM</h3>
+<h4 id="tạo-performance-insights-role">Tạo Performance Insights Role</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Tạo IAM policy cho Performance Insights</span>
+</span></span><span style="display:flex;"><span>aws iam create-policy <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --policy-name PerformanceInsightsPolicy <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --policy-document file://performance-insights-policy.json
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Tạo IAM role</span>
+</span></span><span style="display:flex;"><span>aws iam create-role <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --role-name PerformanceInsightsRole <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --assume-role-policy-document file://trust-policy.json
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Gắn policy vào role</span>
+</span></span><span style="display:flex;"><span>aws iam attach-role-policy <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --role-name PerformanceInsightsRole <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --policy-arn arn:aws:iam::ACCOUNT-ID:policy/PerformanceInsightsPolicy
+</span></span></code></pre></div><h4 id="tài-liệu-policy">Tài liệu Policy</h4>
+<p><strong>performance-insights-policy.json</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;Version&#34;</span>: <span style="color:#e6db74">&#34;2012-10-17&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;Statement&#34;</span>: [
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Effect&#34;</span>: <span style="color:#e6db74">&#34;Allow&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Action&#34;</span>: [
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;pi:*&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;rds:DescribeDBInstances&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;rds:DescribeDBClusters&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;rds:DescribeDBParameterGroups&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;rds:DescribeDBParameters&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;cloudwatch:GetMetricStatistics&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;cloudwatch:ListMetrics&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;logs:DescribeLogGroups&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;logs:DescribeLogStreams&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;logs:GetLogEvents&#34;</span>
+</span></span><span style="display:flex;"><span>            ],
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Resource&#34;</span>: <span style="color:#e6db74">&#34;*&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>trust-policy.json</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;Version&#34;</span>: <span style="color:#e6db74">&#34;2012-10-17&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;Statement&#34;</span>: [
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Effect&#34;</span>: <span style="color:#e6db74">&#34;Allow&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Principal&#34;</span>: {
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&#34;Service&#34;</span>: <span style="color:#e6db74">&#34;rds.amazonaws.com&#34;</span>
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Action&#34;</span>: <span style="color:#e6db74">&#34;sts:AssumeRole&#34;</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h2 id="-thiết-lập-môi-trường-cơ-sở-dữ-liệu">🗄️ Thiết lập môi trường cơ sở dữ liệu</h2>
+<h3 id="cấu-hình-parameter-group">Cấu hình Parameter Group</h3>
+<h4 id="postgresql-parameter-group">PostgreSQL Parameter Group</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Tạo custom parameter group</span>
+</span></span><span style="display:flex;"><span>aws rds create-db-parameter-group <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-parameter-group-name pg-performance-insights <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-parameter-group-family postgres13 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --description <span style="color:#e6db74">&#34;Parameter group for Performance Insights&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Cấu hình các tham số chính</span>
+</span></span><span style="display:flex;"><span>aws rds modify-db-parameter-group <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-parameter-group-name pg-performance-insights <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --parameters <span style="color:#e6db74">&#34;ParameterName=shared_preload_libraries,ParameterValue=pg_stat_statements,ApplyMethod=pending-reboot&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>aws rds modify-db-parameter-group <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-parameter-group-name pg-performance-insights <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --parameters <span style="color:#e6db74">&#34;ParameterName=log_statement,ParameterValue=all,ApplyMethod=immediate&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>aws rds modify-db-parameter-group <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-parameter-group-name pg-performance-insights <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --parameters <span style="color:#e6db74">&#34;ParameterName=log_min_duration_statement,ParameterValue=1000,ApplyMethod=immediate&#34;</span>
+</span></span></code></pre></div><h4 id="mysql-parameter-group">MySQL Parameter Group</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Tạo custom parameter group</span>
+</span></span><span style="display:flex;"><span>aws rds create-db-parameter-group <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-parameter-group-name mysql-performance-insights <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-parameter-group-family mysql8.0 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --description <span style="color:#e6db74">&#34;Parameter group for Performance Insights&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Cấu hình các tham số chính</span>
+</span></span><span style="display:flex;"><span>aws rds modify-db-parameter-group <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-parameter-group-name mysql-performance-insights <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --parameters <span style="color:#e6db74">&#34;ParameterName=performance_schema,ParameterValue=1,ApplyMethod=pending-reboot&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>aws rds modify-db-parameter-group <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-parameter-group-name mysql-performance-insights <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --parameters <span style="color:#e6db74">&#34;ParameterName=slow_query_log,ParameterValue=1,ApplyMethod=immediate&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>aws rds modify-db-parameter-group <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-parameter-group-name mysql-performance-insights <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --parameters <span style="color:#e6db74">&#34;ParameterName=long_query_time,ParameterValue=2,ApplyMethod=immediate&#34;</span>
+</span></span></code></pre></div><hr>
+<h2 id="-hạ-tầng-giám-sát">📊 Hạ tầng giám sát</h2>
+<h3 id="thiết-lập-cloudwatch-dashboard">Thiết lập CloudWatch Dashboard</h3>
+<h4 id="tạo-custom-dashboard">Tạo Custom Dashboard</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> boto3
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> json
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">create_performance_dashboard</span>():
+</span></span><span style="display:flex;"><span>    cloudwatch <span style="color:#f92672">=</span> boto3<span style="color:#f92672">.</span>client(<span style="color:#e6db74">&#39;cloudwatch&#39;</span>)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    dashboard_body <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;widgets&#34;</span>: [
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;metric&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;x&#34;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;y&#34;</span>: <span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;width&#34;</span>: <span style="color:#ae81ff">12</span>, <span style="color:#e6db74">&#34;height&#34;</span>: <span style="color:#ae81ff">6</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;properties&#34;</span>: {
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;metrics&#34;</span>: [
+</span></span><span style="display:flex;"><span>                        [<span style="color:#e6db74">&#34;AWS/RDS&#34;</span>, <span style="color:#e6db74">&#34;CPUUtilization&#34;</span>, <span style="color:#e6db74">&#34;DBInstanceIdentifier&#34;</span>, <span style="color:#e6db74">&#34;your-db-instance&#34;</span>],
+</span></span><span style="display:flex;"><span>                        [<span style="color:#e6db74">&#34;.&#34;</span>, <span style="color:#e6db74">&#34;DatabaseConnections&#34;</span>, <span style="color:#e6db74">&#34;.&#34;</span>, <span style="color:#e6db74">&#34;.&#34;</span>],
+</span></span><span style="display:flex;"><span>                        [<span style="color:#e6db74">&#34;.&#34;</span>, <span style="color:#e6db74">&#34;ReadLatency&#34;</span>, <span style="color:#e6db74">&#34;.&#34;</span>, <span style="color:#e6db74">&#34;.&#34;</span>],
+</span></span><span style="display:flex;"><span>                        [<span style="color:#e6db74">&#34;.&#34;</span>, <span style="color:#e6db74">&#34;WriteLatency&#34;</span>, <span style="color:#e6db74">&#34;.&#34;</span>, <span style="color:#e6db74">&#34;.&#34;</span>]
+</span></span><span style="display:flex;"><span>                    ],
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;period&#34;</span>: <span style="color:#ae81ff">300</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;stat&#34;</span>: <span style="color:#e6db74">&#34;Average&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;region&#34;</span>: <span style="color:#e6db74">&#34;us-east-1&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;title&#34;</span>: <span style="color:#e6db74">&#34;RDS Performance Metrics&#34;</span>
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;metric&#34;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;x&#34;</span>: <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;y&#34;</span>: <span style="color:#ae81ff">6</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;width&#34;</span>: <span style="color:#ae81ff">12</span>, <span style="color:#e6db74">&#34;height&#34;</span>: <span style="color:#ae81ff">6</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;properties&#34;</span>: {
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;metrics&#34;</span>: [
+</span></span><span style="display:flex;"><span>                        [<span style="color:#e6db74">&#34;AWS/RDS&#34;</span>, <span style="color:#e6db74">&#34;ReadIOPS&#34;</span>, <span style="color:#e6db74">&#34;DBInstanceIdentifier&#34;</span>, <span style="color:#e6db74">&#34;your-db-instance&#34;</span>],
+</span></span><span style="display:flex;"><span>                        [<span style="color:#e6db74">&#34;.&#34;</span>, <span style="color:#e6db74">&#34;WriteIOPS&#34;</span>, <span style="color:#e6db74">&#34;.&#34;</span>, <span style="color:#e6db74">&#34;.&#34;</span>]
+</span></span><span style="display:flex;"><span>                    ],
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;period&#34;</span>: <span style="color:#ae81ff">300</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;stat&#34;</span>: <span style="color:#e6db74">&#34;Average&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;region&#34;</span>: <span style="color:#e6db74">&#34;us-east-1&#34;</span>,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#34;title&#34;</span>: <span style="color:#e6db74">&#34;RDS IOPS Metrics&#34;</span>
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        ]
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    response <span style="color:#f92672">=</span> cloudwatch<span style="color:#f92672">.</span>put_dashboard(
+</span></span><span style="display:flex;"><span>        DashboardName<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;RDS-Performance-Insights&#39;</span>,
+</span></span><span style="display:flex;"><span>        DashboardBody<span style="color:#f92672">=</span>json<span style="color:#f92672">.</span>dumps(dashboard_body)
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> response
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Thực thi tạo dashboard</span>
+</span></span><span style="display:flex;"><span>create_performance_dashboard()
+</span></span></code></pre></div><h3 id="sns-topic-cho-alerts">SNS Topic cho Alerts</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Tạo SNS topic cho alerts</span>
+</span></span><span style="display:flex;"><span>aws sns create-topic --name rds-performance-alerts
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Subscribe email vào topic</span>
+</span></span><span style="display:flex;"><span>aws sns subscribe <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --topic-arn arn:aws:sns:us-east-1:ACCOUNT-ID:rds-performance-alerts <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --protocol email <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --notification-endpoint your-email@company.com
+</span></span></code></pre></div><hr>
+<h2 id="-môi-trường-kiểm-thử">🧪 Môi trường kiểm thử</h2>
+<h3 id="thiết-lập-test-database">Thiết lập Test Database</h3>
+<h4 id="tạo-test-rds-instance">Tạo Test RDS Instance</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Tạo test PostgreSQL instance</span>
+</span></span><span style="display:flex;"><span>aws rds create-db-instance <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-instance-identifier test-performance-insights <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-instance-class db.t3.micro <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --engine postgres <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --engine-version 13.7 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --master-username testuser <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --master-user-password YourSecurePassword123! <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --allocated-storage <span style="color:#ae81ff">20</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-parameter-group-name pg-performance-insights <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --enable-performance-insights <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --performance-insights-retention-period <span style="color:#ae81ff">7</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --backup-retention-period <span style="color:#ae81ff">7</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --storage-encrypted <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --vpc-security-group-ids sg-12345678 <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    --db-subnet-group-name default
+</span></span></code></pre></div><h4 id="tạo-dữ-liệu-mẫu">Tạo dữ liệu mẫu</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#75715e">-- Tạo bảng test
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> customers (
+</span></span><span style="display:flex;"><span>    id SERIAL <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>,
+</span></span><span style="display:flex;"><span>    name VARCHAR(<span style="color:#ae81ff">100</span>),
+</span></span><span style="display:flex;"><span>    email VARCHAR(<span style="color:#ae81ff">255</span>),
+</span></span><span style="display:flex;"><span>    created_at <span style="color:#66d9ef">TIMESTAMP</span> <span style="color:#66d9ef">DEFAULT</span> NOW()
+</span></span><span style="display:flex;"><span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> orders (
+</span></span><span style="display:flex;"><span>    id SERIAL <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>,
+</span></span><span style="display:flex;"><span>    customer_id INTEGER <span style="color:#66d9ef">REFERENCES</span> customers(id),
+</span></span><span style="display:flex;"><span>    order_date DATE,
+</span></span><span style="display:flex;"><span>    total_amount DECIMAL(<span style="color:#ae81ff">10</span>,<span style="color:#ae81ff">2</span>),
+</span></span><span style="display:flex;"><span>    status VARCHAR(<span style="color:#ae81ff">20</span>)
+</span></span><span style="display:flex;"><span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- Tạo dữ liệu mẫu
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> customers (name, email)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;Customer &#39;</span> <span style="color:#f92672">||</span> generate_series,
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#39;customer&#39;</span> <span style="color:#f92672">||</span> generate_series <span style="color:#f92672">||</span> <span style="color:#e6db74">&#39;@example.com&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> generate_series(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">10000</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> orders (customer_id, order_date, total_amount, status)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> 
+</span></span><span style="display:flex;"><span>    (random() <span style="color:#f92672">*</span> <span style="color:#ae81ff">10000</span>)::integer <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">CURRENT_DATE</span> <span style="color:#f92672">-</span> (random() <span style="color:#f92672">*</span> <span style="color:#ae81ff">365</span>)::integer,
+</span></span><span style="display:flex;"><span>    (random() <span style="color:#f92672">*</span> <span style="color:#ae81ff">1000</span>)::decimal(<span style="color:#ae81ff">10</span>,<span style="color:#ae81ff">2</span>),
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">CASE</span> <span style="color:#66d9ef">WHEN</span> random() <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">8</span> <span style="color:#66d9ef">THEN</span> <span style="color:#e6db74">&#39;completed&#39;</span> <span style="color:#66d9ef">ELSE</span> <span style="color:#e6db74">&#39;pending&#39;</span> <span style="color:#66d9ef">END</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">FROM</span> generate_series(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">50000</span>);
+</span></span></code></pre></div><hr>
+<h2 id="-xác-thực--kiểm-thử">🔍 Xác thực &amp; Kiểm thử</h2>
+<h3 id="script-xác-thực-môi-trường">Script xác thực môi trường</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> boto3
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> psycopg2
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">validate_environment</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;Xác thực rằng tất cả các thành phần được cấu hình đúng&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Test AWS connectivity</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        rds <span style="color:#f92672">=</span> boto3<span style="color:#f92672">.</span>client(<span style="color:#e6db74">&#39;rds&#39;</span>)
+</span></span><span style="display:flex;"><span>        pi <span style="color:#f92672">=</span> boto3<span style="color:#f92672">.</span>client(<span style="color:#e6db74">&#39;pi&#39;</span>)
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#34;✓ Kết nối AWS thành công&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;✗ Kết nối AWS thất bại: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Test RDS instance</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        response <span style="color:#f92672">=</span> rds<span style="color:#f92672">.</span>describe_db_instances(
+</span></span><span style="display:flex;"><span>            DBInstanceIdentifier<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;test-performance-insights&#39;</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        instance <span style="color:#f92672">=</span> response[<span style="color:#e6db74">&#39;DBInstances&#39;</span>][<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> instance[<span style="color:#e6db74">&#39;PerformanceInsightsEnabled&#39;</span>]:
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">&#34;✓ Performance Insights đã được kích hoạt&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">&#34;✗ Performance Insights chưa được kích hoạt&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;✗ Kiểm tra RDS instance thất bại: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Test database connectivity</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        conn <span style="color:#f92672">=</span> psycopg2<span style="color:#f92672">.</span>connect(
+</span></span><span style="display:flex;"><span>            host<span style="color:#f92672">=</span>instance[<span style="color:#e6db74">&#39;Endpoint&#39;</span>][<span style="color:#e6db74">&#39;Address&#39;</span>],
+</span></span><span style="display:flex;"><span>            port<span style="color:#f92672">=</span>instance[<span style="color:#e6db74">&#39;Endpoint&#39;</span>][<span style="color:#e6db74">&#39;Port&#39;</span>],
+</span></span><span style="display:flex;"><span>            database<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;postgres&#39;</span>,
+</span></span><span style="display:flex;"><span>            user<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;testuser&#39;</span>,
+</span></span><span style="display:flex;"><span>            password<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;YourSecurePassword123!&#39;</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        cursor <span style="color:#f92672">=</span> conn<span style="color:#f92672">.</span>cursor()
+</span></span><span style="display:flex;"><span>        cursor<span style="color:#f92672">.</span>execute(<span style="color:#e6db74">&#39;SELECT version();&#39;</span>)
+</span></span><span style="display:flex;"><span>        version <span style="color:#f92672">=</span> cursor<span style="color:#f92672">.</span>fetchone()
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;✓ Kết nối cơ sở dữ liệu thành công: </span><span style="color:#e6db74">{</span>version[<span style="color:#ae81ff">0</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        conn<span style="color:#f92672">.</span>close()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;✗ Kết nối cơ sở dữ liệu thất bại: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Test Performance Insights API</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        response <span style="color:#f92672">=</span> pi<span style="color:#f92672">.</span>get_resource_metrics(
+</span></span><span style="display:flex;"><span>            ServiceType<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;RDS&#39;</span>,
+</span></span><span style="display:flex;"><span>            Identifier<span style="color:#f92672">=</span>instance[<span style="color:#e6db74">&#39;DbiResourceId&#39;</span>],
+</span></span><span style="display:flex;"><span>            MetricQueries<span style="color:#f92672">=</span>[
+</span></span><span style="display:flex;"><span>                {
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;Metric&#39;</span>: <span style="color:#e6db74">&#39;db.load.avg&#39;</span>
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            ],
+</span></span><span style="display:flex;"><span>            StartTime<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;2023-01-01T00:00:00Z&#39;</span>,
+</span></span><span style="display:flex;"><span>            EndTime<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;2023-01-01T01:00:00Z&#39;</span>
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#34;✓ Performance Insights API có thể truy cập&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;✗ Performance Insights API thất bại: </span><span style="color:#e6db74">{</span>e<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">🎉 Xác thực môi trường thành công!&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> validate_environment():
+</span></span><span style="display:flex;"><span>        sys<span style="color:#f92672">.</span>exit(<span style="color:#ae81ff">1</span>)
+</span></span></code></pre></div><hr>
+<h2 id="-checklist-môi-trường">📋 Checklist môi trường</h2>
+<h3 id="checklist-trước-khi-thiết-lập">Checklist trước khi thiết lập</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>AWS CLI đã cài đặt và cấu hình</strong></li>
+<li><input disabled="" type="checkbox"> <strong>Công cụ database client đã cài đặt</strong></li>
+<li><input disabled="" type="checkbox"> <strong>Môi trường Python đã thiết lập với các packages cần thiết</strong></li>
+<li><input disabled="" type="checkbox"> <strong>IAM roles và policies đã tạo</strong></li>
+<li><input disabled="" type="checkbox"> <strong>Parameter groups đã cấu hình</strong></li>
+<li><input disabled="" type="checkbox"> <strong>Security groups đã cấu hình</strong></li>
+</ul>
+<h3 id="xác-thực-sau-khi-thiết-lập">Xác thực sau khi thiết lập</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Test RDS instance đã tạo thành công</strong></li>
+<li><input disabled="" type="checkbox"> <strong>Performance Insights đã kích hoạt và thu thập dữ liệu</strong></li>
+<li><input disabled="" type="checkbox"> <strong>Kết nối cơ sở dữ liệu đã xác minh</strong></li>
+<li><input disabled="" type="checkbox"> <strong>CloudWatch dashboard đã tạo</strong></li>
+<li><input disabled="" type="checkbox"> <strong>SNS alerts đã cấu hình</strong></li>
+<li><input disabled="" type="checkbox"> <strong>Dữ liệu mẫu đã tải</strong></li>
+<li><input disabled="" type="checkbox"> <strong>Script xác thực đã pass tất cả tests</strong></li>
+</ul>
+<h3 id="tài-liệu">Tài liệu</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Cấu hình môi trường đã được tài liệu hóa</strong></li>
+<li><input disabled="" type="checkbox"> <strong>Access credentials đã lưu trữ an toàn</strong></li>
+<li><input disabled="" type="checkbox"> <strong>Connection strings đã được tài liệu hóa</strong></li>
+<li><input disabled="" type="checkbox"> <strong>Quy trình khắc phục sự cố đã được tài liệu hóa</strong></li>
+<li><input disabled="" type="checkbox"> <strong>Quyền truy cập nhóm đã xác minh</strong></li>
+</ul>
+<hr>
+<h2 id="-bước-tiếp-theo">🔗 Bước tiếp theo</h2>
+<p>Với môi trường đã được thiết lập đúng cách, bạn đã sẵn sàng để:</p>
+<ol>
+<li><strong><a href="/vi/performance-insights/">Thiết lập Performance Insights</a></strong> - Kích hoạt giám sát trên cơ sở dữ liệu production</li>
+<li><strong><a href="/vi/query-optimization/">Tối ưu hóa truy vấn</a></strong> - Bắt đầu tối ưu hóa hiệu suất cơ sở dữ liệu</li>
+<li><strong><a href="/vi/monitoring/">Giám sát &amp; Cảnh báo</a></strong> - Triển khai giám sát toàn diện</li>
+<li><strong><a href="/vi/best-practices/">Thực hành tốt nhất</a></strong> - Tuân theo các phương pháp đã được chứng minh</li>
+</ol>
+<div class="notices tip">
+  <div class="label">
+    <i class="fas fa-lightbulb"></i>
+    Tip
+  </div>
+  <div class="content">
+    Giữ môi trường test chạy trong suốt quá trình triển khai - nó rất có giá trị để test các thay đổi trước khi áp dụng vào production.
+  </div>
+</div>
+
+            </div>
+        </div>
+    </section>
+
+    <script>
+        
+        document.getElementById('sidebar-toggle').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+    </script>
+</body>
+</html>

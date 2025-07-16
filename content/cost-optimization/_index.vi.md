@@ -17,29 +17,35 @@ Tối ưu hóa chi phí AWS RDS thông qua giám sát, lập ngân sách và cá
 
 Tối ưu hóa chi phí là yếu tố quan trọng để duy trì hoạt động AWS RDS hiệu quả trong khi kiểm soát chi phí. Phần này bao gồm giám sát chi phí toàn diện, thiết lập ngân sách và các chiến lược tối ưu hóa.
 
+<img src="/images/2025-07-14_17-27-43.png" alt="AWS Cost Management Dashboard" width="800">
+
 ## Các Bước Tối Ưu Hóa Chi Phí
 
 ### Bước 1: Xem Xét Chi Phí
 1. Truy cập AWS Billing Console
 2. Click "Bills" để xem chi phí hiện tại
-3. Filter theo "Amazon Relational Database Service"
+3. Lọc theo "Amazon Relational Database Service"
 4. Phân tích xu hướng và mẫu chi phí
 5. Xác định tài nguyên chi phí cao và các đỉnh sử dụng
+
+<img src="/images/2025-07-14_17-28-12.png" alt="AWS Billing Console - Chi phí RDS" width="800">
 
 ### Bước 2: Thiết Lập Cảnh Báo Ngân Sách
 1. Trong Billing Console, click "Budgets"
 2. Click "Create budget"
 3. Budget type: Cost budget
 4. Budget name: RDS-Monthly-Budget
-5. Budgeted amount: $10 (hoặc số tiền bạn muốn)
+5. Budgeted amount: $10 (hoặc số tiền bạn mong muốn)
 6. Budget scope: Service = Amazon Relational Database Service
-7. Thiết lập email alert khi đạt 80% và 100% budget
+7. Thiết lập email alerts khi đạt 80% và 100% ngân sách
 8. Cấu hình người nhận thông báo
 9. Xem xét và tạo ngân sách
 
+<img src="/images/2025-07-14_17-30-58.png" alt="Thiết lập AWS Budget cho RDS" width="800">
+
 ### Bước 3: Chiến Lược Tối Ưu Hóa Chi Phí
 1. **Điều chỉnh kích thước instance**: Khớp loại instance với yêu cầu workload thực tế
-2. **Reserved Instances**: Mua RDS Reserved Instances cho workload có thể dự đoán
+2. **Reserved Instances**: Mua RDS Reserved Instances cho workload có thể dự đoán được
 3. **Tối ưu hóa storage**: Sử dụng loại storage phù hợp (gp2, gp3, io1, io2)
 4. **Automated backups**: Tối ưu hóa thời gian lưu trữ backup
 5. **Multi-AZ deployment**: Đánh giá tính cần thiết cho high availability
@@ -51,6 +57,8 @@ Tối ưu hóa chi phí là yếu tố quan trọng để duy trì hoạt độn
 - Theo dõi mẫu tăng trưởng storage
 - Xem xét báo cáo chi phí hàng tháng
 - Triển khai khuyến nghị tối ưu hóa chi phí tự động
+
+<img src="/images/2025-07-14_17-31-38.png" alt="Thiết lập Giám sát Chi phí và Cảnh báo" width="800">
 
 ## Thực Hành Tốt Nhất
 - Xem xét chi phí định kỳ (hàng tuần/tháng)

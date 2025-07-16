@@ -1,0 +1,47 @@
+{{- $currentNode := . -}}
+{{- $showvisitedlinks := .Site.Params.showVisitedLinks -}}
+<div id="header-wrapper">
+    <div id="header">
+        {{ partial "logo.html" . }}
+        {{ partial "search.html" . }}
+    </div>
+    {{ if .Site.Params.landingPageName }}
+    <div class="highlightable">
+        {{ partial "language-switch.html" . }}
+    </div>
+    {{end}}
+</div>
+{{if not .Site.Params.disableLandingPageButton }}
+  <section id="homelinks">
+    <ul>
+      <li>
+          <a class="padding" href='{{ relURL "/" }}'>{{ safeHTML (cond (ne .Site.Params.landingPageName nil) .Site.Params.landingPageName "<i class='fas fa-home'></i> Home") }}</a>
+      </li>
+    </ul>
+  </section>
+{{end}}
+
+<section id="body-inner">
+    <div class="highlightable">
+        {{ range .Site.Menus.shortcuts}}
+        <a class="shortcut" href="{{.URL | relURL }}" target="_blank" rel="noopener">{{ safeHTML .Name }}</a>
+        {{end}}
+    </div>
+</section>
+
+{{- if eq .Site.Params.collapsibleMenu true }}
+<section id="shortcuts">
+    <div class="nav-title padding">{{ T "Shortcuts-Title"}}</div>
+    <ul>
+        {{ range .Site.Menus.shortcuts}}
+        <li>
+            {{ .Pre }}<a class="padding" href="{{.URL | relURL }}">{{ safeHTML .Name }}</a>{{ .Post }}
+        </li>
+        {{end}}
+    </ul>
+</section>
+{{- end}}
+
+<section id="footer">
+    {{ partial "menu-footer.html" . }}
+</section>

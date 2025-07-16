@@ -5,11 +5,6 @@
         {{ partial "logo.html" . }}
         {{ partial "search.html" . }}
     </div>
-    {{ if .Site.Params.landingPageName }}
-    <div class="highlightable">
-        {{ partial "language-switch.html" . }}
-    </div>
-    {{end}}
 </div>
 {{if not .Site.Params.disableLandingPageButton }}
   <section id="homelinks">

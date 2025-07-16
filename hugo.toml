@@ -24,7 +24,7 @@ home = [ "HTML", "RSS", "JSON"]
   # Custom CSS
   custom_css = ["css/custom.css"]
   # Logo
-  landingPageURL = "/"
+  landingPageURL = "/AWS_Trainee/"
   landingPageName = "<i class='fas fa-home'></i> Trang chủ"
   
 [Languages]

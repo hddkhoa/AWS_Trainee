@@ -12,24 +12,24 @@ draft: false
 2. Click vào "Amazon CloudWatch"
 
 ## Bước 2: Tạo Dashboard
-<img src="/dangkhoa/images/2025-07-14_16-15-20.png" alt="2025-07-14_16-15-20" width="800">
+<img src="/AWS_Trainee/images/2025-07-14_16-15-20.png" alt="2025-07-14_16-15-20" width="800">
 
 1. Trong menu bên trái, click "Dashboards"
 2. Click "Create dashboard"
 
-<img src="/dangkhoa/images/2025-07-14_16-16-13.png" alt="2025-07-14_16-16-13" width="800">
+<img src="/AWS_Trainee/images/2025-07-14_16-16-13.png" alt="2025-07-14_16-16-13" width="800">
 
 3. Dashboard name: RDS-Performance-Dashboard
 4. Click "Create dashboard"
 
 
 ## Bước 3: Thêm Widget đầu tiên - CPU Utilization
-<img src="/dangkhoa/images/2025-07-14_16-17-19.png" alt="2025-07-14_16-17-19" width="800">
+<img src="/AWS_Trainee/images/2025-07-14_16-17-19.png" alt="2025-07-14_16-17-19" width="800">
 
 1. Chọn "Line" widget type
 2. Click "Next"
 
-<img src="/dangkhoa/images/2025-07-14_16-25-18.png" alt="2025-07-14_16-25-18" width="800">
+<img src="/AWS_Trainee/images/2025-07-14_16-25-18.png" alt="2025-07-14_16-25-18" width="800">
 
 3. Metrics:
    • **Namespace:** AWS/RDS
@@ -119,7 +119,7 @@ draft: false
 
 ## Bước 8: Lưu và Chia sẻ Dashboard
 
-<img src="/dangkhoa/images/2025-07-14_16-30-33.png" alt="2025-07-14_16-30-33" width="800">
+<img src="/AWS_Trainee/images/2025-07-14_16-30-33.png" alt="2025-07-14_16-30-33" width="800">
 
 ### Lưu Dashboard
 1. Click "Save dashboard"

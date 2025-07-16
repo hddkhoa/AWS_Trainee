@@ -1,7 +1,8 @@
 ---
 title: "RDS Performance Insights & Tối Ưu Hóa Truy Vấn"
 date: 2025-07-11T11:00:00+07:00
-draft: false
+weight: 1
+chapter: false
 ---
 
 # Tổng Quan

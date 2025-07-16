@@ -28,9 +28,9 @@ Performance Insights is available for:
 | **RDS for Oracle** | 12.1.0.2.v8 | Enterprise Edition only |
 | **RDS for SQL Server** | 2016 SP1 | Enterprise and Standard editions |
 
-{{% notice warning %}}
+⚠️ **Warning:** 
 Some older instance types (t2.micro, t2.small) may not support Performance Insights. Check AWS documentation for current compatibility.
-{{% /notice %}}
+
 
 ---
 
@@ -232,6 +232,6 @@ Once you've completed the preparation phase:
 3. **[Monitoring & Alerting](../../monitoring/)** - Set up comprehensive monitoring
 4. **[Best Practices](../../best-practices/)** - Implement proven methodologies
 
-{{% notice tip %}}
+💡 **Tip:** 
 Thorough preparation is key to successful implementation. Don't skip the baseline measurement step - you'll need it to measure your success!
-{{% /notice %}}
+

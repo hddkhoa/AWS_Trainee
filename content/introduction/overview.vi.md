@@ -11,9 +11,9 @@ draft: false
 
 Amazon RDS Performance Insights là một tính năng điều chỉnh và giám sát hiệu suất cơ sở dữ liệu giúp bạn nhanh chóng đánh giá tải trên cơ sở dữ liệu và xác định thời điểm và vị trí cần hành động. Nó cung cấp cái nhìn toàn diện về hiệu suất cơ sở dữ liệu, giúp dễ dàng xác định các nút thắt và tối ưu hóa hiệu suất truy vấn.
 
-{{% notice info %}}
+ℹ️ **Info:** 
 Performance Insights có sẵn cho Amazon Aurora, RDS for MySQL, MariaDB, PostgreSQL, Oracle và SQL Server.
-{{% /notice %}}
+
 
 ---
 
@@ -150,6 +150,6 @@ Sẵn sàng bắt đầu tối ưu hóa hiệu suất cơ sở dữ liệu của
 3. **[Tối ưu hóa truy vấn](../../query-optimization/)** - Học các kỹ thuật tối ưu hóa
 4. **[Thực hành tốt nhất](../../best-practices/)** - Tuân theo các phương pháp đã được chứng minh
 
-{{% notice tip %}}
+💡 **Tip:** 
 Bắt đầu với chương Chuẩn bị để đảm bảo bạn có tất cả các điều kiện tiên quyết trước khi kích hoạt Performance Insights.
-{{% /notice %}}
+

@@ -419,6 +419,6 @@ Với môi trường đã được thiết lập đúng cách, bạn đã sẵn 
 3. **[Giám sát & Cảnh báo](../../monitoring/)** - Triển khai giám sát toàn diện
 4. **[Thực hành tốt nhất](../../best-practices/)** - Tuân theo các phương pháp đã được chứng minh
 
-{{% notice tip %}}
+💡 **Tip:** 
 Giữ môi trường test chạy trong suốt quá trình triển khai - nó rất có giá trị để test các thay đổi trước khi áp dụng vào production.
-{{% /notice %}}
+

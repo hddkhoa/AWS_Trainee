@@ -419,6 +419,6 @@ With your environment properly set up, you're ready to:
 3. **[Monitoring & Alerting](../../monitoring/)** - Implement comprehensive monitoring
 4. **[Best Practices](../../best-practices/)** - Follow proven methodologies
 
-{{% notice tip %}}
+💡 **Tip:** 
 Keep your test environment running throughout the implementation process - it's invaluable for testing changes before applying them to production.
-{{% /notice %}}
+

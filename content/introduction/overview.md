@@ -11,9 +11,9 @@ draft: false
 
 Amazon RDS Performance Insights is a database performance tuning and monitoring feature that helps you quickly assess the load on your database and determine when and where to take action. It provides a comprehensive view of your database performance, making it easier to identify bottlenecks and optimize query performance.
 
-{{% notice info %}}
+ℹ️ **Info:** 
 Performance Insights is available for Amazon Aurora, RDS for MySQL, MariaDB, PostgreSQL, Oracle, and SQL Server.
-{{% /notice %}}
+
 
 ---
 
@@ -150,6 +150,6 @@ Ready to start optimizing your database performance? Here's what's next:
 3. **[Query Optimization](../../query-optimization/)** - Learn optimization techniques
 4. **[Best Practices](../../best-practices/)** - Follow proven methodologies
 
-{{% notice tip %}}
+💡 **Tip:** 
 Start with the Preparation chapter to ensure you have all prerequisites in place before enabling Performance Insights.
-{{% /notice %}}
+

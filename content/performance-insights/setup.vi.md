@@ -67,9 +67,9 @@ description: "Hướng dẫn chi tiết cách tạo RDS Instance và kích hoạ
 
 
 ### Bước 7: Monitoring 
-{{% notice warning %}}
+⚠️ **Warning:** 
 (Quan trọng!)
-{{% /notice %}}
+
 
 <img src="/images/2025-07-14_16-08-09.png" alt="2025-07-14_16-08-09" width="800">
 

@@ -161,6 +161,6 @@ Sẵn sàng thực hiện những lợi ích này trong tổ chức của bạn?
 3. **[Tối ưu hóa truy vấn](../../query-optimization/)** - Bắt đầu tối ưu hóa truy vấn cơ sở dữ liệu
 4. **[Thực hành tốt nhất](../../best-practices/)** - Tuân theo các phương pháp triển khai đã được chứng minh
 
-{{% notice tip %}}
+💡 **Tip:** 
 Chìa khóa để tối đa hóa ROI là bắt đầu với một phép đo đường cơ sở rõ ràng về hiệu suất và chi phí hiện tại của bạn.
-{{% /notice %}}
+

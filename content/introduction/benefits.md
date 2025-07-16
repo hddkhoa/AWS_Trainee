@@ -161,6 +161,4 @@ Ready to realize these benefits in your organization?
 3. **[Query Optimization](../../query-optimization/)** - Start optimizing your database queries
 4. **[Best Practices](../../best-practices/)** - Follow proven implementation methodologies
 
-{{% notice tip %}}
-The key to maximizing ROI is starting with a clear baseline measurement of your current performance and costs.
-{{% /notice %}}
+**💡 Tip:** The key to maximizing ROI is starting with a clear baseline measurement of your current performance and costs.

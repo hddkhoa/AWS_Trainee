@@ -28,9 +28,9 @@ Performance Insights có sẵn cho:
 | **RDS for Oracle** | 12.1.0.2.v8 | Chỉ Enterprise Edition |
 | **RDS for SQL Server** | 2016 SP1 | Enterprise và Standard editions |
 
-{{% notice warning %}}
+⚠️ **Warning:** 
 Một số loại instance cũ (t2.micro, t2.small) có thể không hỗ trợ Performance Insights. Kiểm tra tài liệu AWS để biết tính tương thích hiện tại.
-{{% /notice %}}
+
 
 ---
 
@@ -232,6 +232,6 @@ Khi bạn đã hoàn thành giai đoạn chuẩn bị:
 3. **[Giám sát & Cảnh báo](../../monitoring/)** - Thiết lập giám sát toàn diện
 4. **[Thực hành tốt nhất](../../best-practices/)** - Triển khai các phương pháp đã được chứng minh
 
-{{% notice tip %}}
+💡 **Tip:** 
 Chuẩn bị kỹ lưỡng là chìa khóa cho việc triển khai thành công. Đừng bỏ qua bước đo lường baseline - bạn sẽ cần nó để đo lường thành công của mình!
-{{% /notice %}}
+

@@ -1,6 +1,8 @@
 # Change the default theme to be use when building the site with Hugo
 theme = "hugo-theme-learn"
-baseURL = "https://hddkhoa.github.io/AWS-Trainee/"
+baseURL = "https://hddkhoa.github.io/AWS-Trainee"
+relativeURLs = false
+canonifyURLs = true
 
 # Character encoding
 defaultContentLanguage = "en"

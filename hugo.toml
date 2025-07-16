@@ -1,5 +1,6 @@
 # Change the default theme to be use when building the site with Hugo
 theme = "hugo-theme-learn"
+baseURL = "https://hddkhoa.github.io/AWS-Trainee/"
 
 # Character encoding
 defaultContentLanguage = "en"
@@ -14,7 +15,7 @@ home = [ "HTML", "RSS", "JSON"]
   # Change default color scheme with a variant one. Can be "red", "blue", "green".
   themeVariant = "blue"
   # Git hub repo link
-  editURL = ""
+  editURL = "https://github.com/hddkhoa/AWS-Trainee/edit/main/content/"
   description = "RDS Performance Insights & Query Optimization - Comprehensive guide to AWS RDS Performance monitoring and optimization"
   author = "Hà Duy Đăng Khoa - 2180606665"
   showVisitedLinks = true

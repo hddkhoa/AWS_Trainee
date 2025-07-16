@@ -11,7 +11,7 @@ draft: false
 
 # Introduction
 
-<img src="/images/usecase.jpg" alt="usecase" width="800">
+<img src="/dangkhoa/images/usecase.jpg" alt="usecase" width="800">
 
 Discover what AWS RDS Performance Insights is all about and the core concepts behind database performance monitoring and optimization.
 

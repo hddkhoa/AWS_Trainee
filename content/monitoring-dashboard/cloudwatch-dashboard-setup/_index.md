@@ -13,14 +13,14 @@ draft: false
 
 
 ## Step 2: Create Dashboard
-<img src="/images/2025-07-14_16-15-20.png" alt="2025-07-14_16-15-20" width="800">
+<img src="/dangkhoa/images/2025-07-14_16-15-20.png" alt="2025-07-14_16-15-20" width="800">
 
 1. In the left menu, click "Dashboards"
 2. Click "Create dashboard"
 3. Dashboard name: RDS-Performance-Dashboard
 4. Click "Create dashboard"
 
-<img src="/images/2025-07-14_16-16-13.png" alt="2025-07-14_16-16-13" width="800">
+<img src="/dangkhoa/images/2025-07-14_16-16-13.png" alt="2025-07-14_16-16-13" width="800">
 
 ## Step 3: Add First Widget - CPU Utilization
 1. Select "Line" widget type
@@ -32,7 +32,7 @@ draft: false
 4. Period: 5 minutes
 5. Click "Create widget"
 
-<img src="/images/2025-07-14_16-25-18.png" alt="2025-07-14_16-25-18" width="800">
+<img src="/dangkhoa/images/2025-07-14_16-25-18.png" alt="2025-07-14_16-25-18" width="800">
 
 ## Step 4: Add Second Widget - Database Connections
 1. Click "Add widget"
@@ -43,7 +43,7 @@ draft: false
    • **DBInstanceIdentifier:** Select your instance
 4. Click "Create widget"
 
-<img src="/images/2025-07-14_16-30-33.png" alt="2025-07-14_16-30-33" width="800">
+<img src="/dangkhoa/images/2025-07-14_16-30-33.png" alt="2025-07-14_16-30-33" width="800">
 
 ## Step 5: Add Third Widget - Free Memory
 1. Click "Add widget"
@@ -116,7 +116,7 @@ draft: false
 
 ## Step 8: Save and Share Dashboard
 
-<img src="/images/2025-07-14_16-31-10.png" alt="2025-07-14_16-31-10" width="800">
+<img src="/dangkhoa/images/2025-07-14_16-31-10.png" alt="2025-07-14_16-31-10" width="800">
 
 ### Save Dashboard
 1. Click "Save dashboard"

@@ -17,7 +17,7 @@ Tối ưu hóa chi phí AWS RDS thông qua giám sát, lập ngân sách và cá
 
 Tối ưu hóa chi phí là yếu tố quan trọng để duy trì hoạt động AWS RDS hiệu quả trong khi kiểm soát chi phí. Phần này bao gồm giám sát chi phí toàn diện, thiết lập ngân sách và các chiến lược tối ưu hóa.
 
-<img src="/images/2025-07-14_17-27-43.png" alt="AWS Cost Management Dashboard" width="800">
+<img src="/dangkhoa/images/2025-07-14_17-27-43.png" alt="AWS Cost Management Dashboard" width="800">
 
 ## Các Bước Tối Ưu Hóa Chi Phí
 
@@ -28,7 +28,7 @@ Tối ưu hóa chi phí là yếu tố quan trọng để duy trì hoạt độn
 4. Phân tích xu hướng và mẫu chi phí
 5. Xác định tài nguyên chi phí cao và các đỉnh sử dụng
 
-<img src="/images/2025-07-14_17-28-12.png" alt="AWS Billing Console - Chi phí RDS" width="800">
+<img src="/dangkhoa/images/2025-07-14_17-28-12.png" alt="AWS Billing Console - Chi phí RDS" width="800">
 
 ### Bước 2: Thiết Lập Cảnh Báo Ngân Sách
 1. Trong Billing Console, click "Budgets"
@@ -41,7 +41,7 @@ Tối ưu hóa chi phí là yếu tố quan trọng để duy trì hoạt độn
 8. Cấu hình người nhận thông báo
 9. Xem xét và tạo ngân sách
 
-<img src="/images/2025-07-14_17-30-58.png" alt="Thiết lập AWS Budget cho RDS" width="800">
+<img src="/dangkhoa/images/2025-07-14_17-30-58.png" alt="Thiết lập AWS Budget cho RDS" width="800">
 
 ### Bước 3: Chiến Lược Tối Ưu Hóa Chi Phí
 1. **Điều chỉnh kích thước instance**: Khớp loại instance với yêu cầu workload thực tế
@@ -58,7 +58,7 @@ Tối ưu hóa chi phí là yếu tố quan trọng để duy trì hoạt độn
 - Xem xét báo cáo chi phí hàng tháng
 - Triển khai khuyến nghị tối ưu hóa chi phí tự động
 
-<img src="/images/2025-07-14_17-31-38.png" alt="Thiết lập Giám sát Chi phí và Cảnh báo" width="800">
+<img src="/dangkhoa/images/2025-07-14_17-31-38.png" alt="Thiết lập Giám sát Chi phí và Cảnh báo" width="800">
 
 ## Thực Hành Tốt Nhất
 - Xem xét chi phí định kỳ (hàng tuần/tháng)

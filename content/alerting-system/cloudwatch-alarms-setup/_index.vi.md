@@ -17,7 +17,7 @@ draft: false
    • Click "Select metric"
 
 ## Bước 2: Cấu hình Alarm Conditions
-<img src="/images/2025-07-14_16-36-57.png" alt="2025-07-14_16-36-57" width="800">
+<img src="/dangkhoa/images/2025-07-14_16-36-57.png" alt="2025-07-14_16-36-57" width="800">
 
 1. Conditions:
    • **Threshold type:** Static
@@ -28,7 +28,7 @@ draft: false
    • **Period:** 5 minutes
 
 ## Bước 3: Cấu hình Actions
-<img src="/images/2025-07-14_16-38-15.png" alt="2025-07-14_16-38-15" width="800">
+<img src="/dangkhoa/images/2025-07-14_16-38-15.png" alt="2025-07-14_16-38-15" width="800">
 
 1. Alarm state trigger: In alarm
 2. Send a notification to: 
@@ -38,20 +38,20 @@ draft: false
 3. Click "Create topic"
 
 ## Bước 4: Thêm Name và Description
-<img src="/images/2025-07-14_16-42-46.png" alt="2025-07-14_16-42-46" width="800">
+<img src="/dangkhoa/images/2025-07-14_16-42-46.png" alt="2025-07-14_16-42-46" width="800">
 
 1. Alarm name: RDS-CPU-High
 2. Alarm description: RDS CPU utilization is above 80%
 3. Click "Next"
 
 ## Bước 5: Preview và Create
-<img src="/images/2025-07-14_16-43-53.png" alt="2025-07-14_16-43-53" width="800">
+<img src="/dangkhoa/images/2025-07-14_16-43-53.png" alt="2025-07-14_16-43-53" width="800">
 
 1. Review tất cả settings
 2. Click "Create alarm"
 3. Confirm email: Kiểm tra email và click confirm subscription
 
-<img src="/images/2025-07-14_16-44-13.png" alt="2025-07-14_16-44-13" width="800">
+<img src="/dangkhoa/images/2025-07-14_16-44-13.png" alt="2025-07-14_16-44-13" width="800">
 
 
 ## Bước 6: Tạo Additional Alarms cho Other Metrics
@@ -78,7 +78,7 @@ draft: false
 
 ## Bước 7: Verify và Test Alarms
 
-<img src="/images/2025-07-14_16-31-10.png" alt="2025-07-14_16-31-10" width="800">
+<img src="/dangkhoa/images/2025-07-14_16-31-10.png" alt="2025-07-14_16-31-10" width="800">
 
 ### Verify Alarm Status
 1. Return to CloudWatch Alarms dashboard

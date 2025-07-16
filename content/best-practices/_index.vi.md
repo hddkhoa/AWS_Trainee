@@ -19,7 +19,7 @@ Sau khi hoàn thành workshop RDS Performance Insights, điều quan trọng là
 
 Điều hướng đến RDS Console và xóa database instance của bạn:
 
-<img src="/images/2025-07-14_16-42-46.png" alt="RDS Console Delete Instance" width="800">
+<img src="/dangkhoa/images/2025-07-14_16-42-46.png" alt="RDS Console Delete Instance" width="800">
 
 1. **Mở RDS Console** → Chọn instance của bạn
 2. **Actions** → **Delete**
@@ -33,7 +33,7 @@ Sau khi hoàn thành workshop RDS Performance Insights, điều quan trọng là
 
 Xóa tất cả các alarm giám sát được tạo trong workshop:
 
-<img src="/images/2025-07-14_16-43-53.png" alt="CloudWatch Alarms Delete" width="800">
+<img src="/dangkhoa/images/2025-07-14_16-43-53.png" alt="CloudWatch Alarms Delete" width="800">
 
 1. **CloudWatch Console** → **Alarms**
 2. **Chọn tất cả alarm liên quan đến workshop**
@@ -53,7 +53,7 @@ Dọn dẹp các topic thông báo:
 
 Xóa dashboard giám sát:
 
-<img src="/images/2025-07-14_16-44-13.png" alt="CloudWatch Dashboard Delete" width="800">
+<img src="/dangkhoa/images/2025-07-14_16-44-13.png" alt="CloudWatch Dashboard Delete" width="800">
 
 1. **CloudWatch Console** → **Dashboards**
 2. **Chọn RDS dashboard của bạn**

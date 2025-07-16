@@ -24,7 +24,7 @@ The following steps are here to help you initialize your new RDS Performance Ins
 6. [Alerting System](alerting-system/) - Setting up alerts and notifications
 7. [Automated Tuning Recommendations](automated-tuning/) - Implementing automated optimizations
 8. [Capacity Planning](capacity-planning/) - Planning for future growth
-9. [Monitoring & Alert](monitoring/) - Ongoing monitoring strategies
+9. [Cost Optimization](cost-optimization/) - Cost monitoring and optimization strategies
 10. [Resource Cleanup](best-practices/) - Best practices and cleanup procedures
 
 Reference [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html)

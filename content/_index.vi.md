@@ -24,7 +24,7 @@ Các bước sau đây sẽ giúp bạn khởi tạo thiết lập giám sát RD
 6. [Hệ thống Cảnh báo](alerting-system/) - Thiết lập cảnh báo và thông báo
 7. [Khuyến nghị Tự động Tối ưu hóa](automated-tuning/) - Triển khai tối ưu hóa tự động
 8. [Lập kế hoạch Dung lượng](capacity-planning/) - Lập kế hoạch cho sự phát triển tương lai
-9. [Giám sát & Cảnh báo](monitoring/) - Chiến lược giám sát liên tục
+9. [Tối Ưu Hóa Chi Phí](cost-optimization/) - Chiến lược giám sát và tối ưu hóa chi phí
 10. [Dọn dẹp Tài nguyên](best-practices/) - Thực hành tốt nhất và quy trình dọn dẹp
 
 Tài liệu tham khảo [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html)

@@ -17,7 +17,7 @@ description: "Detailed guide on creating RDS Instance and enabling Performance I
 
 
 ### Step 2: Create Database
-<img src="/AWS_Trainee/images/2025-07-14_15-55-30.png" alt="2025-07-14_15-55-30" width="800">
+<img src="/images/2025-07-14_15-55-30.png" alt="2025-07-14_15-55-30" width="800">
 
 1. Click the orange "Create database" button
 2. Select "Standard create" (not Easy create)
@@ -28,7 +28,7 @@ description: "Detailed guide on creating RDS Instance and enabling Performance I
 
 
 ### Step 3: Templates and Settings
-<img src="/AWS_Trainee/images/2025-07-14_15-58-04.png" alt="2025-07-14_15-58-04" width="800">
+<img src="/images/2025-07-14_15-58-04.png" alt="2025-07-14_15-58-04" width="800">
 
 1. Templates: Choose "Free tier" (if eligible) or "Dev/Test"
 2. Settings:
@@ -39,7 +39,7 @@ description: "Detailed guide on creating RDS Instance and enabling Performance I
 
 
 ### Step 4: Instance Configuration
-<img src="/AWS_Trainee/images/2025-07-14_16-02-05.png" alt="2025-07-14_16-02-05" width="800">
+<img src="/images/2025-07-14_16-02-05.png" alt="2025-07-14_16-02-05" width="800">
 
 1. DB instance class:
    • Select "Burstable classes (includes t classes)"
@@ -52,7 +52,7 @@ description: "Detailed guide on creating RDS Instance and enabling Performance I
 
 
 ### Step 5: Connectivity
-<img src="/AWS_Trainee/images/2025-07-14_16-03-40.png" alt="2025-07-14_16-03-40" width="800">
+<img src="/images/2025-07-14_16-03-40.png" alt="2025-07-14_16-03-40" width="800">
 
 1. Virtual private cloud (VPC): Select Default VPC
 2. Subnet group: default
@@ -73,7 +73,7 @@ description: "Detailed guide on creating RDS Instance and enabling Performance I
 
 
 
-<img src="/AWS_Trainee/images/2025-07-14_16-08-09.png" alt="2025-07-14_16-08-09" width="800">
+<img src="/images/2025-07-14_16-08-09.png" alt="2025-07-14_16-08-09" width="800">
 
 1. Enable Enhanced monitoring: Check the box
    • **Granularity:** 60 seconds
@@ -85,7 +85,7 @@ description: "Detailed guide on creating RDS Instance and enabling Performance I
 
 
 ### Step 8: Additional Configuration
-<img src="/AWS_Trainee/images/2025-07-14_16-10-09.png" alt="2025-07-14_16-10-09" width="800">
+<img src="/images/2025-07-14_16-10-09.png" alt="2025-07-14_16-10-09" width="800">
 
 1. Initial database name: testdb
 2. DB parameter group: default
@@ -99,8 +99,8 @@ description: "Detailed guide on creating RDS Instance and enabling Performance I
 
 
 ### Step 9: Create Database
-<img src="/AWS_Trainee/images/2025-07-14_16-11-19.png" alt="2025-07-14_16-11-19" width="800">
-<img src="/AWS_Trainee/images/2025-07-14_16-45-15.png" alt="2025-07-14_16-45-15" width="800">
+<img src="/images/2025-07-14_16-11-19.png" alt="2025-07-14_16-11-19" width="800">
+<img src="/images/2025-07-14_16-45-15.png" alt="2025-07-14_16-45-15" width="800">
 
 1. Click "Create database"
 2. Wait 10-15 minutes for database creation
@@ -115,14 +115,14 @@ description: "Detailed guide on creating RDS Instance and enabling Performance I
 If you already have an RDS instance and want to enable Performance Insights:
 
 ### Step 1: Select Database
-<img src="/AWS_Trainee/images/22.png" alt="22" width="800">
+<img src="/images/22.png" alt="22" width="800">
 
 1. Go to RDS Console
 2. Click "Databases" in the sidebar
 3. Select the database instance to enable
 
 ### Step 2: Modify Database
-<img src="/AWS_Trainee/images/33.png" alt="33" width="800">
+<img src="/images/33.png" alt="33" width="800">
 
 1. Click the "Modify" button
 2. Scroll down to "Monitoring" section

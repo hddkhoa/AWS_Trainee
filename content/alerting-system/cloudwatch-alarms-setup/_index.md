@@ -19,7 +19,7 @@ draft: false
 
 
 ## Step 2: Configure Alarm Conditions
-<img src="/AWS_Trainee/images/2025-07-14_16-36-57.png" alt="2025-07-14_16-36-57" width="800">
+<img src="/images/2025-07-14_16-36-57.png" alt="2025-07-14_16-36-57" width="800">
 
 1. Conditions:
    • **Threshold type:** Static
@@ -32,7 +32,7 @@ draft: false
 
 
 ## Step 3: Configure Actions
-<img src="/AWS_Trainee/images/2025-07-14_16-38-15.png" alt="2025-07-14_16-38-15" width="800">
+<img src="/images/2025-07-14_16-38-15.png" alt="2025-07-14_16-38-15" width="800">
 
 1. Alarm state trigger: In alarm
 2. Send a notification to: 
@@ -43,7 +43,7 @@ draft: false
 
 
 ## Step 4: Add Name and Description
-<img src="/AWS_Trainee/images/2025-07-14_16-42-46.png" alt="22025-07-14_16-42-46" width="800">
+<img src="/images/2025-07-14_16-42-46.png" alt="22025-07-14_16-42-46" width="800">
 
 
 1. Alarm name: RDS-CPU-High
@@ -54,14 +54,14 @@ draft: false
 
 
 ## Step 5: Preview and Create
-<img src="/AWS_Trainee/images/2025-07-14_16-43-53.png" alt="2025-07-14_16-43-53" width="800">
+<img src="/images/2025-07-14_16-43-53.png" alt="2025-07-14_16-43-53" width="800">
 
 1. Review all settings
 2. Click "Create alarm"
 3. Confirm email: Check your email and click confirm subscription
 
 
-<img src="/AWS_Trainee/images/2025-07-14_16-44-13.png" alt="2025-07-14_16-44-13" width="800">
+<img src="/images/2025-07-14_16-44-13.png" alt="2025-07-14_16-44-13" width="800">
 
 
 ## Step 6: Create Additional Alarms for Other Metrics

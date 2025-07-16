@@ -19,7 +19,7 @@ After completing the RDS Performance Insights workshop, it's important to clean 
 
 Navigate to the RDS Console and remove your database instance:
 
-<img src="/AWS_Trainee/images/2025-07-14_16-42-46.png" alt="RDS Console Delete Instance" width="800">
+<img src="/images/2025-07-14_16-42-46.png" alt="RDS Console Delete Instance" width="800">
 
 1. **Open RDS Console** → Select your instance
 2. **Actions** → **Delete**
@@ -33,7 +33,7 @@ Navigate to the RDS Console and remove your database instance:
 
 Remove all monitoring alarms created during the workshop:
 
-<img src="/AWS_Trainee/images/2025-07-14_16-43-53.png" alt="CloudWatch Alarms Delete" width="800">
+<img src="/images/2025-07-14_16-43-53.png" alt="CloudWatch Alarms Delete" width="800">
 
 1. **CloudWatch Console** → **Alarms**
 2. **Select all workshop-related alarms**
@@ -53,7 +53,7 @@ Clean up notification topics:
 
 Remove the monitoring dashboard:
 
-<img src="/AWS_Trainee/images/2025-07-14_16-44-13.png" alt="CloudWatch Dashboard Delete" width="800">
+<img src="/images/2025-07-14_16-44-13.png" alt="CloudWatch Dashboard Delete" width="800">
 
 1. **CloudWatch Console** → **Dashboards**
 2. **Select your RDS dashboard**

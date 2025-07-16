@@ -17,7 +17,7 @@ Optimize your AWS RDS costs through monitoring, budgeting, and smart resource ma
 
 Cost optimization is crucial for maintaining efficient AWS RDS operations while controlling expenses. This section covers comprehensive cost monitoring, budget setup, and optimization strategies.
 
-<img src="/AWS_Trainee/images/2025-07-14_17-27-43.png" alt="AWS Cost Management Dashboard" width="800">
+<img src="/images/2025-07-14_17-27-43.png" alt="AWS Cost Management Dashboard" width="800">
 
 ## Cost Optimization Steps
 
@@ -28,7 +28,7 @@ Cost optimization is crucial for maintaining efficient AWS RDS operations while 
 4. Analyze cost trends and patterns
 5. Identify high-cost resources and usage spikes
 
-<img src="/AWS_Trainee/images/2025-07-14_17-28-12.png" alt="AWS Billing Console - RDS Costs" width="800">
+<img src="/images/2025-07-14_17-28-12.png" alt="AWS Billing Console - RDS Costs" width="800">
 
 ### Step 2: Set up Budget Alert
 1. In Billing Console, click "Budgets"
@@ -41,7 +41,7 @@ Cost optimization is crucial for maintaining efficient AWS RDS operations while 
 8. Configure notification recipients
 9. Review and create budget
 
-<img src="/AWS_Trainee/images/2025-07-14_17-30-58.png" alt="AWS Budget Setup for RDS" width="800">
+<img src="/images/2025-07-14_17-30-58.png" alt="AWS Budget Setup for RDS" width="800">
 
 ### Step 3: Cost Optimization Strategies
 1. **Right-sizing instances**: Match instance types to actual workload requirements
@@ -58,7 +58,7 @@ Cost optimization is crucial for maintaining efficient AWS RDS operations while 
 - Review monthly cost reports
 - Implement automated cost optimization recommendations
 
-<img src="/AWS_Trainee/images/2025-07-14_17-31-38.png" alt="Cost Monitoring and Alerts Setup" width="800">
+<img src="/images/2025-07-14_17-31-38.png" alt="Cost Monitoring and Alerts Setup" width="800">
 
 ## Best Practices
 - Regular cost reviews (weekly/monthly)

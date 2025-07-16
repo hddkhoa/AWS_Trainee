@@ -15,7 +15,7 @@ description: "Hướng dẫn chi tiết cách tạo RDS Instance và kích hoạ
 
 
 ### Bước 2: Tạo Database
-<img src="/AWS_Trainee/images/2025-07-14_15-55-30.png" alt="2025-07-14_15-55-30" width="800">
+<img src="/images/2025-07-14_15-55-30.png" alt="2025-07-14_15-55-30" width="800">
 
 1. Click nút "Create database" màu cam
 2. Chọn "Standard create" (không chọn Easy create)
@@ -26,7 +26,7 @@ description: "Hướng dẫn chi tiết cách tạo RDS Instance và kích hoạ
 
 
 ### Bước 3: Templates và Settings
-<img src="/AWS_Trainee/images/2025-07-14_15-58-04.png" alt="2025-07-14_15-58-04" width="800">
+<img src="/images/2025-07-14_15-58-04.png" alt="2025-07-14_15-58-04" width="800">
 
 1. Templates: Chọn "Free tier" (nếu đủ điều kiện) hoặc "Dev/Test"
 2. Settings:
@@ -37,7 +37,7 @@ description: "Hướng dẫn chi tiết cách tạo RDS Instance và kích hoạ
 
 
 ### Bước 4: Instance Configuration
-<img src="/AWS_Trainee/images/2025-07-14_16-02-05.png" alt="2025-07-14_16-02-05" width="800">
+<img src="/images/2025-07-14_16-02-05.png" alt="2025-07-14_16-02-05" width="800">
 
 1. DB instance class:
    • Chọn "Burstable classes (includes t classes)"
@@ -50,7 +50,7 @@ description: "Hướng dẫn chi tiết cách tạo RDS Instance và kích hoạ
 
 
 ### Bước 5: Connectivity
-<img src="/AWS_Trainee/images/2025-07-14_16-03-40.png" alt="2025-07-14_16-03-40" width="800">
+<img src="/images/2025-07-14_16-03-40.png" alt="2025-07-14_16-03-40" width="800">
 
 1. Virtual private cloud (VPC): Chọn Default VPC
 2. Subnet group: default
@@ -71,7 +71,7 @@ description: "Hướng dẫn chi tiết cách tạo RDS Instance và kích hoạ
 (Quan trọng!)
 
 
-<img src="/AWS_Trainee/images/2025-07-14_16-08-09.png" alt="2025-07-14_16-08-09" width="800">
+<img src="/images/2025-07-14_16-08-09.png" alt="2025-07-14_16-08-09" width="800">
 
 1. Enable Enhanced monitoring: Tick chọn
    • **Granularity:** 60 seconds
@@ -83,7 +83,7 @@ description: "Hướng dẫn chi tiết cách tạo RDS Instance và kích hoạ
 
 
 ### Bước 8: Additional Configuration
-<img src="/AWS_Trainee/images/2025-07-14_16-10-09.png" alt="2025-07-14_16-10-09" width="800">
+<img src="/images/2025-07-14_16-10-09.png" alt="2025-07-14_16-10-09" width="800">
 
 1. Initial database name: testdb
 2. DB parameter group: default
@@ -97,8 +97,8 @@ description: "Hướng dẫn chi tiết cách tạo RDS Instance và kích hoạ
 
 
 ### Bước 9: Tạo Database
-<img src="/AWS_Trainee/images/2025-07-14_16-11-19.png" alt="2025-07-14_16-11-19" width="800">
-<img src="/AWS_Trainee/images/2025-07-14_16-45-15.png" alt="2025-07-14_16-45-15" width="800">
+<img src="/images/2025-07-14_16-11-19.png" alt="2025-07-14_16-11-19" width="800">
+<img src="/images/2025-07-14_16-45-15.png" alt="2025-07-14_16-45-15" width="800">
 1. Click "Create database"
 2. Đợi 10-15 phút để database được tạo
 3. Trạng thái sẽ chuyển từ "Creating" → "Available"
@@ -112,7 +112,7 @@ description: "Hướng dẫn chi tiết cách tạo RDS Instance và kích hoạ
 Nếu bạn đã có RDS instance và muốn kích hoạt Performance Insights:
 
 ### Bước 1: Chọn Database
-<img src="/AWS_Trainee/images/22.png" alt="22" width="800">
+<img src="/images/22.png" alt="22" width="800">
 
 
 1. Vào RDS Console
@@ -120,7 +120,7 @@ Nếu bạn đã có RDS instance và muốn kích hoạt Performance Insights:
 3. Chọn database instance cần kích hoạt
 
 ### Bước 2: Modify Database
-<img src="/AWS_Trainee/images/33.png" alt="33" width="800">
+<img src="/images/33.png" alt="33" width="800">
 
 1. Click nút "Modify"
 2. Scroll xuống phần "Monitoring"

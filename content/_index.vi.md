@@ -11,7 +11,7 @@ RDS Performance Insights là một công cụ giám sát và phân tích hiệu 
 
 Dưới đây là mô hình triển khai bạn có thể tham khảo.
 
-<img src="/AWS_Trainee/images/usecase.jpg" alt="usecase" width="800">
+<img src="/images/usecase.jpg" alt="usecase" width="800">
 
 Các bước sau đây sẽ giúp bạn khởi tạo thiết lập giám sát RDS Performance Insights mới. Nếu bạn chưa biết gì về AWS RDS, chúng tôi khuyến khích bạn tìm hiểu thêm bằng cách theo dõi [tài liệu tuyệt vời này dành cho người mới bắt đầu](https://docs.aws.amazon.com/rds/).
 
